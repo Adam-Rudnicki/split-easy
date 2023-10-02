@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.ui.theme
+package com.mammuten.spliteasy.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
