@@ -6,5 +6,5 @@ import androidx.room.Transaction
 interface GroupWithUsersDao {
     @Transaction
     @Query("SELECT * FROM groups")
-    fun getGroupsWithUsers(): List<GroupWithUsers>
+    suspend fun getGroupsWithUsers(): List<GroupWithUsers>
 }

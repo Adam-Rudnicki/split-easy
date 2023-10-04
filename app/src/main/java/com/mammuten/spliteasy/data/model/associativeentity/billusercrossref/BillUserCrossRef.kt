@@ -1,19 +1,19 @@
-package com.mammuten.spliteasy.data.model.associativeentity
+package com.mammuten.spliteasy.data.model.associativeentity.billusercrossref
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 
-import com.mammuten.spliteasy.data.model.entity.group.Group
+import com.mammuten.spliteasy.data.model.entity.bill.Bill
 import com.mammuten.spliteasy.data.model.entity.user.User
 
 @Entity(
-    tableName = "group_user_cross_ref",
-    primaryKeys = ["groupId", "userId"],
+    tableName = "bill_user_cross_ref",
+    primaryKeys = ["billId", "userId"],
     foreignKeys = [
         ForeignKey(
-            entity = Group::class,
+            entity = Bill::class,
             parentColumns = ["id"],
-            childColumns = ["groupId"],
+            childColumns = ["billId"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
@@ -24,7 +24,7 @@ import com.mammuten.spliteasy.data.model.entity.user.User
         )
     ]
 )
-data class GroupUserCrossRef (
-    val groupId: Int,
+data class BillUserCrossRef(
+    val billId: Int,
     val userId: Int
 )

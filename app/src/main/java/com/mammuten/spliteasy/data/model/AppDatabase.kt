@@ -2,9 +2,12 @@ package com.mammuten.spliteasy.data.model
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.mammuten.spliteasy.data.model.associativeentity.billusercrossref.BillUserCrossRef
+import com.mammuten.spliteasy.data.model.associativeentity.groupusercrossref.GroupUserCrossRef
 
 import com.mammuten.spliteasy.data.model.entity.bill.Bill
 import com.mammuten.spliteasy.data.model.entity.bill.BillDao
+import com.mammuten.spliteasy.data.model.entity.contribution.Contribution
 import com.mammuten.spliteasy.data.model.entity.group.Group
 import com.mammuten.spliteasy.data.model.entity.group.GroupDao
 import com.mammuten.spliteasy.data.model.entity.user.User
@@ -14,7 +17,10 @@ import com.mammuten.spliteasy.data.model.entity.user.UserDao
     entities = [
         Group::class,
         Bill::class,
-        User::class
+        User::class,
+        Contribution::class,
+        BillUserCrossRef::class,
+        GroupUserCrossRef::class
                ],
     views = [],
     version = 1
