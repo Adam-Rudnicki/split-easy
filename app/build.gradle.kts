@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.mammuten.spliteasy"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.mammuten.spliteasy"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
