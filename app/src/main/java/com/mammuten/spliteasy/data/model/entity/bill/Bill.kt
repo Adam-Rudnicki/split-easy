@@ -1,12 +1,24 @@
 package com.mammuten.spliteasy.data.model.entity.bill
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "bills")
+import com.mammuten.spliteasy.data.model.entity.group.Group
+
+@Entity(
+    tableName = "bills",
+    foreignKeys = [
+        ForeignKey(
+            entity = Group::class,
+            childColumns = ["groupId"],
+            parentColumns = ["id"],
+            onDelete = ForeignKey.CASCADE,
+        )
+    ]
+)
 data class Bill (
     @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "group_id") val groupId: Int,
+    val groupId: Int,
     val amount: Double,
 )
