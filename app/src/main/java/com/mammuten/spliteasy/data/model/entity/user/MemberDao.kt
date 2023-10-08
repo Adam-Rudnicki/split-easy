@@ -5,18 +5,16 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 
-import kotlinx.coroutines.flow.Flow
-
 @Dao
-interface UserDao {
+interface MemberDao {
     @Upsert
-    suspend fun upsertUser(user: User)
+    suspend fun upsertUser(memberEntity: MemberEntity)
 
     @Delete
-    suspend fun deleteUser(user: User)
+    suspend fun deleteUser(memberEntity: MemberEntity)
 
     @Query("SELECT * FROM users WHERE id = :id")
-    suspend fun loadUserById(id: Int): User
+    suspend fun loadUserById(id: Int): MemberEntity
 
 //    @Query("SELECT * FROM users WHERE id = :id")
 //    fun loadUserById(id: Int): Flow<User>

@@ -1,30 +1,30 @@
-package com.mammuten.spliteasy.data.model.associativeentity.groupusercrossref
+package com.mammuten.spliteasy.data.model.entity.associativeentity.groupusercrossref
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 
-import com.mammuten.spliteasy.data.model.entity.group.Group
-import com.mammuten.spliteasy.data.model.entity.user.User
+import com.mammuten.spliteasy.data.model.entity.group.GroupEntity
+import com.mammuten.spliteasy.data.model.entity.user.MemberEntity
 
 @Entity(
     tableName = "group_user_cross_ref",
     primaryKeys = ["groupId", "userId"],
     foreignKeys = [
         ForeignKey(
-            entity = Group::class,
+            entity = GroupEntity::class,
             parentColumns = ["id"],
             childColumns = ["groupId"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = User::class,
+            entity = MemberEntity::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
-data class GroupUserCrossRef (
+data class GroupUserCrossRefEntity (
     val groupId: Int,
     val userId: Int
 )

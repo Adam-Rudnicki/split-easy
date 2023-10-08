@@ -4,16 +4,16 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 
-import com.mammuten.spliteasy.data.model.associativeentity.groupusercrossref.GroupUserCrossRef
-import com.mammuten.spliteasy.data.model.entity.group.Group
-import com.mammuten.spliteasy.data.model.entity.user.User
+import com.mammuten.spliteasy.data.model.entity.associativeentity.groupusercrossref.GroupUserCrossRefEntity
+import com.mammuten.spliteasy.data.model.entity.group.GroupEntity
+import com.mammuten.spliteasy.data.model.entity.user.MemberEntity
 
 data class GroupWithUsers (
-    @Embedded val group: Group,
+    @Embedded val group: GroupEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "userId",
-        associateBy = Junction(GroupUserCrossRef::class)
+        associateBy = Junction(GroupUserCrossRefEntity::class)
     )
-    val users: List<User>
+    val users: List<MemberEntity>
 )

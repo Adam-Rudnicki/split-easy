@@ -3,28 +3,28 @@ package com.mammuten.spliteasy.data.model.entity.contribution
 import androidx.room.Entity
 import androidx.room.ForeignKey
 
-import com.mammuten.spliteasy.data.model.entity.bill.Bill
-import com.mammuten.spliteasy.data.model.entity.user.User
+import com.mammuten.spliteasy.data.model.entity.bill.BillEntity
+import com.mammuten.spliteasy.data.model.entity.user.MemberEntity
 
 @Entity(
     tableName = "contributions",
     primaryKeys = ["billId", "userId"],
     foreignKeys = [
         ForeignKey(
-            entity = Bill::class,
+            entity = BillEntity::class,
             parentColumns = ["id"],
             childColumns = ["billId"],
             onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
-            entity = User::class,
+            entity = MemberEntity::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
             onDelete = ForeignKey.CASCADE,
         )
     ]
 )
-data class Contribution(
+data class ContributionEntity(
     val billId: Int,
     val userId: Int,
     val amountPaid: Double,

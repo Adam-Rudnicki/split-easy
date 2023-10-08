@@ -5,18 +5,16 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 
-import kotlinx.coroutines.flow.Flow
-
 @Dao
 interface GroupDao {
     @Upsert
-    suspend fun upsertGroup(group: Group)
+    suspend fun upsertGroup(groupEntity: GroupEntity)
 
     @Delete
-    suspend fun deleteGroup(group: Group)
+    suspend fun deleteGroup(groupEntity: GroupEntity)
 
     @Query("SELECT * FROM groups WHERE id = :id")
-    suspend fun loadGroupById(id: Int): Group
+    suspend fun loadGroupById(id: Int): GroupEntity
 
 //    @Query("SELECT * FROM groups WHERE id = :id")
 //    fun loadGroupById(id: Int): Flow<Group>

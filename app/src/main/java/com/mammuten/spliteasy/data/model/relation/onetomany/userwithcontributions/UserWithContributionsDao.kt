@@ -7,4 +7,9 @@ interface UserWithContributionsDao {
     @Transaction
     @Query("SELECT * FROM users")
     suspend fun getUsersWithContributions(): List<UserWithContributions>
+
+    @Transaction
+    @Query("SELECT * FROM users WHERE id = :id")
+    suspend fun getUserWithContributions(id: Int): UserWithContributions
+
 }

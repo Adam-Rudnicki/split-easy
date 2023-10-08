@@ -5,18 +5,16 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 
-import kotlinx.coroutines.flow.Flow
-
 @Dao
 interface BillDao {
     @Upsert
-    suspend fun upsertBill(bill: Bill)
+    suspend fun upsertBill(billEntity: BillEntity)
 
     @Delete
-    suspend fun deleteBill(bill: Bill)
+    suspend fun deleteBill(billEntity: BillEntity)
 
     @Query("SELECT * FROM bills WHERE id = :id")
-    suspend fun loadBillById(id: Int): Bill
+    suspend fun loadBillById(id: Int): BillEntity
 
 //    @Query("SELECT * FROM bills WHERE id = :id")
 //    fun loadBillById(id: Int): Flow<Bill>

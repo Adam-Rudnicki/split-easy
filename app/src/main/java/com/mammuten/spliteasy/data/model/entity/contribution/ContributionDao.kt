@@ -8,13 +8,13 @@ import androidx.room.Upsert
 @Dao
 interface ContributionDao {
     @Upsert
-    suspend fun upsertContribution(contribution: Contribution)
+    suspend fun upsertContribution(contributionEntity: ContributionEntity)
 
     @Delete
-    suspend fun deleteContribution(contribution: Contribution)
+    suspend fun deleteContribution(contributionEntity: ContributionEntity)
 
     @Query("SELECT * FROM contributions WHERE billId = :billId AND userId = :userId")
-    suspend fun loadContributionById(billId: Int, userId: Int): Contribution
+    suspend fun loadContributionById(billId: Int, userId: Int): ContributionEntity
 
 //    @Query("SELECT * FROM contributions WHERE billId = :billId AND userId = :userId")
 //    fun loadContributionById(billId: Int, userId: Int): Flow<Contribution>
