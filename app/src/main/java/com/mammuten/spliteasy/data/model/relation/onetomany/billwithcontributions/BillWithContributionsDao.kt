@@ -7,4 +7,8 @@ interface BillWithContributionsDao {
     @Transaction
     @Query("SELECT * FROM bills")
     suspend fun getBillsWithContributions(): List<BillWithContributions>
+
+    @Transaction
+    @Query("SELECT * FROM bills WHERE id = :billId")
+    suspend fun getBillWithContributions(billId: Int): BillWithContributions
 }

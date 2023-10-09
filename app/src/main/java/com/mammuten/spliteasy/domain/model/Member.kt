@@ -1,8 +1,7 @@
 package com.mammuten.spliteasy.domain.model
 
-data class Bill(
+data class Member(
     val id: Int,
-    val name: String,
     val groupId: Int,
-    val amount: Double,
+    val nickname: String?,
 )

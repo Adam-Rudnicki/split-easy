@@ -7,4 +7,8 @@ interface GroupWithBillsDao {
     @Transaction
     @Query("SELECT * FROM groups")
     suspend fun getGroupsWithBills(): List<GroupWithBills>
+
+    @Transaction
+    @Query("SELECT * FROM groups WHERE id = :groupId")
+    suspend fun getGroupWithBills(groupId: Int): GroupWithBills
 }

@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.data.model.entity.bill
+package com.mammuten.spliteasy.data.model.entity.member
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.mammuten.spliteasy.data.model.entity.group.GroupEntity
 
 @Entity(
-    tableName = "bills",
+    tableName = "members",
     foreignKeys = [
         ForeignKey(
             entity = GroupEntity::class,
@@ -17,9 +17,8 @@ import com.mammuten.spliteasy.data.model.entity.group.GroupEntity
         )
     ]
 )
-data class BillEntity (
+data class MemberEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val name: String,
     val groupId: Int,
-    val amount: Double,
+    val nickname: String?,
 )

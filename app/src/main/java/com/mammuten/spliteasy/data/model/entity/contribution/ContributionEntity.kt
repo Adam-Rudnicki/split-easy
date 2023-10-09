@@ -4,11 +4,11 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 
 import com.mammuten.spliteasy.data.model.entity.bill.BillEntity
-import com.mammuten.spliteasy.data.model.entity.user.MemberEntity
+import com.mammuten.spliteasy.data.model.entity.member.MemberEntity
 
 @Entity(
     tableName = "contributions",
-    primaryKeys = ["billId", "userId"],
+    primaryKeys = ["billId", "memberId"],
     foreignKeys = [
         ForeignKey(
             entity = BillEntity::class,
@@ -19,14 +19,14 @@ import com.mammuten.spliteasy.data.model.entity.user.MemberEntity
         ForeignKey(
             entity = MemberEntity::class,
             parentColumns = ["id"],
-            childColumns = ["userId"],
+            childColumns = ["memberId"],
             onDelete = ForeignKey.CASCADE,
         )
     ]
 )
 data class ContributionEntity(
     val billId: Int,
-    val userId: Int,
+    val memberId: Int,
     val amountPaid: Double,
     val amountOwed: Double,
 )

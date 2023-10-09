@@ -8,10 +8,8 @@ class BillMapper: Mapper<BillEntity, Bill>{
         return Bill(
             id = entity.id,
             name = entity.name,
-            group = entity.group,
+            groupId = entity.groupId,
             amount = entity.amount,
-            contributions = entity.contributions,
-            participants = entity.participants
         )
     }
 
@@ -19,10 +17,8 @@ class BillMapper: Mapper<BillEntity, Bill>{
         return BillEntity(
             id = domain.id,
             name = domain.name,
-            group = domain.group,
+            groupId = domain.groupId,
             amount = domain.amount,
-            contributions = domain.contributions,
-            participants = domain.participants
         )
     }
 }

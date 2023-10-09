@@ -13,9 +13,9 @@ interface ContributionDao {
     @Delete
     suspend fun deleteContribution(contributionEntity: ContributionEntity)
 
-    @Query("SELECT * FROM contributions WHERE billId = :billId AND userId = :userId")
-    suspend fun loadContributionById(billId: Int, userId: Int): ContributionEntity
+    @Query("SELECT * FROM contributions WHERE billId = :billId AND memberId = :memberId")
+    suspend fun loadContributionById(billId: Int, memberId: Int): ContributionEntity
 
-//    @Query("SELECT * FROM contributions WHERE billId = :billId AND userId = :userId")
-//    fun loadContributionById(billId: Int, userId: Int): Flow<Contribution>
+//    @Query("SELECT * FROM contributions WHERE billId = :billId AND memberId = :memberId")
+//    fun loadContributionById(billId: Int, memberId: Int): Flow<Contribution>
 }

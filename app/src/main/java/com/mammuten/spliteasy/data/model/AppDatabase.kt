@@ -6,17 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-import com.mammuten.spliteasy.data.model.entity.associativeentity.billusercrossref.BillUserCrossRefEntity
-import com.mammuten.spliteasy.data.model.entity.associativeentity.groupusercrossref.GroupUserCrossRefEntity
 import com.mammuten.spliteasy.data.model.entity.bill.BillEntity
 import com.mammuten.spliteasy.data.model.entity.bill.BillDao
 import com.mammuten.spliteasy.data.model.entity.contribution.ContributionEntity
+import com.mammuten.spliteasy.data.model.entity.contribution.ContributionDao
 import com.mammuten.spliteasy.data.model.entity.group.GroupEntity
 import com.mammuten.spliteasy.data.model.entity.group.GroupDao
-import com.mammuten.spliteasy.data.model.entity.user.MemberEntity
-import com.mammuten.spliteasy.data.model.entity.user.MemberDao
-import com.mammuten.spliteasy.data.util.Constants
+import com.mammuten.spliteasy.data.model.entity.member.MemberEntity
+import com.mammuten.spliteasy.data.model.entity.member.MemberDao
+
 import com.mammuten.spliteasy.data.converter.Converters
+import com.mammuten.spliteasy.data.util.Constants
 
 @Database(
     entities = [
@@ -24,8 +24,6 @@ import com.mammuten.spliteasy.data.converter.Converters
         BillEntity::class,
         MemberEntity::class,
         ContributionEntity::class,
-        BillUserCrossRefEntity::class,
-        GroupUserCrossRefEntity::class
                ],
     version = 1
 )
@@ -33,7 +31,8 @@ import com.mammuten.spliteasy.data.converter.Converters
 abstract class AppDatabase : RoomDatabase() {
     abstract fun groupDao(): GroupDao
     abstract fun billDao(): BillDao
-    abstract fun userDao(): MemberDao
+    abstract fun MemberDao(): MemberDao
+    abstract fun contributionDao(): ContributionDao
 
     companion object {
         @Volatile
