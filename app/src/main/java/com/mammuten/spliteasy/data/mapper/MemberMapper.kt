@@ -1,7 +1,7 @@
 package com.mammuten.spliteasy.data.mapper
 
-import com.mammuten.spliteasy.data.model.entity.member.MemberEntity
-import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.data.source.local.model.entity.member.MemberEntity
+import com.mammuten.spliteasy.domain.model.dto.Member
 
 class MemberMapper: Mapper<MemberEntity, Member> {
     override fun toDomain(entity: MemberEntity): Member {

@@ -1,7 +1,7 @@
 package com.mammuten.spliteasy.data.mapper
 
-import com.mammuten.spliteasy.data.model.entity.group.GroupEntity
-import com.mammuten.spliteasy.domain.model.Group
+import com.mammuten.spliteasy.data.source.local.model.entity.group.GroupEntity
+import com.mammuten.spliteasy.domain.model.dto.Group
 
 class GroupMapper : Mapper<GroupEntity, Group> {
     override fun toDomain(entity: GroupEntity): Group {
