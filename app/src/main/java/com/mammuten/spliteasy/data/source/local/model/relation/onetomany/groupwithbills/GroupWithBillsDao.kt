@@ -1,9 +1,11 @@
 package com.mammuten.spliteasy.data.source.local.model.relation.onetomany.groupwithbills
 
+import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface GroupWithBillsDao {
     @Transaction
     @Query("SELECT * FROM groups WHERE id = :groupId")

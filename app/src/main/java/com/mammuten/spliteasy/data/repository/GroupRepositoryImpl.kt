@@ -2,19 +2,16 @@ package com.mammuten.spliteasy.data.repository
 
 import com.mammuten.spliteasy.data.mapper.BillMapper
 import com.mammuten.spliteasy.data.mapper.GroupMapper
+import com.mammuten.spliteasy.data.mapper.MemberMapper
 import com.mammuten.spliteasy.data.source.local.AppDatabase
 import com.mammuten.spliteasy.domain.model.dto.Bill
 import com.mammuten.spliteasy.domain.model.dto.Group
 import com.mammuten.spliteasy.domain.model.dto.Member
 import com.mammuten.spliteasy.domain.repository.GroupRepository
 import com.mammuten.spliteasy.util.common.Resource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.yield
+
 
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +20,8 @@ import javax.inject.Singleton
 class GroupRepositoryImpl @Inject constructor(
     private val db: AppDatabase,
     private val groupMapper: GroupMapper,
-    private val billMapper: BillMapper
+    private val billMapper: BillMapper,
+    private val memberMapper: MemberMapper
 ) : GroupRepository {
     override suspend fun upsertGroup(group: Group) {
         val groupEntity = groupMapper.toEntity(group)
@@ -63,10 +61,16 @@ class GroupRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getGroupWithMembers(groupId: Int): Resource<List<Member>> {
-        TODO("Not yet implemented")
+        val groupWithMembers = db.groupWithMembersDao().getGroupWithMembers(groupId)
+        return Resource.Success(groupWithMembers.members.map { memberMapper.toDomain(it) })
     }
 
     override fun getGroupWithMembersFlow(groupId: Int): Flow<Resource<List<Member>>> {
-        TODO("Not yet implemented")
+        return flow {
+            db.groupWithMembersDao().getGroupWithMembersFlow(groupId).collect { groupWithMembers ->
+                emit(Resource.Loading())
+                emit(Resource.Success(groupWithMembers.members.map { memberMapper.toDomain(it) }))
+            }
+        }
     }
 }
