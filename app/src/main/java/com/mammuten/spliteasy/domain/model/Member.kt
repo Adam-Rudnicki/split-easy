@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.domain.model.dto
+package com.mammuten.spliteasy.domain.model
 
 data class Member(
     val id: Int,

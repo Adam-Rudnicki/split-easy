@@ -8,7 +8,7 @@ import androidx.room.Upsert
 @Dao
 interface MemberDao {
     @Upsert
-    suspend fun insertMember(member: MemberEntity)
+    suspend fun upsertMember(member: MemberEntity)
 
     @Delete
     suspend fun deleteMember(member: MemberEntity)

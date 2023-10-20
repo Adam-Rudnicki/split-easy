@@ -1,5 +1,7 @@
 package com.mammuten.spliteasy.util
 
+import java.util.Locale
+
 object StringUtil {
     fun splitString(input: String, delimiter: String): List<String> {
         return input.split(delimiter)
@@ -10,6 +12,6 @@ object StringUtil {
     }
 
     fun stringToUpperCase(text: String): String {
-        return text.toUpperCase()
+        return text.uppercase(Locale.ROOT)
     }
 }
