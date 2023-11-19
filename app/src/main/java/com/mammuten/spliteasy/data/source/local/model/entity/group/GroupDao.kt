@@ -9,14 +9,18 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GroupDao {
     @Upsert
-    suspend fun upsertGroup(groupEntity: GroupEntity)
+    suspend fun upsertGroups(vararg groups: GroupEntity)
 
     @Delete
-    suspend fun deleteGroup(groupEntity: GroupEntity)
+    suspend fun deleteGroups(vararg groups: GroupEntity)
+
+    @Query("SELECT * FROM groups WHERE id = :groupId")
+    suspend fun loadGroupById(groupId: Int): GroupEntity
 
     @Query("SELECT * FROM groups")
-    suspend fun getAllGroups(): List<GroupEntity>
+    suspend fun loadGroups(): List<GroupEntity>
 
     @Query("SELECT * FROM groups")
-    fun getAllGroupsFlow(): Flow<List<GroupEntity>>
+    fun loadGroupsAsFlow(): Flow<List<GroupEntity>>
+
 }

@@ -1,8 +1,6 @@
 package com.mammuten.spliteasy.domain.repository
 
 import com.mammuten.spliteasy.domain.model.Bill
-import com.mammuten.spliteasy.domain.model.Contribution
-import com.mammuten.spliteasy.util.common.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface BillRepository {
@@ -10,8 +8,8 @@ interface BillRepository {
 
     suspend fun deleteBill(bill: Bill)
 
-    suspend fun getBillWithContributions(billId: Int): List<Contribution>
+    suspend fun getBillsByGroupId(groupId: Int): List<Bill>
 
-    fun getBillWithContributionsFlow(billId: Int): Flow<List<Contribution>>
+    fun getBillsByGroupIdAsFlow(groupId: Int): Flow<List<Bill>>
 
 }

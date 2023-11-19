@@ -14,12 +14,7 @@ import com.mammuten.spliteasy.data.source.local.model.entity.group.GroupEntity
 import com.mammuten.spliteasy.data.source.local.model.entity.group.GroupDao
 import com.mammuten.spliteasy.data.source.local.model.entity.member.MemberEntity
 import com.mammuten.spliteasy.data.source.local.model.entity.member.MemberDao
-
 import com.mammuten.spliteasy.data.converter.Converters
-import com.mammuten.spliteasy.data.source.local.model.relation.onetomany.billwithcontributions.BillWithContributionsDao
-import com.mammuten.spliteasy.data.source.local.model.relation.onetomany.groupwithbills.GroupWithBillsDao
-import com.mammuten.spliteasy.data.source.local.model.relation.onetomany.groupwithmembers.GroupWithMembersDao
-import com.mammuten.spliteasy.data.source.local.model.relation.onetomany.memberwithcontributions.MemberWithContributionsDao
 import com.mammuten.spliteasy.data.util.Constants
 
 @Database(
@@ -37,14 +32,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun billDao(): BillDao
     abstract fun memberDao(): MemberDao
     abstract fun contributionDao(): ContributionDao
-
-    abstract fun groupWithBillsDao(): GroupWithBillsDao
-
-    abstract fun groupWithMembersDao(): GroupWithMembersDao
-
-    abstract fun billWithContributionsDao(): BillWithContributionsDao
-
-    abstract fun memberWithContributionsDao(): MemberWithContributionsDao
 
     companion object {
         @Volatile

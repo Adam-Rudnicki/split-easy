@@ -8,8 +8,7 @@ sealed class Resource<out T> {
         val exception: Throwable? = null,
         val message: String? = null,
         val data: T? = null
-    ) :
-        Resource<T>()
+    ) : Resource<T>()
 
     data class Loading<T>(val isLoading: Boolean = true, val data: T? = null) : Resource<T>()
 }
