@@ -53,6 +53,7 @@ class AddEditGroupViewModel @Inject constructor(
             is AddEditGroupEvent.EnteredName -> {
                 val trimmed = event.value.trim()
                 val error: InvalidInputError? = when {
+                    !Group.IS_NAME_REQUIRED && trimmed.isEmpty() -> null
                     trimmed.length < Group.MIN_NAME_LEN -> InvalidInputError.TooShort(Group.MIN_NAME_LEN)
                     trimmed.length > Group.MAX_NAME_LEN -> InvalidInputError.TooLong(Group.MAX_NAME_LEN)
                     else -> null
@@ -66,6 +67,7 @@ class AddEditGroupViewModel @Inject constructor(
             is AddEditGroupEvent.EnteredDescription -> {
                 val trimmed = event.value.trim()
                 val error: InvalidInputError? = when {
+                    !Group.IS_DESC_REQUIRED && trimmed.isEmpty() -> null
                     trimmed.length < Group.MIN_DESC_LEN -> InvalidInputError.TooShort(Group.MIN_DESC_LEN)
                     trimmed.length > Group.MAX_DESC_LEN -> InvalidInputError.TooLong(Group.MAX_DESC_LEN)
                     else -> null
@@ -80,7 +82,7 @@ class AddEditGroupViewModel @Inject constructor(
                 viewModelScope.launch {
                     if (Group.IS_NAME_REQUIRED && name.value.isBlank()) name =
                         name.copy(error = InvalidInputError.Required)
-                    if (Group.IS_DESC_REQUIRED) description =
+                    if (Group.IS_DESC_REQUIRED && description.value.isBlank()) description =
                         description.copy(error = InvalidInputError.Required)
                     if (name.error != null || description.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))
