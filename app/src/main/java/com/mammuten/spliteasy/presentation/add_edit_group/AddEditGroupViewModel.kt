@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
-import com.mammuten.spliteasy.presentation.components.TextFieldState
+import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -46,7 +46,7 @@ class AddEditGroupViewModel @Inject constructor(
                 }
             }
             name = name.copy(
-                error = InvalidInputError.checkInput(
+                error = InvalidInputError.checkText(
                     text = name.value,
                     isRequired = Group.IS_NAME_REQUIRED,
                     minLength = Group.MIN_NAME_LEN,
@@ -54,7 +54,7 @@ class AddEditGroupViewModel @Inject constructor(
                 )
             )
             description = description.copy(
-                error = InvalidInputError.checkInput(
+                error = InvalidInputError.checkText(
                     text = description.value,
                     isRequired = Group.IS_DESC_REQUIRED,
                     minLength = Group.MIN_DESC_LEN,
@@ -67,29 +67,23 @@ class AddEditGroupViewModel @Inject constructor(
     fun onEvent(event: AddEditGroupEvent) {
         when (event) {
             is AddEditGroupEvent.EnteredName -> {
-                val error: InvalidInputError? = InvalidInputError.checkInput(
+                val error: InvalidInputError? = InvalidInputError.checkText(
                     text = event.value,
                     isRequired = Group.IS_NAME_REQUIRED,
                     minLength = Group.MIN_NAME_LEN,
                     maxLength = Group.MAX_NAME_LEN
                 )
-                name = name.copy(
-                    value = event.value,
-                    error = error
-                )
+                name = name.copy(value = event.value, error = error)
             }
 
             is AddEditGroupEvent.EnteredDescription -> {
-                val error: InvalidInputError? = InvalidInputError.checkInput(
+                val error: InvalidInputError? = InvalidInputError.checkText(
                     text = event.value,
                     isRequired = Group.IS_DESC_REQUIRED,
                     minLength = Group.MIN_DESC_LEN,
                     maxLength = Group.MAX_DESC_LEN
                 )
-                description = description.copy(
-                    value = event.value,
-                    error = error
-                )
+                description = description.copy(value = event.value, error = error)
             }
 
             is AddEditGroupEvent.SaveGroup -> {

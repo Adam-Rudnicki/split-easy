@@ -1,7 +1,11 @@
 package com.mammuten.spliteasy.data.mapper
 
+import com.mammuten.spliteasy.data.source.local.entity.bill.BillEntity
 import com.mammuten.spliteasy.data.source.local.entity.group.GroupEntity
+import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Group
+
+// Group mappers
 
 fun Group.asEntity(): GroupEntity {
     return GroupEntity(
@@ -10,8 +14,6 @@ fun Group.asEntity(): GroupEntity {
         description = description,
     )
 }
-
-fun List<Group>.asEntityList(): List<GroupEntity> = this.map { it.asEntity() }
 
 fun GroupEntity.asModel(): Group {
     return Group(
@@ -22,4 +24,30 @@ fun GroupEntity.asModel(): Group {
     )
 }
 
-fun List<GroupEntity>.asModelList(): List<Group> = this.map { it.asModel() }
+fun List<GroupEntity>.asGroupModelList(): List<Group> = this.map { it.asModel() }
+
+// Bill mappers
+
+fun Bill.asEntity(): BillEntity {
+    return BillEntity(
+        id = id,
+        groupId = groupId,
+        name = name,
+        description = description,
+        amount = amount,
+        date = date
+    )
+}
+
+fun BillEntity.asModel(): Bill {
+    return Bill(
+        id = id,
+        groupId = groupId,
+        name = name,
+        description = description,
+        amount = amount,
+        date = date
+    )
+}
+
+fun List<BillEntity>.asBillModelList(): List<Bill> = this.map { it.asModel() }

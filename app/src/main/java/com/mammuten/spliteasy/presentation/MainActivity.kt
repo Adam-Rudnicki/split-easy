@@ -11,7 +11,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mammuten.spliteasy.presentation.add_edit_bill.AddEditBillScreen
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupScreen
+import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsScreen
 import com.mammuten.spliteasy.presentation.groups.GroupsScreen
 import com.mammuten.spliteasy.presentation.ui.theme.SplitEasyTheme
@@ -47,7 +49,7 @@ private fun SplitEasyApp() {
                 navArgument(name = "groupId") {
                     type = NavType.IntType
                     defaultValue = -1
-                },
+                }
             )
         ) {
             AddEditGroupScreen(navController = navController)
@@ -57,10 +59,34 @@ private fun SplitEasyApp() {
             arguments = listOf(
                 navArgument(name = "groupId") {
                     type = NavType.IntType
-                },
+                }
             )
         ) {
             GroupDetailsScreen(navController = navController)
+        }
+        composable(
+            route = "${Screen.AddEditBillScreen.route}/{groupId}?billId={billId}",
+            arguments = listOf(
+                navArgument(name = "groupId") {
+                    type = NavType.IntType
+                },
+                navArgument(name = "billId") {
+                    type = NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) {
+            AddEditBillScreen(navController = navController)
+        }
+        composable(
+            route = "${Screen.BillDetailsScreen.route}/{billId}",
+            arguments = listOf(
+                navArgument(name = "billId") {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            BillDetailsScreen(navController = navController)
         }
     }
 }

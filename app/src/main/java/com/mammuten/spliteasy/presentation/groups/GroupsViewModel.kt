@@ -35,12 +35,9 @@ class GroupsViewModel @Inject constructor(
 
     private fun getGroups(groupOrder: GroupOrder) {
         getGroupsJob?.cancel()
-        getGroupsJob = groupUseCases.getGroups(groupOrder)
+        getGroupsJob = groupUseCases.getGroupsUseCase(groupOrder)
             .onEach { groups ->
-                _state.value = state.value.copy(
-                    groups = groups,
-                    groupOrder = groupOrder
-                )
+                _state.value = state.value.copy(groups = groups, groupOrder = groupOrder)
             }.launchIn(viewModelScope)
     }
 }

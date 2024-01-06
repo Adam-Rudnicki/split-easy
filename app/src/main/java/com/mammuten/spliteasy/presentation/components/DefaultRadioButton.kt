@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.presentation.groups.components
+package com.mammuten.spliteasy.presentation.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme

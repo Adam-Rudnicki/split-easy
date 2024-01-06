@@ -1,23 +1,34 @@
-package com.mammuten.spliteasy.presentation.group_details
+package com.mammuten.spliteasy.presentation.bill_details
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -27,19 +38,19 @@ import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupDetailsScreen(
+fun BillDetailsScreen(
     navController: NavController,
-    viewModel: GroupDetailsViewModel = hiltViewModel()
+    viewModel: BillDetailsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
 
-    val openDeleteGroupDialog = remember { mutableStateOf(false) }
+    val openDeleteBillDialog = remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is GroupDetailsViewModel.UiEvent.DeleteGroup -> navController.navigateUp()
+                is BillDetailsViewModel.UiEvent.DeleteBill -> navController.navigateUp()
             }
         }
     }
@@ -47,27 +58,29 @@ fun GroupDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Group Details") },
+                title = { Text(text = "Bill Details") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { openDeleteGroupDialog.value = true }) {
+                    IconButton(onClick = { openDeleteBillDialog.value = true }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete group"
+                            contentDescription = "Delete bill"
                         )
                     }
                     IconButton(
                         onClick = {
                             navController.navigate(
-                                Screen.AddEditGroupScreen.route + "?groupId=${state.group?.id}"
+                                Screen.AddEditBillScreen.route +
+                                        "/${state.bill?.groupId}" +
+                                        "?billId=${state.bill?.id}"
                             )
                         }
                     ) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit group")
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit bill")
                     }
                 },
             )
@@ -75,8 +88,13 @@ fun GroupDetailsScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.AddEditBillScreen.route + "/${state.group?.id}") },
-                content = { Icon(imageVector = Icons.Default.Add, contentDescription = "Add bill") }
+                onClick = { },
+                content = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add contribution"
+                    )
+                }
             )
         },
         content = { innerPadding ->
@@ -95,7 +113,7 @@ fun GroupDetailsScreen(
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        state.group?.let {
+                        state.bill?.let {
                             Text(
                                 text = "Name",
                                 style = MaterialTheme.typography.bodyLarge,
@@ -119,13 +137,27 @@ fun GroupDetailsScreen(
                             )
 
                             Text(
-                                text = "Creation Date",
+                                text = "Amount",
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                text = it.created.toString(),
+                                text = it.amount?.let { amount ->
+                                    String.format("%.2f", amount)
+                                } ?: "N/A",
                                 style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+
+                            Text(
+                                text = "Date",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = "${it.date ?: "N/A"} ",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(bottom = 16.dp)
                             )
                         }
                     }
@@ -141,71 +173,18 @@ fun GroupDetailsScreen(
                         .padding(8.dp),
                     color = Color.Black
                 )
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(
-                        items = state.bills,
-                        key = { bill -> bill.id!! }
-                    ) { bill ->
-                        OutlinedCard(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            border = BorderStroke(width = 1.dp, color = Color.Black),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    navController.navigate(
-                                        Screen.BillDetailsScreen.route + "/${bill.id}"
-                                    )
-                                }
-                        ) {
-                            Column(modifier = Modifier.padding(8.dp)) {
-                                Text(
-                                    text = bill.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                bill.date?.let {
-                                    Text(
-                                        text = it.toString(),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                                bill.amount?.let {
-                                    Text(
-                                        text = String.format("%.2f", it),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                                bill.description?.let {
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 3,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {}
 
                 when {
-                    openDeleteGroupDialog.value -> {
+                    openDeleteBillDialog.value -> {
                         ConfirmDismissDialog(
-                            onDismissRequest = { openDeleteGroupDialog.value = false },
+                            onDismissRequest = { openDeleteBillDialog.value = false },
                             onConfirmation = {
-                                openDeleteGroupDialog.value = false
-                                viewModel.onEvent(GroupDetailsEvent.DeleteGroup)
+                                openDeleteBillDialog.value = false
+                                viewModel.onEvent(BillDetailsEvent.DeleteBill)
                             },
-                            dialogTitle = "Delete group",
-                            dialogText = "Are you sure you want to delete this group?",
+                            dialogTitle = "Delete bill",
+                            dialogText = "Are you sure you want to delete this bill?",
                             icon = Icons.Default.Delete
                         )
                     }

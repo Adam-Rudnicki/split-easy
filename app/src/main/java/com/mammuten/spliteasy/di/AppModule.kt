@@ -2,9 +2,15 @@ package com.mammuten.spliteasy.di
 
 import android.content.Context
 import androidx.room.Room
+import com.mammuten.spliteasy.data.repo.BillRepo
 import com.mammuten.spliteasy.data.repo.GroupRepo
 import com.mammuten.spliteasy.data.source.local.LocalSplitDataSource
 import com.mammuten.spliteasy.data.source.local.SplitDatabase
+import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
+import com.mammuten.spliteasy.domain.usecase.bill.DeleteBillUseCase
+import com.mammuten.spliteasy.domain.usecase.bill.GetBillByIdUseCase
+import com.mammuten.spliteasy.domain.usecase.bill.GetBillsByGroupIdUseCase
+import com.mammuten.spliteasy.domain.usecase.bill.UpsertBillUseCase
 import com.mammuten.spliteasy.domain.usecase.group.DeleteGroupUseCase
 import com.mammuten.spliteasy.domain.usecase.group.GetGroupByIdUseCase
 import com.mammuten.spliteasy.domain.usecase.group.GetGroupsUseCase
@@ -34,7 +40,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideLocalSplitDataSource(splitDatabase: SplitDatabase): LocalSplitDataSource {
-        return LocalSplitDataSource(splitDatabase.groupDao)
+        return LocalSplitDataSource(
+            splitDatabase.groupDao,
+            splitDatabase.billDao
+        )
     }
 
     @Singleton
@@ -45,12 +54,29 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideNoteUseCases(repo: GroupRepo): GroupUseCases {
+    fun provideBillRepository(localSplitDataSource: LocalSplitDataSource): BillRepo {
+        return BillRepo(localSplitDataSource)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGroupUseCases(repo: GroupRepo): GroupUseCases {
         return GroupUseCases(
             upsertGroupUseCase = UpsertGroupUseCase(repo),
             deleteGroupUseCase = DeleteGroupUseCase(repo),
             getGroupByIdUseCase = GetGroupByIdUseCase(repo),
-            getGroups = GetGroupsUseCase(repo)
+            getGroupsUseCase = GetGroupsUseCase(repo)
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideBillUseCases(repo: BillRepo): BillUseCases {
+        return BillUseCases(
+            upsertBillUseCase = UpsertBillUseCase(repo),
+            deleteBillUseCase = DeleteBillUseCase(repo),
+            getBillByIdUseCase = GetBillByIdUseCase(repo),
+            getBillsByGroupIdUseCase = GetBillsByGroupIdUseCase(repo)
         )
     }
 }

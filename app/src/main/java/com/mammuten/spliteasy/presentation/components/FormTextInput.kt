@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.components
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
@@ -9,6 +10,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import com.mammuten.spliteasy.presentation.util.RegexUtil
 
 @Composable
 fun FormTextInput(
@@ -18,7 +21,8 @@ fun FormTextInput(
     error: InvalidInputError?,
     onValueChange: (String) -> Unit,
     isRequired: Boolean,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
 
     OutlinedTextField(
@@ -26,12 +30,17 @@ fun FormTextInput(
         label = {
             Text(
                 text = label + if (!isRequired) " (optional)" else "",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         value = text,
-        onValueChange = onValueChange,
+        onValueChange = {
+            if (isValidInput(it, keyboardType)) {
+                onValueChange(it)
+            }
+        },
         singleLine = singleLine,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         trailingIcon = {
             if (text.isNotEmpty()) {
                 IconButton(onClick = { onValueChange("") }) {
@@ -43,11 +52,21 @@ fun FormTextInput(
             error?.let {
                 when (it) {
                     is InvalidInputError.Required -> Text(text = "This field is required")
-                    is InvalidInputError.TooShort -> Text(text = "Text is too short (minimum length: ${it.minLength})")
-                    is InvalidInputError.TooLong -> Text(text = "Text is too long (maximum length: ${it.maxLength})")
+                    is InvalidInputError.TooShortText -> Text(text = "Text is too short (minimum length: ${it.minLength})")
+                    is InvalidInputError.TooLongText -> Text(text = "Text is too long (maximum length: ${it.maxLength})")
+                    is InvalidInputError.TooBigDecimal -> Text(text = "Amount is too big (maximum: ${it.maxValue})")
+                    is InvalidInputError.TooSmallDecimal -> Text(text = "Amount is too small (minimum: ${it.minValue})")
                 }
             }
         },
         isError = error != null
     )
+}
+
+private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
+    return when (keyboardType) {
+        KeyboardType.Text -> true
+        KeyboardType.Number -> input.matches(RegexUtil.inputTwoDecimalPlaces)
+        else -> false
+    }
 }

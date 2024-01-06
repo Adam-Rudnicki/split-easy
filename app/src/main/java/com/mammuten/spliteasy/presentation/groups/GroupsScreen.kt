@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.mammuten.spliteasy.presentation.groups.components.OrderSection
+import com.mammuten.spliteasy.presentation.groups.component.GroupOrderSection
 import com.mammuten.spliteasy.presentation.Screen
 
 @Composable
@@ -39,9 +39,13 @@ fun GroupsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Screen.AddEditGroupScreen.route) },
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add group")
-            }
+                content = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add group"
+                    )
+                }
+            )
         },
         content = { innerPadding ->
             Column(
@@ -50,7 +54,7 @@ fun GroupsScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp)
             ) {
-                OrderSection(
+                GroupOrderSection(
                     modifier = Modifier.fillMaxWidth(),
                     groupOrder = state.groupOrder,
                     onOrderChange = { viewModel.onEvent(GroupsEvent.Order(it)) }

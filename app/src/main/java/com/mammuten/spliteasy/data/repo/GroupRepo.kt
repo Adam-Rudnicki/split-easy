@@ -1,8 +1,8 @@
 package com.mammuten.spliteasy.data.repo
 
 import com.mammuten.spliteasy.data.mapper.asModel
+import com.mammuten.spliteasy.data.mapper.asGroupModelList
 import com.mammuten.spliteasy.data.mapper.asEntity
-import com.mammuten.spliteasy.data.mapper.asModelList
 import com.mammuten.spliteasy.data.source.local.LocalSplitDataSource
 import com.mammuten.spliteasy.domain.model.Group
 import kotlinx.coroutines.flow.Flow
@@ -18,5 +18,5 @@ class GroupRepo(
     fun getGroupById(groupId: Int): Flow<Group?> =
         dataSource.getGroupById(groupId).map { it?.asModel() }
 
-    fun getGroups(): Flow<List<Group>> = dataSource.getGroups().map { it.asModelList() }
+    fun getGroups(): Flow<List<Group>> = dataSource.getGroups().map { it.asGroupModelList() }
 }

@@ -1,13 +1,14 @@
-package com.mammuten.spliteasy.presentation.groups.components
+package com.mammuten.spliteasy.presentation.groups.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.mammuten.spliteasy.domain.util.GroupOrder
 import com.mammuten.spliteasy.domain.util.OrderType
+import com.mammuten.spliteasy.presentation.components.DefaultRadioButton
 
 @Composable
-fun OrderSection(
+fun GroupOrderSection(
     modifier: Modifier = Modifier,
     groupOrder: GroupOrder = GroupOrder.Date(OrderType.Descending),
     onOrderChange: (GroupOrder) -> Unit
