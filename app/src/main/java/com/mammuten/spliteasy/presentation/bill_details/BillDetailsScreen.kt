@@ -60,9 +60,15 @@ fun BillDetailsScreen(
             TopAppBar(
                 title = { Text(text = "Bill Details") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    )
                 },
                 actions = {
                     IconButton(onClick = { openDeleteBillDialog.value = true }) {

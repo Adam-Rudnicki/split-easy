@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
+import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
 import com.mammuten.spliteasy.domain.util.BillOrder
+import com.mammuten.spliteasy.domain.util.MemberOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +23,7 @@ import javax.inject.Inject
 class GroupDetailsViewModel @Inject constructor(
     private val groupUseCases: GroupUseCases,
     private val billUseCases: BillUseCases,
+    private val memberUseCases: MemberUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,10 +37,12 @@ class GroupDetailsViewModel @Inject constructor(
 
     private var getGroupJob: Job? = null
     private var getBillsJob: Job? = null
+    private var getMembersJob: Job? = null
 
     init {
         getGroup()
         getBills()
+        getMembers()
     }
 
     fun onEvent(event: GroupDetailsEvent) {
@@ -47,11 +52,14 @@ class GroupDetailsViewModel @Inject constructor(
                     state.value.group?.let { group ->
                         getGroupJob?.cancel()
                         getBillsJob?.cancel()
+                        getMembersJob?.cancel()
                         groupUseCases.deleteGroupUseCase(group)
                         _eventFlow.emit(UiEvent.DeleteGroup)
                     }
                 }
             }
+
+            is GroupDetailsEvent.DeleteMember -> {}
 
             is GroupDetailsEvent.Order -> getBills(event.billOrder)
         }
@@ -73,7 +81,16 @@ class GroupDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
+    private fun getMembers(memberOrder: MemberOrder? = null) {
+        getMembersJob?.cancel()
+        getMembersJob = memberUseCases.getMembersByGroupIdUseCase(currentGroupId, memberOrder)
+            .onEach { members ->
+                _state.value = state.value.copy(members = members, memberOrder = memberOrder)
+            }.launchIn(viewModelScope)
+    }
+
     sealed class UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent()
         data object DeleteGroup : UiEvent()
     }
 }

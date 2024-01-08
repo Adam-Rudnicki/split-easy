@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.mammuten.spliteasy.data.source.local.entity.group.GroupEntity
 
 @Entity(
-    tableName = "members",
+    tableName = MemberEntity.TABLE_NAME,
     foreignKeys = [
         ForeignKey(
             entity = GroupEntity::class,
@@ -18,7 +18,11 @@ import com.mammuten.spliteasy.data.source.local.entity.group.GroupEntity
     ]
 )
 data class MemberEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int? = 0,
     val groupId: Int,
-    val nickname: String?,
-)
+    val name: String,
+) {
+    companion object {
+        const val TABLE_NAME = "members"
+    }
+}

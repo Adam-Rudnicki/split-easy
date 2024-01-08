@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
@@ -39,6 +40,9 @@ fun GroupDetailsScreen(
     LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
+                is GroupDetailsViewModel.UiEvent.ShowSnackbar ->
+                    snackbarHostState.showSnackbar(message = event.message)
+
                 is GroupDetailsViewModel.UiEvent.DeleteGroup -> navController.navigateUp()
             }
         }
@@ -49,26 +53,39 @@ fun GroupDetailsScreen(
             TopAppBar(
                 title = { Text(text = "Group Details") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    )
                 },
                 actions = {
-                    IconButton(onClick = { openDeleteGroupDialog.value = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete group"
-                        )
-                    }
+                    IconButton(
+                        onClick = { openDeleteGroupDialog.value = true },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete group"
+                            )
+                        }
+                    )
                     IconButton(
                         onClick = {
                             navController.navigate(
                                 Screen.AddEditGroupScreen.route + "?groupId=${state.group?.id}"
                             )
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit group"
+                            )
                         }
-                    ) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit group")
-                    }
+                    )
                 },
             )
         },
@@ -84,131 +101,179 @@ fun GroupDetailsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        state.group?.let {
-                            Text(
-                                text = "Name",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = it.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                    .padding(horizontal = 8.dp),
+                content = {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        content = {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                content = {
+                                    state.group?.let {
+                                        Text(
+                                            text = "Name",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+                                        Text(
+                                            text = it.name,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            modifier = Modifier.padding(bottom = 16.dp)
+                                        )
 
-                            Text(
-                                text = "Description",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = it.description ?: "N/A",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                                        Text(
+                                            text = "Description",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+                                        Text(
+                                            text = it.description ?: "N/A",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            modifier = Modifier.padding(bottom = 16.dp)
+                                        )
 
-                            Text(
-                                text = "Creation Date",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = it.created.toString(),
-                                style = MaterialTheme.typography.bodyMedium,
+                                        Text(
+                                            text = "Creation Date",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+                                        Text(
+                                            text = it.created.toString(),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                        )
+                                    }
+                                }
                             )
                         }
-                    }
-                }
+                    )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            navController.navigate(
+                                Screen.AddEditMemberScreen.route + "/${state.group?.id}"
+                            )
+                        },
+                        content = { Text(text = "Add member") }
+                    )
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        content = {
+                            items(
+                                items = state.members,
+                                key = { member -> member.id!! },
+                                itemContent = { member ->
+                                    Button(
+                                        onClick = {
+                                            navController.navigate(
+                                                Screen.AddEditMemberScreen.route +
+                                                        "/${state.group?.id}" +
+                                                        "?memberId=${member.id}"
+                                            )
+                                        },
+                                        content = { Text(text = member.name) }
+                                    )
+                                    IconButton(
+                                        onClick = {},
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        content = {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Delete member"
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
 //                BillOrderSection(
 //                    modifier = Modifier.fillMaxWidth(),
 //                    billOrder = state.billOrder,
 //                    onOrderChange = { viewModel.onEvent(GroupDetailsEvent.Order(it)) }
 //                )
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    color = Color.Black
-                )
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(
-                        items = state.bills,
-                        key = { bill -> bill.id!! }
-                    ) { bill ->
-                        OutlinedCard(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            border = BorderStroke(width = 1.dp, color = Color.Black),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    navController.navigate(
-                                        Screen.BillDetailsScreen.route + "/${bill.id}"
-                                    )
-                                }
-                        ) {
-                            Column(modifier = Modifier.padding(8.dp)) {
-                                Text(
-                                    text = bill.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        color = Color.Black
+                    )
+                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                        items(
+                            items = state.bills,
+                            key = { bill -> bill.id!! },
+                            itemContent = { bill ->
+                                OutlinedCard(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface
+                                    ),
+                                    border = BorderStroke(width = 1.dp, color = Color.Black),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .clickable {
+                                            navController.navigate(
+                                                Screen.BillDetailsScreen.route + "/${bill.id}"
+                                            )
+                                        },
+                                    content = {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            content = {
+                                                Text(
+                                                    text = bill.name,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                bill.date?.let {
+                                                    Text(
+                                                        text = it.toString(),
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+                                                }
+                                                bill.amount?.let {
+                                                    Text(
+                                                        text = String.format("%.2f", it),
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+                                                }
+                                                bill.description?.let {
+                                                    Text(
+                                                        text = it,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 3,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
                                 )
-                                bill.date?.let {
-                                    Text(
-                                        text = it.toString(),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                                bill.amount?.let {
-                                    Text(
-                                        text = String.format("%.2f", it),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                                bill.description?.let {
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 3,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
                             }
-                        }
-                    }
-                }
-
-                when {
-                    openDeleteGroupDialog.value -> {
-                        ConfirmDismissDialog(
-                            onDismissRequest = { openDeleteGroupDialog.value = false },
-                            onConfirmation = {
-                                openDeleteGroupDialog.value = false
-                                viewModel.onEvent(GroupDetailsEvent.DeleteGroup)
-                            },
-                            dialogTitle = "Delete group",
-                            dialogText = "Are you sure you want to delete this group?",
-                            icon = Icons.Default.Delete
                         )
                     }
+                }
+            )
+            when {
+                openDeleteGroupDialog.value -> {
+                    ConfirmDismissDialog(
+                        onDismissRequest = { openDeleteGroupDialog.value = false },
+                        onConfirmation = {
+                            openDeleteGroupDialog.value = false
+                            viewModel.onEvent(GroupDetailsEvent.DeleteGroup)
+                        },
+                        dialogTitle = "Delete group",
+                        dialogText = "Are you sure you want to delete this group?",
+                        icon = Icons.Default.Delete
+                    )
                 }
             }
         }

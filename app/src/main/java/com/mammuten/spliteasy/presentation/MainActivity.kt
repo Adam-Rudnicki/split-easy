@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mammuten.spliteasy.presentation.add_edit_bill.AddEditBillScreen
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupScreen
+import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberScreen
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsScreen
 import com.mammuten.spliteasy.presentation.groups.GroupsScreen
@@ -87,6 +88,20 @@ private fun SplitEasyApp() {
             )
         ) {
             BillDetailsScreen(navController = navController)
+        }
+        composable(
+            route = "${Screen.AddEditMemberScreen.route}/{groupId}?memberId={memberId}",
+            arguments = listOf(
+                navArgument(name = "groupId") {
+                    type = NavType.IntType
+                },
+                navArgument(name = "memberId") {
+                    type = NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) {
+            AddEditMemberScreen(navController = navController)
         }
     }
 }

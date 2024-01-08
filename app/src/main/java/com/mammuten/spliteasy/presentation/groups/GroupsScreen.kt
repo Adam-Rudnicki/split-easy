@@ -52,64 +52,70 @@ fun GroupsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-            ) {
-                GroupOrderSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    groupOrder = state.groupOrder,
-                    onOrderChange = { viewModel.onEvent(GroupsEvent.Order(it)) }
-                )
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    color = Color.Black
-                )
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(
-                        items = state.groups,
-                        key = { group -> group.id!! }
-                    ) { group ->
-                        OutlinedCard(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            border = BorderStroke(width = 1.dp, color = Color.Black),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    navController.navigate(
-                                        Screen.GroupDetailsScreen.route + "/${group.id}"
-                                    )
-                                }
-                        ) {
-                            Column(modifier = Modifier.padding(8.dp)) {
-                                Text(
-                                    text = group.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                    .padding(horizontal = 8.dp),
+                content = {
+                    GroupOrderSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        groupOrder = state.groupOrder,
+                        onOrderChange = { viewModel.onEvent(GroupsEvent.Order(it)) }
+                    )
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        color = Color.Black
+                    )
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(
+                            items = state.groups,
+                            key = { group -> group.id!! },
+                            itemContent = { group ->
+                                OutlinedCard(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface
+                                    ),
+                                    border = BorderStroke(width = 1.dp, color = Color.Black),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .clickable {
+                                            navController.navigate(
+                                                Screen.GroupDetailsScreen.route + "/${group.id}"
+                                            )
+                                        },
+                                    content = {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            content = {
+                                                Text(
+                                                    text = group.name,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                Text(
+                                                    text = group.created.toString(),
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
+                                                group.description?.let {
+                                                    Text(
+                                                        text = it,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 3,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
                                 )
-                                Text(
-                                    text = group.created.toString(),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                group.description?.let {
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 3,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
                             }
-                        }
+                        )
                     }
                 }
-            }
+            )
         }
     )
 }

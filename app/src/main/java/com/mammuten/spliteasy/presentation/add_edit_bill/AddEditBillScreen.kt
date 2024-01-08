@@ -66,9 +66,15 @@ fun AddEditBillScreen(
             TopAppBar(
                 title = { Text(text = "Save bill") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    )
                 },
             )
         },
@@ -89,44 +95,47 @@ fun AddEditBillScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-            ) {
-                FormTextInput(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Name",
-                    text = nameState.value,
-                    error = nameState.error,
-                    onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredName(it)) },
-                    isRequired = Bill.IS_NAME_REQUIRED,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                FormTextInput(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Description",
-                    text = descriptionState.value,
-                    error = descriptionState.error,
-                    onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredDescription(it)) },
-                    isRequired = Bill.IS_DESC_REQUIRED,
-                    singleLine = false
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                FormTextInput(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = "Amount",
-                    text = amountState.value,
-                    error = amountState.error,
-                    onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredAmount(it)) },
-                    isRequired = Bill.IS_AMOUNT_REQUIRED,
-                    keyboardType = KeyboardType.Number
-                )
-                Text(text = "Date: ${dateState.value ?: "not set"}")
-                Button(onClick = { showDatePicker = true }) {
-                    Text(text = "Choose date")
+                    .padding(horizontal = 8.dp),
+                content = {
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Name",
+                        text = nameState.value,
+                        error = nameState.error,
+                        onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredName(it)) },
+                        isRequired = Bill.IS_NAME_REQUIRED,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Description",
+                        text = descriptionState.value,
+                        error = descriptionState.error,
+                        onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredDescription(it)) },
+                        isRequired = Bill.IS_DESC_REQUIRED,
+                        singleLine = false
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Amount",
+                        text = amountState.value,
+                        error = amountState.error,
+                        onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredAmount(it)) },
+                        isRequired = Bill.IS_AMOUNT_REQUIRED,
+                        keyboardType = KeyboardType.Number
+                    )
+                    Text(text = "Date: ${dateState.value ?: "not set"}")
+                    Button(
+                        onClick = { showDatePicker = true },
+                        content = { Text(text = "Choose date") }
+                    )
+                    Button(
+                        onClick = { viewModel.onEvent(AddEditBillEvent.EnteredDate(null)) },
+                        content = { Text(text = "Clear date") }
+                    )
                 }
-                Button(onClick = { viewModel.onEvent(AddEditBillEvent.EnteredDate(null)) }) {
-                    Text(text = "Clear date")
-                }
-            }
+            )
             if (showDatePicker) {
                 MyDatePicker(
                     date = dateState.value ?: Date(),

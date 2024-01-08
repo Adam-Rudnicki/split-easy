@@ -2,8 +2,12 @@ package com.mammuten.spliteasy.data.mapper
 
 import com.mammuten.spliteasy.data.source.local.entity.bill.BillEntity
 import com.mammuten.spliteasy.data.source.local.entity.group.GroupEntity
+import com.mammuten.spliteasy.data.source.local.entity.member.MemberEntity
+import com.mammuten.spliteasy.data.source.local.entity.contribution.ContributionEntity
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Group
+import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.model.Contribution
 
 // Group mappers
 
@@ -51,3 +55,46 @@ fun BillEntity.asModel(): Bill {
 }
 
 fun List<BillEntity>.asBillModelList(): List<Bill> = this.map { it.asModel() }
+
+// Member mappers
+
+fun Member.asEntity(): MemberEntity {
+    return MemberEntity(
+        id = id,
+        groupId = groupId,
+        name = name
+    )
+}
+
+fun MemberEntity.asModel(): Member {
+    return Member(
+        id = id,
+        groupId = groupId,
+        name = name
+    )
+}
+
+fun List<MemberEntity>.asMemberModelList(): List<Member> = this.map { it.asModel() }
+
+// Contribution mappers
+
+fun Contribution.asEntity(): ContributionEntity {
+    return ContributionEntity(
+        billId = billId,
+        memberId = memberId,
+        amountPaid = amountPaid,
+        amountOwed = amountOwed
+    )
+}
+
+fun ContributionEntity.asModel(): Contribution {
+    return Contribution(
+        billId = billId,
+        memberId = memberId,
+        amountPaid = amountPaid,
+        amountOwed = amountOwed
+    )
+}
+
+fun List<ContributionEntity>.asContributionModelList(): List<Contribution> =
+    this.map { it.asModel() }

@@ -20,7 +20,7 @@ data class Bill(
         val MAX_DESC_LEN = 200
 
         val IS_AMOUNT_REQUIRED = false
-        val MAX_AMOUNT = 1000000000.0
+        val MAX_AMOUNT = 1000000.0
 
         val IS_DATE_REQUIRED = false
     }

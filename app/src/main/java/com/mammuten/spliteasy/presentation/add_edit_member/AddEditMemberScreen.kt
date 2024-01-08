@@ -1,6 +1,9 @@
-package com.mammuten.spliteasy.presentation.add_edit_group
+package com.mammuten.spliteasy.presentation.add_edit_member
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
@@ -20,28 +23,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.mammuten.spliteasy.domain.model.Group
+import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.presentation.components.FormTextInput
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditGroupScreen(
+fun AddEditMemberScreen(
     navController: NavController,
-    viewModel: AddEditGroupViewModel = hiltViewModel()
+    viewModel: AddEditMemberViewModel = hiltViewModel()
 ) {
     val nameState = viewModel.name
-    val descriptionState = viewModel.description
 
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is AddEditGroupViewModel.UiEvent.ShowSnackbar ->
+                is AddEditMemberViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
 
-                is AddEditGroupViewModel.UiEvent.SaveGroup -> navController.navigateUp()
+                is AddEditMemberViewModel.UiEvent.SaveMember -> navController.navigateUp()
             }
         }
     }
@@ -49,7 +51,7 @@ fun AddEditGroupScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Save group") },
+                title = { Text(text = "Save member") },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.navigateUp() },
@@ -66,11 +68,11 @@ fun AddEditGroupScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.onEvent(AddEditGroupEvent.SaveGroup) },
+                onClick = { viewModel.onEvent(AddEditMemberEvent.SaveMember) },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Save,
-                        contentDescription = "Save group"
+                        contentDescription = "Save member"
                     )
                 }
             )
@@ -87,18 +89,8 @@ fun AddEditGroupScreen(
                         label = "Name",
                         text = nameState.value,
                         error = nameState.error,
-                        onValueChange = { viewModel.onEvent(AddEditGroupEvent.EnteredName(it)) },
-                        isRequired = Group.IS_NAME_REQUIRED,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    FormTextInput(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = "Description",
-                        text = descriptionState.value,
-                        error = descriptionState.error,
-                        onValueChange = { viewModel.onEvent(AddEditGroupEvent.EnteredDescription(it)) },
-                        isRequired = Group.IS_DESC_REQUIRED,
-                        singleLine = false
+                        onValueChange = { viewModel.onEvent(AddEditMemberEvent.EnteredName(it)) },
+                        isRequired = Member.IS_NAME_REQUIRED,
                     )
                 }
             )

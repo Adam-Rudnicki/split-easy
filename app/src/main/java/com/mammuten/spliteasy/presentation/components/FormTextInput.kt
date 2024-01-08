@@ -43,9 +43,15 @@ fun FormTextInput(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         trailingIcon = {
             if (text.isNotEmpty()) {
-                IconButton(onClick = { onValueChange("") }) {
-                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
-                }
+                IconButton(
+                    onClick = { onValueChange("") },
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear"
+                        )
+                    }
+                )
             }
         },
         supportingText = {
