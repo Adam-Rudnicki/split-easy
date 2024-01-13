@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.presentation.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import kotlinx.coroutines.flow.collectLatest
@@ -35,6 +36,8 @@ fun GroupDetailsScreen(
     val state = viewModel.state.value
 
     val openDeleteGroupDialog = remember { mutableStateOf(false) }
+    val openDeleteMemberDialog = remember { mutableStateOf(false) }
+    val selectedMemberToDelete = remember { mutableStateOf<Member?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
@@ -177,7 +180,10 @@ fun GroupDetailsScreen(
                                         content = { Text(text = member.name) }
                                     )
                                     IconButton(
-                                        onClick = {},
+                                        onClick = {
+                                            selectedMemberToDelete.value = member
+                                            openDeleteMemberDialog.value = true
+                                        },
                                         modifier = Modifier.padding(top = 8.dp),
                                         content = {
                                             Icon(
@@ -274,6 +280,25 @@ fun GroupDetailsScreen(
                         dialogText = "Are you sure you want to delete this group?",
                         icon = Icons.Default.Delete
                     )
+                }
+
+                openDeleteMemberDialog.value -> {
+                    selectedMemberToDelete.value?.let { member ->
+                        ConfirmDismissDialog(
+                            onDismissRequest = {
+                                selectedMemberToDelete.value = null
+                                openDeleteMemberDialog.value = false
+                            },
+                            onConfirmation = {
+                                openDeleteMemberDialog.value = false
+                                viewModel.onEvent(GroupDetailsEvent.DeleteMember(member))
+                                selectedMemberToDelete.value = null
+                            },
+                            dialogTitle = "Delete member",
+                            dialogText = "Are you sure you want to delete this member?",
+                            icon = Icons.Default.Delete
+                        )
+                    }
                 }
             }
         }

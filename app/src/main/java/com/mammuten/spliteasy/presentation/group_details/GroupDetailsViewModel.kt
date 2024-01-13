@@ -9,6 +9,7 @@ import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
 import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
 import com.mammuten.spliteasy.domain.util.BillOrder
+import com.mammuten.spliteasy.domain.util.MemberHasContributions
 import com.mammuten.spliteasy.domain.util.MemberOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -59,7 +60,15 @@ class GroupDetailsViewModel @Inject constructor(
                 }
             }
 
-            is GroupDetailsEvent.DeleteMember -> {}
+            is GroupDetailsEvent.DeleteMember -> {
+                viewModelScope.launch {
+                    try {
+                        memberUseCases.deleteMemberUseCase(event.member)
+                    } catch (e: MemberHasContributions) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(e.message!!))
+                    }
+                }
+            }
 
             is GroupDetailsEvent.Order -> getBills(event.billOrder)
         }
