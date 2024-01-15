@@ -19,29 +19,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.mammuten.spliteasy.domain.model.Bill
+import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.presentation.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupDetailsScreen(
     navController: NavController,
-    viewModel: GroupDetailsViewModel = hiltViewModel()
+    state: GroupDetailsState,
+    onEvent: (GroupDetailsEvent) -> Unit,
+    eventFlow: SharedFlow<GroupDetailsViewModel.UiEvent>,
 ) {
-    val state = viewModel.state.value
-
     val openDeleteGroupDialog = remember { mutableStateOf(false) }
-    val openDeleteMemberDialog = remember { mutableStateOf(false) }
-    val selectedMemberToDelete = remember { mutableStateOf<Member?>(null) }
+    val openDeleteMemberDialog = remember { mutableStateOf<Member?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
-        viewModel.eventFlow.collectLatest { event ->
+        eventFlow.collectLatest { event ->
             when (event) {
                 is GroupDetailsViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
@@ -180,10 +185,7 @@ fun GroupDetailsScreen(
                                         content = { Text(text = member.name) }
                                     )
                                     IconButton(
-                                        onClick = {
-                                            selectedMemberToDelete.value = member
-                                            openDeleteMemberDialog.value = true
-                                        },
+                                        onClick = { openDeleteMemberDialog.value = member },
                                         modifier = Modifier.padding(top = 8.dp),
                                         content = {
                                             Icon(
@@ -207,65 +209,68 @@ fun GroupDetailsScreen(
                             .padding(8.dp),
                         color = Color.Black
                     )
-                    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                        items(
-                            items = state.bills,
-                            key = { bill -> bill.id!! },
-                            itemContent = { bill ->
-                                OutlinedCard(
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface
-                                    ),
-                                    border = BorderStroke(width = 1.dp, color = Color.Black),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp)
-                                        .clickable {
-                                            navController.navigate(
-                                                Screen.BillDetailsScreen.route + "/${bill.id}"
-                                            )
-                                        },
-                                    content = {
-                                        Column(
-                                            modifier = Modifier.padding(8.dp),
-                                            content = {
-                                                Text(
-                                                    text = bill.name,
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        content = {
+                            items(
+                                items = state.bills,
+                                key = { bill -> bill.id!! },
+                                itemContent = { bill ->
+                                    OutlinedCard(
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surface
+                                        ),
+                                        border = BorderStroke(width = 1.dp, color = Color.Black),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                            .clickable {
+                                                navController.navigate(
+                                                    Screen.BillDetailsScreen.route + "/${bill.id}"
                                                 )
-                                                bill.date?.let {
+                                            },
+                                        content = {
+                                            Column(
+                                                modifier = Modifier.padding(8.dp),
+                                                content = {
                                                     Text(
-                                                        text = it.toString(),
-                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        text = bill.name,
+                                                        style = MaterialTheme.typography.bodyLarge,
                                                         maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
+                                                        overflow = TextOverflow.Ellipsis
                                                     )
+                                                    bill.date?.let {
+                                                        Text(
+                                                            text = it.toString(),
+                                                            style = MaterialTheme.typography.bodyMedium,
+                                                            maxLines = 1,
+                                                            overflow = TextOverflow.Ellipsis,
+                                                        )
+                                                    }
+                                                    bill.amount?.let {
+                                                        Text(
+                                                            text = String.format("%.2f", it),
+                                                            style = MaterialTheme.typography.bodyMedium,
+                                                            maxLines = 1,
+                                                            overflow = TextOverflow.Ellipsis,
+                                                        )
+                                                    }
+                                                    bill.description?.let {
+                                                        Text(
+                                                            text = it,
+                                                            style = MaterialTheme.typography.bodyMedium,
+                                                            maxLines = 3,
+                                                            overflow = TextOverflow.Ellipsis,
+                                                        )
+                                                    }
                                                 }
-                                                bill.amount?.let {
-                                                    Text(
-                                                        text = String.format("%.2f", it),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                    )
-                                                }
-                                                bill.description?.let {
-                                                    Text(
-                                                        text = it,
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        maxLines = 3,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                    )
-                                                }
-                                            }
-                                        )
-                                    }
-                                )
-                            }
-                        )
-                    }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
                 }
             )
             when {
@@ -274,7 +279,7 @@ fun GroupDetailsScreen(
                         onDismissRequest = { openDeleteGroupDialog.value = false },
                         onConfirmation = {
                             openDeleteGroupDialog.value = false
-                            viewModel.onEvent(GroupDetailsEvent.DeleteGroup)
+                            onEvent(GroupDetailsEvent.DeleteGroup)
                         },
                         dialogTitle = "Delete group",
                         dialogText = "Are you sure you want to delete this group?",
@@ -282,25 +287,68 @@ fun GroupDetailsScreen(
                     )
                 }
 
-                openDeleteMemberDialog.value -> {
-                    selectedMemberToDelete.value?.let { member ->
-                        ConfirmDismissDialog(
-                            onDismissRequest = {
-                                selectedMemberToDelete.value = null
-                                openDeleteMemberDialog.value = false
-                            },
-                            onConfirmation = {
-                                openDeleteMemberDialog.value = false
-                                viewModel.onEvent(GroupDetailsEvent.DeleteMember(member))
-                                selectedMemberToDelete.value = null
-                            },
-                            dialogTitle = "Delete member",
-                            dialogText = "Are you sure you want to delete this member?",
-                            icon = Icons.Default.Delete
-                        )
-                    }
+                openDeleteMemberDialog.value != null -> {
+                    val memberToDelete = openDeleteMemberDialog.value!!
+                    ConfirmDismissDialog(
+                        onDismissRequest = { openDeleteMemberDialog.value = null },
+                        onConfirmation = {
+                            openDeleteMemberDialog.value = null
+                            onEvent(GroupDetailsEvent.DeleteMember(memberToDelete))
+                        },
+                        dialogTitle = "Delete member",
+                        dialogText = "Are you sure you want to delete this member?",
+                        icon = Icons.Default.Delete
+                    )
                 }
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun GroupDetailsScreenPreview() {
+    GroupDetailsScreen(
+        navController = rememberNavController(),
+        state = GroupDetailsState(
+            group = Group(
+                id = 1,
+                name = "Group 1",
+                description = "Description 1",
+                created = Date()
+            ),
+            members = listOf(
+                Member(
+                    id = 1,
+                    name = "Member 1",
+                    groupId = 1
+                ),
+                Member(
+                    id = 2,
+                    name = "Member 2",
+                    groupId = 1
+                )
+            ),
+            bills = listOf(
+                Bill(
+                    id = 1,
+                    name = "Bill 1",
+                    description = "Description 1",
+                    amount = 100.0,
+                    groupId = 1,
+                    date = Date()
+                ),
+                Bill(
+                    id = 2,
+                    name = "Bill 2",
+                    description = "Description 2",
+                    amount = 200.0,
+                    groupId = 1,
+                    date = Date()
+                )
+            )
+        ),
+        onEvent = {},
+        eventFlow = MutableSharedFlow()
     )
 }

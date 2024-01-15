@@ -22,19 +22,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.presentation.groups.component.GroupOrderSection
 import com.mammuten.spliteasy.presentation.Screen
+import com.mammuten.spliteasy.presentation.ui.theme.SplitEasyTheme
+import java.util.Date
 
 @Composable
 fun GroupsScreen(
     navController: NavController,
-    viewModel: GroupsViewModel = hiltViewModel()
+    state: GroupsState,
+    onEvent: (GroupsEvent) -> Unit
 ) {
-    val state = viewModel.state.value
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -57,7 +60,7 @@ fun GroupsScreen(
                     GroupOrderSection(
                         modifier = Modifier.fillMaxWidth(),
                         groupOrder = state.groupOrder,
-                        onOrderChange = { viewModel.onEvent(GroupsEvent.Order(it)) }
+                        onOrderChange = { onEvent(GroupsEvent.Order(it)) }
                     )
                     Divider(
                         modifier = Modifier
@@ -65,57 +68,85 @@ fun GroupsScreen(
                             .padding(8.dp),
                         color = Color.Black
                     )
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(
-                            items = state.groups,
-                            key = { group -> group.id!! },
-                            itemContent = { group ->
-                                OutlinedCard(
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface
-                                    ),
-                                    border = BorderStroke(width = 1.dp, color = Color.Black),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp)
-                                        .clickable {
-                                            navController.navigate(
-                                                Screen.GroupDetailsScreen.route + "/${group.id}"
-                                            )
-                                        },
-                                    content = {
-                                        Column(
-                                            modifier = Modifier.padding(8.dp),
-                                            content = {
-                                                Text(
-                                                    text = group.name,
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        content = {
+                            items(
+                                items = state.groups,
+                                key = { group -> group.id!! },
+                                itemContent = { group ->
+                                    OutlinedCard(
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.surface
+                                        ),
+                                        border = BorderStroke(width = 1.dp, color = Color.Black),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                            .clickable {
+                                                navController.navigate(
+                                                    Screen.GroupDetailsScreen.route + "/${group.id}"
                                                 )
-                                                Text(
-                                                    text = group.created.toString(),
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis,
-                                                )
-                                                group.description?.let {
+                                            },
+                                        content = {
+                                            Column(
+                                                modifier = Modifier.padding(8.dp),
+                                                content = {
                                                     Text(
-                                                        text = it,
+                                                        text = group.name,
+                                                        style = MaterialTheme.typography.bodyLarge,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                    Text(
+                                                        text = group.created.toString(),
                                                         style = MaterialTheme.typography.bodyMedium,
-                                                        maxLines = 3,
+                                                        maxLines = 1,
                                                         overflow = TextOverflow.Ellipsis,
                                                     )
+                                                    group.description?.let {
+                                                        Text(
+                                                            text = it,
+                                                            style = MaterialTheme.typography.bodyMedium,
+                                                            maxLines = 3,
+                                                            overflow = TextOverflow.Ellipsis,
+                                                        )
+                                                    }
                                                 }
-                                            }
-                                        )
-                                    }
-                                )
-                            }
-                        )
-                    }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
                 }
             )
         }
+    )
+}
+
+@Preview
+@Composable
+fun GroupsScreenPreview() {
+    GroupsScreen(
+        navController = rememberNavController(),
+        state = GroupsState(
+            groups = listOf(
+                Group(
+                    id = 1,
+                    name = "Group 1",
+                    description = "Description 1",
+                    created = Date()
+                ),
+                Group(
+                    id = 2,
+                    name = "Group 2",
+                    description = "Description 2",
+                    created = Date()
+                )
+            )
+        ),
+        onEvent = {}
     )
 }

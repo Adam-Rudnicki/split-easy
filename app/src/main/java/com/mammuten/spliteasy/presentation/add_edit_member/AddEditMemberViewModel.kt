@@ -75,7 +75,7 @@ class AddEditMemberViewModel @Inject constructor(
                         Member(
                             id = currentMemberId,
                             groupId = currentGroupId,
-                            name = name.value,
+                            name = name.value.trim(),
                         )
                     )
                     _eventFlow.emit(UiEvent.SaveMember)

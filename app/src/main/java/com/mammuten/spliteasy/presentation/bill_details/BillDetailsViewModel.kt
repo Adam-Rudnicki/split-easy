@@ -1,7 +1,8 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,8 +29,8 @@ class BillDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(BillDetailsState())
-    val state: State<BillDetailsState> = _state
+    var state by mutableStateOf(BillDetailsState())
+        private set
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -43,15 +44,15 @@ class BillDetailsViewModel @Inject constructor(
 
     init {
         getBill()
-        getContributions()
         getGroupMembers()
+        getContributions()
     }
 
     fun onEvent(event: BillDetailsEvent) {
         when (event) {
             is BillDetailsEvent.DeleteBill -> {
                 viewModelScope.launch {
-                    state.value.bill?.let { bill ->
+                    state.bill?.let { bill ->
                         getBillJob?.cancel()
                         getContributionsJob?.cancel()
                         billUseCases.deleteBillUseCase(bill)
@@ -59,6 +60,8 @@ class BillDetailsViewModel @Inject constructor(
                     }
                 }
             }
+            // TODO
+            is BillDetailsEvent.DeleteContribution -> {}
         }
     }
 
@@ -66,8 +69,18 @@ class BillDetailsViewModel @Inject constructor(
         getBillJob?.cancel()
         getBillJob = billUseCases.getBillByIdUseCase(currentBillId)
             .onEach { bill ->
-                _state.value = state.value.copy(bill = bill)
+                state = state.copy(bill = bill)
             }.launchIn(viewModelScope)
+    }
+
+    private fun getGroupMembers() {
+        viewModelScope.launch {
+            val groupId = state.bill?.groupId
+            groupId?.let {
+                val members = memberUseCases.getMembersByGroupIdUseCase(groupId).firstOrNull()
+                members?.let { groupMembers = it }
+            }
+        }
     }
 
     private fun getContributions(contributionOrder: ContributionOrder? = null) {
@@ -75,39 +88,19 @@ class BillDetailsViewModel @Inject constructor(
         getContributionsJob =
             contributionUseCases.getContributionsByBillIdUseCase(currentBillId, contributionOrder)
                 .onEach { contributions ->
-                    _state.value = state.value.copy(
+                    val membersWithContributions = groupMembers.filter { member ->
+                        state.contributions.any { it.memberId == member.id }
+                    }
+                    val membersWithoutContributions = groupMembers.filter { member ->
+                        state.contributions.none { it.memberId == member.id }
+                    }
+                    state = state.copy(
                         contributions = contributions,
-                        contributionOrder = contributionOrder
+                        contributionOrder = contributionOrder,
+                        membersWithContributions = membersWithContributions,
+                        membersWithoutContributions = membersWithoutContributions
                     )
                 }.launchIn(viewModelScope)
-    }
-
-    private fun getGroupMembers() {
-        viewModelScope.launch {
-            val groupId = state.value.bill?.groupId
-            groupId?.let {
-                val members = memberUseCases.getMembersByGroupIdUseCase(groupId).firstOrNull()
-                members?.let {
-                    groupMembers = it
-                    filterMembersWithContributions()
-                    filterMembersWithoutContributions()
-                }
-            }
-        }
-    }
-
-    private fun filterMembersWithContributions() {
-        val membersWithContributions = groupMembers.filter { member ->
-            state.value.contributions.any { it.memberId == member.id }
-        }
-        _state.value = state.value.copy(membersWithContributions = membersWithContributions)
-    }
-
-    private fun filterMembersWithoutContributions() {
-        val membersWithoutContributions = groupMembers.filter { member ->
-            state.value.contributions.none { it.memberId == member.id }
-        }
-        _state.value = state.value.copy(membersWithoutContributions = membersWithoutContributions)
     }
 
     sealed class UiEvent {

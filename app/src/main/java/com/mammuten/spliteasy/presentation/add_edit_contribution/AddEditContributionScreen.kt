@@ -1,8 +1,10 @@
-package com.mammuten.spliteasy.presentation.add_edit_member
+package com.mammuten.spliteasy.presentation.add_edit_contribution
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -24,30 +26,33 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.presentation.components.FormTextInput
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
+// TODO
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditMemberScreen(
+fun AddEditContributionScreen(
     navController: NavController,
-    nameState: TextFieldState,
-    onEvent: (AddEditMemberEvent) -> Unit,
-    eventFlow: SharedFlow<AddEditMemberViewModel.UiEvent>
+    memberIdState: Int,
+    amountPaidState: TextFieldState,
+    amountOwedState: TextFieldState,
+    onEvent: (AddEditContributionEvent) -> Unit,
+    eventFlow: SharedFlow<AddEditContributionViewModel.UiEvent>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is AddEditMemberViewModel.UiEvent.ShowSnackbar ->
+                is AddEditContributionViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
 
-                is AddEditMemberViewModel.UiEvent.SaveMember -> navController.navigateUp()
+                is AddEditContributionViewModel.UiEvent.SaveContribution -> navController.navigateUp()
             }
         }
     }
@@ -55,7 +60,7 @@ fun AddEditMemberScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Save member") },
+                title = { Text(text = "Save contribution") },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.navigateUp() },
@@ -72,11 +77,11 @@ fun AddEditMemberScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(AddEditMemberEvent.SaveMember) },
+                onClick = { onEvent(AddEditContributionEvent.SaveContribution) },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Save,
-                        contentDescription = "Save member"
+                        contentDescription = "Save contribution"
                     )
                 }
             )
@@ -90,11 +95,20 @@ fun AddEditMemberScreen(
                 content = {
                     FormTextInput(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Name",
-                        text = nameState.value,
-                        error = nameState.error,
-                        onValueChange = { onEvent(AddEditMemberEvent.EnteredName(it)) },
-                        isRequired = Member.IS_NAME_REQUIRED,
+                        label = "Amount paid",
+                        text = amountPaidState.value,
+                        error = amountPaidState.error,
+                        onValueChange = { onEvent(AddEditContributionEvent.EnteredAmountPaid(it)) },
+                        isRequired = Contribution.IS_AMOUNT_REQUIRED,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Amount owed",
+                        text = amountOwedState.value,
+                        error = amountOwedState.error,
+                        onValueChange = { onEvent(AddEditContributionEvent.EnteredAmountOwed(it)) },
+                        isRequired = Contribution.IS_AMOUNT_REQUIRED,
                     )
                 }
             )
@@ -104,15 +118,12 @@ fun AddEditMemberScreen(
 
 @Preview
 @Composable
-fun AddEditMemberScreenPreview() {
-    AddEditMemberScreen(
+fun AddEditBillContributionPreview() {
+    AddEditContributionScreen(
         navController = rememberNavController(),
-        nameState = remember {
-            TextFieldState(
-                value = "Name",
-                error = null,
-            )
-        },
+        memberIdState = 1,
+        amountPaidState = TextFieldState(),
+        amountOwedState = TextFieldState(),
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

@@ -136,8 +136,8 @@ class AddEditBillViewModel @Inject constructor(
                         Bill(
                             id = currentBillId,
                             groupId = currentGroupId,
-                            name = name.value,
-                            description = description.value.takeIf { it.isNotBlank() },
+                            name = name.value.trim(),
+                            description = description.value.takeIf { it.isNotBlank() }?.trim(),
                             amount = amount.value.toDoubleOrNull(),
                             date = date.value
                         )

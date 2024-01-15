@@ -27,12 +27,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.presentation.components.FormTextInput
 import com.mammuten.spliteasy.presentation.components.MyDatePicker
+import com.mammuten.spliteasy.presentation.components.input_state.DateState
+import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Date
 
@@ -40,18 +45,18 @@ import java.util.Date
 @Composable
 fun AddEditBillScreen(
     navController: NavController,
-    viewModel: AddEditBillViewModel = hiltViewModel()
+    nameState: TextFieldState,
+    descriptionState: TextFieldState,
+    amountState: TextFieldState,
+    dateState: DateState,
+    onEvent: (AddEditBillEvent) -> Unit,
+    eventFlow: SharedFlow<AddEditBillViewModel.UiEvent>
 ) {
-    val nameState = viewModel.name
-    val descriptionState = viewModel.description
-    val amountState = viewModel.amount
-    val dateState = viewModel.date
-
     val snackbarHostState = remember { SnackbarHostState() }
     var showDatePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
-        viewModel.eventFlow.collectLatest { event ->
+        eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditBillViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
@@ -81,7 +86,7 @@ fun AddEditBillScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.onEvent(AddEditBillEvent.SaveBill) },
+                onClick = { onEvent(AddEditBillEvent.SaveBill) },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Save,
@@ -102,7 +107,7 @@ fun AddEditBillScreen(
                         label = "Name",
                         text = nameState.value,
                         error = nameState.error,
-                        onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredName(it)) },
+                        onValueChange = { onEvent(AddEditBillEvent.EnteredName(it)) },
                         isRequired = Bill.IS_NAME_REQUIRED,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -111,7 +116,7 @@ fun AddEditBillScreen(
                         label = "Description",
                         text = descriptionState.value,
                         error = descriptionState.error,
-                        onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredDescription(it)) },
+                        onValueChange = { onEvent(AddEditBillEvent.EnteredDescription(it)) },
                         isRequired = Bill.IS_DESC_REQUIRED,
                         singleLine = false
                     )
@@ -121,7 +126,7 @@ fun AddEditBillScreen(
                         label = "Amount",
                         text = amountState.value,
                         error = amountState.error,
-                        onValueChange = { viewModel.onEvent(AddEditBillEvent.EnteredAmount(it)) },
+                        onValueChange = { onEvent(AddEditBillEvent.EnteredAmount(it)) },
                         isRequired = Bill.IS_AMOUNT_REQUIRED,
                         keyboardType = KeyboardType.Number
                     )
@@ -131,7 +136,7 @@ fun AddEditBillScreen(
                         content = { Text(text = "Choose date") }
                     )
                     Button(
-                        onClick = { viewModel.onEvent(AddEditBillEvent.EnteredDate(null)) },
+                        onClick = { onEvent(AddEditBillEvent.EnteredDate(null)) },
                         content = { Text(text = "Clear date") }
                     )
                 }
@@ -140,12 +145,26 @@ fun AddEditBillScreen(
                 MyDatePicker(
                     date = dateState.value ?: Date(),
                     onConfirm = {
-                        viewModel.onEvent(AddEditBillEvent.EnteredDate(it))
+                        onEvent(AddEditBillEvent.EnteredDate(it))
                         showDatePicker = false
                     },
                     onDismiss = { showDatePicker = false }
                 )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun AddEditBillScreenPreview() {
+    AddEditBillScreen(
+        navController = rememberNavController(),
+        nameState = TextFieldState(),
+        descriptionState = TextFieldState(),
+        amountState = TextFieldState(),
+        dateState = DateState(),
+        onEvent = {},
+        eventFlow = MutableSharedFlow()
     )
 }

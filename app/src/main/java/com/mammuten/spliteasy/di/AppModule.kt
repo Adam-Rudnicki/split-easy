@@ -15,6 +15,7 @@ import com.mammuten.spliteasy.domain.usecase.bill.GetBillsByGroupIdUseCase
 import com.mammuten.spliteasy.domain.usecase.bill.UpsertBillUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
 import com.mammuten.spliteasy.domain.usecase.contribution.DeleteContributionUseCase
+import com.mammuten.spliteasy.domain.usecase.contribution.GetContributionByBillIdAndMemberIdUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.GetContributionsByBillIdUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.UpsertContributionUseCase
 import com.mammuten.spliteasy.domain.usecase.group.DeleteGroupUseCase
@@ -125,7 +126,10 @@ object AppModule {
         return ContributionUseCases(
             upsertContributionUseCase = UpsertContributionUseCase(repo),
             deleteContributionUseCase = DeleteContributionUseCase(repo),
-            getContributionsByBillIdUseCase = GetContributionsByBillIdUseCase(repo)
+            getContributionsByBillIdUseCase = GetContributionsByBillIdUseCase(repo),
+            getContributionByBillIdAndMemberIdUseCase = GetContributionByBillIdAndMemberIdUseCase(
+                repo
+            )
         )
     }
 }

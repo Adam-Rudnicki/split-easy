@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import com.mammuten.spliteasy.presentation.util.RegexUtil
 
 @Composable
@@ -24,7 +25,6 @@ fun FormTextInput(
     singleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
-
     OutlinedTextField(
         modifier = modifier,
         label = {
@@ -75,4 +75,16 @@ private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
         KeyboardType.Number -> input.matches(RegexUtil.inputTwoDecimalPlaces)
         else -> false
     }
+}
+
+@Preview
+@Composable
+fun FormTextInputPreview() {
+    FormTextInput(
+        label = "Name",
+        text = "",
+        error = null,
+        onValueChange = {},
+        isRequired = true
+    )
 }

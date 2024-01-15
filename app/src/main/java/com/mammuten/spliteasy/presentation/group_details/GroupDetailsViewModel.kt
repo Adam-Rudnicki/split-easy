@@ -1,7 +1,8 @@
 package com.mammuten.spliteasy.presentation.group_details
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,8 +29,8 @@ class GroupDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(GroupDetailsState())
-    val state: State<GroupDetailsState> = _state
+    var state by mutableStateOf(GroupDetailsState())
+        private set
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -50,7 +51,7 @@ class GroupDetailsViewModel @Inject constructor(
         when (event) {
             is GroupDetailsEvent.DeleteGroup -> {
                 viewModelScope.launch {
-                    state.value.group?.let { group ->
+                    state.group?.let { group ->
                         getGroupJob?.cancel()
                         getBillsJob?.cancel()
                         getMembersJob?.cancel()
@@ -78,7 +79,7 @@ class GroupDetailsViewModel @Inject constructor(
         getGroupJob?.cancel()
         getGroupJob = groupUseCases.getGroupByIdUseCase(currentGroupId)
             .onEach { group ->
-                _state.value = state.value.copy(group = group)
+                state = state.copy(group = group)
             }.launchIn(viewModelScope)
     }
 
@@ -86,7 +87,7 @@ class GroupDetailsViewModel @Inject constructor(
         getBillsJob?.cancel()
         getBillsJob = billUseCases.getBillsByGroupIdUseCase(currentGroupId, billOrder)
             .onEach { bills ->
-                _state.value = state.value.copy(bills = bills, billOrder = billOrder)
+                state = state.copy(bills = bills, billOrder = billOrder)
             }.launchIn(viewModelScope)
     }
 
@@ -94,7 +95,7 @@ class GroupDetailsViewModel @Inject constructor(
         getMembersJob?.cancel()
         getMembersJob = memberUseCases.getMembersByGroupIdUseCase(currentGroupId, memberOrder)
             .onEach { members ->
-                _state.value = state.value.copy(members = members, memberOrder = memberOrder)
+                state = state.copy(members = members, memberOrder = memberOrder)
             }.launchIn(viewModelScope)
     }
 

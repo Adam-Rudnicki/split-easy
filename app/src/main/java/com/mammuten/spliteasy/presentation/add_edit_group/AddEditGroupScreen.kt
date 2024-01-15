@@ -17,26 +17,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.presentation.components.FormTextInput
+import com.mammuten.spliteasy.presentation.components.InvalidInputError
+import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditGroupScreen(
     navController: NavController,
-    viewModel: AddEditGroupViewModel = hiltViewModel()
+    nameState: TextFieldState,
+    descriptionState: TextFieldState,
+    onEvent: (AddEditGroupEvent) -> Unit,
+    eventFlow: SharedFlow<AddEditGroupViewModel.UiEvent>
 ) {
-    val nameState = viewModel.name
-    val descriptionState = viewModel.description
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
-        viewModel.eventFlow.collectLatest { event ->
+        eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditGroupViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
@@ -66,7 +71,7 @@ fun AddEditGroupScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.onEvent(AddEditGroupEvent.SaveGroup) },
+                onClick = { onEvent(AddEditGroupEvent.SaveGroup) },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Save,
@@ -87,7 +92,7 @@ fun AddEditGroupScreen(
                         label = "Name",
                         text = nameState.value,
                         error = nameState.error,
-                        onValueChange = { viewModel.onEvent(AddEditGroupEvent.EnteredName(it)) },
+                        onValueChange = { onEvent(AddEditGroupEvent.EnteredName(it)) },
                         isRequired = Group.IS_NAME_REQUIRED,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -96,12 +101,27 @@ fun AddEditGroupScreen(
                         label = "Description",
                         text = descriptionState.value,
                         error = descriptionState.error,
-                        onValueChange = { viewModel.onEvent(AddEditGroupEvent.EnteredDescription(it)) },
+                        onValueChange = { onEvent(AddEditGroupEvent.EnteredDescription(it)) },
                         isRequired = Group.IS_DESC_REQUIRED,
                         singleLine = false
                     )
                 }
             )
         }
+    )
+}
+
+@Preview
+@Composable
+fun AddEditGroupScreenPreview() {
+    AddEditGroupScreen(
+        navController = rememberNavController(),
+        nameState = TextFieldState(
+            value = "gr",
+            error = InvalidInputError.TooShortText(3)
+        ),
+        descriptionState = TextFieldState(),
+        onEvent = {},
+        eventFlow = MutableSharedFlow()
     )
 }

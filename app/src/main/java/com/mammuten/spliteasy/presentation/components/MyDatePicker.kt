@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,25 +22,33 @@ fun MyDatePicker(
     DatePickerDialog(
         onDismissRequest = { onDismiss() },
         confirmButton = {
-            Button(onClick = {
-                val selectedDateMillis = datePickerState.selectedDateMillis
-                if (selectedDateMillis != null) {
-                    val formattedDate = Date(selectedDateMillis)
-                    onConfirm(formattedDate)
-                }
-            }) {
-                Text(text = "OK")
-            }
+            Button(
+                onClick = {
+                    val selectedDateMillis = datePickerState.selectedDateMillis
+                    if (selectedDateMillis != null) {
+                        val formattedDate = Date(selectedDateMillis)
+                        onConfirm(formattedDate)
+                    }
+                },
+                content = { Text(text = "OK") }
+            )
         },
         dismissButton = {
-            Button(onClick = { onDismiss() }) {
-                Text(text = "Cancel")
-            }
-        },
-        content = {
-            DatePicker(
-                state = datePickerState
+            Button(
+                onClick = { onDismiss() },
+                content = { Text(text = "Cancel") }
             )
-        }
+        },
+        content = { DatePicker(state = datePickerState) }
+    )
+}
+
+@Preview
+@Composable
+fun MyDatePickerPreview() {
+    MyDatePicker(
+        date = Date(),
+        onConfirm = {},
+        onDismiss = {}
     )
 }

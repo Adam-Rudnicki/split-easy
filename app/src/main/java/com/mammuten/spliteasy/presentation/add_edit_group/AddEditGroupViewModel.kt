@@ -95,8 +95,8 @@ class AddEditGroupViewModel @Inject constructor(
                     groupUseCases.upsertGroupUseCase(
                         Group(
                             id = currentGroupId,
-                            name = name.value,
-                            description = description.value.takeIf { it.isNotBlank() }
+                            name = name.value.trim(),
+                            description = description.value.takeIf { it.isNotBlank() }?.trim()
                         )
                     )
                     _eventFlow.emit(UiEvent.SaveGroup)

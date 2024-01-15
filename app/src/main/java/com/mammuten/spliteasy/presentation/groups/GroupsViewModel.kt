@@ -1,7 +1,8 @@
 package com.mammuten.spliteasy.presentation.groups
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
@@ -18,8 +19,8 @@ class GroupsViewModel @Inject constructor(
     private val groupUseCases: GroupUseCases
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(GroupsState())
-    val state: State<GroupsState> = _state
+    var state by mutableStateOf(GroupsState())
+        private set
 
     private var getGroupsJob: Job? = null
 
@@ -37,7 +38,7 @@ class GroupsViewModel @Inject constructor(
         getGroupsJob?.cancel()
         getGroupsJob = groupUseCases.getGroupsUseCase(groupOrder)
             .onEach { groups ->
-                _state.value = state.value.copy(groups = groups, groupOrder = groupOrder)
+                state = state.copy(groups = groups)
             }.launchIn(viewModelScope)
     }
 }
