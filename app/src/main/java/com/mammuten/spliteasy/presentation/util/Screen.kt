@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.presentation
+package com.mammuten.spliteasy.presentation.util
 
 sealed class Screen(val route: String) {
     data object GroupsScreen : Screen("groups_screen")

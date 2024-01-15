@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.presentation.groups.component.GroupOrderSection
-import com.mammuten.spliteasy.presentation.Screen
+import com.mammuten.spliteasy.presentation.util.Screen
 import java.util.Date
 
 @Composable

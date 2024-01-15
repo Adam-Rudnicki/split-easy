@@ -27,6 +27,7 @@ import com.mammuten.spliteasy.presentation.group_details.GroupDetailsViewModel
 import com.mammuten.spliteasy.presentation.groups.GroupsScreen
 import com.mammuten.spliteasy.presentation.groups.GroupsViewModel
 import com.mammuten.spliteasy.presentation.ui.theme.SplitEasyTheme
+import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

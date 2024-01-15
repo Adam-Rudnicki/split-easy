@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
 import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
@@ -37,6 +38,8 @@ class GroupDetailsViewModel @Inject constructor(
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
 
+    private var recentlyDeletedMember: Member? = null
+
     private var getGroupJob: Job? = null
     private var getBillsJob: Job? = null
     private var getMembersJob: Job? = null
@@ -65,9 +68,18 @@ class GroupDetailsViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         memberUseCases.deleteMemberUseCase(event.member)
+                        recentlyDeletedMember = event.member
+                        _eventFlow.emit(UiEvent.ShowSnackbarRestoreMember("Member deleted", "Undo"))
                     } catch (e: MemberHasContributions) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(e.message!!))
                     }
+                }
+            }
+
+            is GroupDetailsEvent.RestoreMember -> {
+                viewModelScope.launch {
+                    memberUseCases.upsertMemberUseCase(recentlyDeletedMember ?: return@launch)
+                    recentlyDeletedMember = null
                 }
             }
 
@@ -101,6 +113,10 @@ class GroupDetailsViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowSnackbarRestoreMember(
+            val message: String, val actionLabel: String? = null
+        ) : UiEvent()
+
         data object DeleteGroup : UiEvent()
     }
 }
