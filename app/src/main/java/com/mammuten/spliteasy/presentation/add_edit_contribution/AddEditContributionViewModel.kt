@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
-import com.mammuten.spliteasy.presentation.add_edit_bill.AddEditBillViewModel
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
