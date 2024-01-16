@@ -128,7 +128,7 @@ fun AddEditBillScreen(
                         error = amountState.error,
                         onValueChange = { onEvent(AddEditBillEvent.EnteredAmount(it)) },
                         isRequired = Bill.IS_AMOUNT_REQUIRED,
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Decimal
                     )
                     Text(text = "Date: ${dateState.value ?: "not set"}")
                     Button(

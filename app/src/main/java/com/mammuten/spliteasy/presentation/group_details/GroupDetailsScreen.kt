@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,7 +31,6 @@ import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +44,6 @@ fun GroupDetailsScreen(
     val openDeleteGroupDialog = remember { mutableStateOf(false) }
     val openDeleteMemberDialog = remember { mutableStateOf<Member?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
@@ -55,16 +52,14 @@ fun GroupDetailsScreen(
                     snackbarHostState.showSnackbar(message = event.message)
 
                 is GroupDetailsViewModel.UiEvent.ShowSnackbarRestoreMember -> {
-                    scope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = event.message,
-                            actionLabel = event.actionLabel,
-                        )
-                        if (result == SnackbarResult.ActionPerformed) {
-                            onEvent(GroupDetailsEvent.RestoreMember)
-                        }
+                    val result = snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = event.actionLabel,
+                        duration = SnackbarDuration.Short
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        onEvent(GroupDetailsEvent.RestoreMember)
                     }
-
                 }
 
                 is GroupDetailsViewModel.UiEvent.DeleteGroup -> navController.navigateUp()

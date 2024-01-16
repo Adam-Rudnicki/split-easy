@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
@@ -19,14 +18,13 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// TODO
 @HiltViewModel
 class AddEditContributionViewModel @Inject constructor(
     private val contributionUseCases: ContributionUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var memberId by mutableIntStateOf(0)
+    var memberId by mutableIntStateOf(-1)
         private set
 
     var amountPaid by mutableStateOf(TextFieldState())
@@ -55,6 +53,7 @@ class AddEditContributionViewModel @Inject constructor(
                     }
                 }
             }
+            amountPaid = amountPaid.copy(value = "0.0")
             amountPaid = amountPaid.copy(
                 error = InvalidInputError.checkDecimal(
                     decimal = amountPaid.value.toDoubleOrNull(),
@@ -62,6 +61,7 @@ class AddEditContributionViewModel @Inject constructor(
                     maxValue = Contribution.MAX_AMOUNT
                 )
             )
+            amountOwed = amountOwed.copy(value = "0.0")
             amountOwed = amountOwed.copy(
                 error = InvalidInputError.checkDecimal(
                     decimal = amountOwed.value.toDoubleOrNull(),
@@ -81,8 +81,8 @@ class AddEditContributionViewModel @Inject constructor(
             is AddEditContributionEvent.EnteredAmountPaid -> {
                 val error: InvalidInputError? = InvalidInputError.checkDecimal(
                     decimal = event.value.toDoubleOrNull(),
-                    isRequired = Bill.IS_AMOUNT_REQUIRED,
-                    maxValue = Bill.MAX_AMOUNT
+                    isRequired = Contribution.IS_AMOUNT_REQUIRED,
+                    maxValue = Contribution.MAX_AMOUNT
                 )
                 amountPaid = amountPaid.copy(value = event.value, error = error)
             }
@@ -90,8 +90,8 @@ class AddEditContributionViewModel @Inject constructor(
             is AddEditContributionEvent.EnteredAmountOwed -> {
                 val error: InvalidInputError? = InvalidInputError.checkDecimal(
                     decimal = event.value.toDoubleOrNull(),
-                    isRequired = Bill.IS_AMOUNT_REQUIRED,
-                    maxValue = Bill.MAX_AMOUNT
+                    isRequired = Contribution.IS_AMOUNT_REQUIRED,
+                    maxValue = Contribution.MAX_AMOUNT
                 )
                 amountOwed = amountOwed.copy(value = event.value, error = error)
             }
@@ -102,14 +102,18 @@ class AddEditContributionViewModel @Inject constructor(
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
                     }
-                    contributionUseCases.upsertContributionUseCase(
-                        Contribution(
-                            billId = currentBillId,
-                            memberId = memberId,
-                            amountPaid = amountPaid.value.toDouble(),
-                            amountOwed = amountOwed.value.toDouble()
-                        )
+                    val contribution = Contribution(
+                        billId = currentBillId,
+                        memberId = memberId,
+                        amountPaid = amountPaid.value.toDouble(),
+                        amountOwed = amountOwed.value.toDouble()
                     )
+                    if (currentMemberId != null && currentMemberId != memberId) {
+                        contributionUseCases.deleteContributionUseCase(
+                            contribution.copy(memberId = currentMemberId!!)
+                        )
+                    }
+                    contributionUseCases.upsertContributionUseCase(contribution)
                     _eventFlow.emit(UiEvent.SaveContribution)
                 }
             }

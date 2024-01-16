@@ -169,10 +169,13 @@ private fun SplitEasyApp() {
                 }
             )
             composable(
-                route = "${Screen.AddEditContributionScreen.route}/{billId}/{memberId}",
+                route = "${Screen.AddEditContributionScreen.route}/{billId}?memberId={memberId}",
                 arguments = listOf(
                     navArgument(name = "billId") { type = NavType.IntType },
-                    navArgument(name = "memberId") { type = NavType.IntType }
+                    navArgument(name = "memberId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
                 ),
                 content = {
                     val viewModel = hiltViewModel<AddEditContributionViewModel>()

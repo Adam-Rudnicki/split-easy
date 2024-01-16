@@ -72,7 +72,7 @@ fun FormTextInput(
 private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
     return when (keyboardType) {
         KeyboardType.Text -> true
-        KeyboardType.Number -> input.matches(RegexUtil.inputTwoDecimalPlaces)
+        KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoDecimalPlaces)
         else -> false
     }
 }

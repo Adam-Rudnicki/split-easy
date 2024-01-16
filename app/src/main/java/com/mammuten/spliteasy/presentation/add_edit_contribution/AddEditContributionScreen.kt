@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
-// TODO
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditContributionScreen(
@@ -100,6 +100,7 @@ fun AddEditContributionScreen(
                         error = amountPaidState.error,
                         onValueChange = { onEvent(AddEditContributionEvent.EnteredAmountPaid(it)) },
                         isRequired = Contribution.IS_AMOUNT_REQUIRED,
+                        keyboardType = KeyboardType.Decimal
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     FormTextInput(
@@ -109,6 +110,7 @@ fun AddEditContributionScreen(
                         error = amountOwedState.error,
                         onValueChange = { onEvent(AddEditContributionEvent.EnteredAmountOwed(it)) },
                         isRequired = Contribution.IS_AMOUNT_REQUIRED,
+                        keyboardType = KeyboardType.Decimal
                     )
                 }
             )
