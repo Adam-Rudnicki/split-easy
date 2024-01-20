@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.domain.util
+package com.mammuten.spliteasy.domain.util.order
 
 sealed class OrderType {
     data object Ascending: OrderType()

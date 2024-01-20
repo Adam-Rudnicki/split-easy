@@ -10,9 +10,9 @@ import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
 import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
-import com.mammuten.spliteasy.domain.util.BillOrder
+import com.mammuten.spliteasy.domain.util.order.BillOrder
 import com.mammuten.spliteasy.domain.util.MemberHasContributions
-import com.mammuten.spliteasy.domain.util.MemberOrder
+import com.mammuten.spliteasy.domain.util.order.MemberOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,8 +46,8 @@ class GroupDetailsViewModel @Inject constructor(
 
     init {
         getGroup()
-        getBills()
-        getMembers()
+        getBills(state.billOrder)
+        getMembers(state.memberOrder)
     }
 
     fun onEvent(event: GroupDetailsEvent) {
@@ -83,7 +83,21 @@ class GroupDetailsViewModel @Inject constructor(
                 }
             }
 
-            is GroupDetailsEvent.Order -> getBills(event.billOrder)
+            is GroupDetailsEvent.BillsOrder -> {
+                if (state.billOrder::class != event.billOrder::class ||
+                    state.billOrder.orderType != event.billOrder.orderType
+                ) {
+                    getBills(event.billOrder)
+                }
+            }
+
+            is GroupDetailsEvent.MembersOrder -> {
+                if (state.memberOrder::class != event.memberOrder::class ||
+                    state.memberOrder.orderType != event.memberOrder.orderType
+                ) {
+                    getMembers(event.memberOrder)
+                }
+            }
         }
     }
 
@@ -95,7 +109,7 @@ class GroupDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    private fun getBills(billOrder: BillOrder? = null) {
+    private fun getBills(billOrder: BillOrder) {
         getBillsJob?.cancel()
         getBillsJob = billUseCases.getBillsByGroupIdUseCase(currentGroupId, billOrder)
             .onEach { bills ->
@@ -103,7 +117,7 @@ class GroupDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    private fun getMembers(memberOrder: MemberOrder? = null) {
+    private fun getMembers(memberOrder: MemberOrder) {
         getMembersJob?.cancel()
         getMembersJob = memberUseCases.getMembersByGroupIdUseCase(currentGroupId, memberOrder)
             .onEach { members ->

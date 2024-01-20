@@ -1,20 +1,17 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -23,10 +20,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -42,6 +40,9 @@ import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.presentation.bill_details.component.ContributionOrderSection
+import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
+import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
 import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -58,12 +59,23 @@ fun BillDetailsScreen(
     eventFlow: SharedFlow<BillDetailsViewModel.UiEvent>,
 ) {
     val openDeleteBillDialog = remember { mutableStateOf(false) }
-    val openDeleteContributionDialog = remember { mutableStateOf(false) }
+    val openDeleteContributionDialog = remember { mutableStateOf<Contribution?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
+                is BillDetailsViewModel.UiEvent.ShowSnackbarRestoreContribution -> {
+                    val result = snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = event.actionLabel,
+                        duration = SnackbarDuration.Short
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        onEvent(BillDetailsEvent.RestoreContribution)
+                    }
+                }
+
                 is BillDetailsViewModel.UiEvent.DeleteBill -> navController.navigateUp()
             }
         }
@@ -117,7 +129,7 @@ fun BillDetailsScreen(
             FloatingActionButton(
                 onClick = {
                     navController.navigate(
-                        Screen.AddEditContributionScreen.route + "/${state.bill?.id}"
+                        Screen.AddEditBillScreen.route + "/${state.bill?.groupId}"
                     )
                 },
                 content = {
@@ -195,117 +207,50 @@ fun BillDetailsScreen(
                             )
                         }
                     )
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        content = {
-                            items(
-                                items = state.membersWithContributions,
-                                key = { member -> member.id!! },
-                                itemContent = { member ->
-                                    OutlinedCard(
-                                        content = {
-                                            Text(
-                                                modifier = Modifier.padding(8.dp),
-                                                text = member.name
-                                            )
-                                        }
-                                    )
-                                }
-                            )
-                        }
+                    ContributionOrderSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        contributionOrder = state.contributionOrder,
+                        onOrderChange = { onEvent(BillDetailsEvent.ContributionsOrder(it)) }
                     )
-//                BillOrderSection(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    billOrder = state.billOrder,
-//                    onOrderChange = { viewModel.onEvent(GroupDetailsEvent.Order(it)) }
-//                )
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
                         color = Color.Black
                     )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            navController.navigate(
+                                Screen.ManageContributionsScreen.route +
+                                        "/${state.bill?.groupId}" +
+                                        "/${state.bill?.id}"
+                            )
+                        },
+                        content = { Text(text = "Manage contributions") }
+                    )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         content = {
+                            item(
+                                content = {
+                                    TableHeader(
+                                        memberHeaderText = "Member",
+                                        amountPaidHeaderText = "Amount Paid",
+                                        amountOwedHeaderText = "Amount Owed"
+                                    )
+                                }
+                            )
                             items(
-                                items = state.contributions,
-                                key = { contribution -> contribution.memberId },
-                                itemContent = { contribution ->
-                                    OutlinedCard(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface,
-                                        ),
-                                        border = BorderStroke(width = 1.dp, color = Color.Black),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clickable {
-                                                navController.navigate(
-                                                    Screen.AddEditContributionScreen.route +
-                                                            "/${state.bill?.id}" +
-                                                            "?memberId=${contribution.memberId}"
-                                                )
-                                            },
-                                        content = {
-                                            Column(
-                                                modifier = Modifier.padding(8.dp),
-                                                content = {
-                                                    Text(
-                                                        text = "Member",
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        modifier = Modifier.padding(bottom = 4.dp)
-                                                    )
-                                                    Text(
-                                                        text = state.membersWithContributions
-                                                            .firstOrNull { it.id == contribution.memberId }
-                                                            ?.name ?: "N/A",
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        modifier = Modifier.padding(bottom = 16.dp)
-                                                    )
-
-                                                    Text(
-                                                        text = "Amount paid",
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        modifier = Modifier.padding(bottom = 4.dp)
-                                                    )
-                                                    Text(
-                                                        text = String.format(
-                                                            "%.2f",
-                                                            contribution.amountPaid
-                                                        ),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        modifier = Modifier.padding(bottom = 16.dp)
-                                                    )
-
-                                                    Text(
-                                                        text = "Amount owed",
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        modifier = Modifier.padding(bottom = 4.dp)
-                                                    )
-                                                    Text(
-                                                        text = String.format(
-                                                            "%.2f",
-                                                            contribution.amountOwed
-                                                        ),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                    )
-                                                }
-                                            )
-                                            IconButton(
-                                                onClick = {
-                                                    openDeleteContributionDialog.value = true
-                                                },
-                                                content = {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Delete,
-                                                        contentDescription = "Delete contribution"
-                                                    )
-                                                }
-                                            )
+                                items = state.membersAndContributions,
+                                key = { (member, _) -> member.id!! },
+                                itemContent = { (member, contribution) ->
+                                    TableRow(
+                                        memberName = member.name,
+                                        amountPaid = contribution.amountPaid.toString(),
+                                        amountOwed = contribution.amountOwed.toString(),
+                                        onDeleteClick = {
+                                            openDeleteContributionDialog.value = contribution
                                         }
                                     )
                                 }
@@ -327,12 +272,13 @@ fun BillDetailsScreen(
                             )
                         }
 
-                        openDeleteContributionDialog.value -> {
+                        openDeleteContributionDialog.value != null -> {
+                            val contributionToDelete = openDeleteContributionDialog.value!!
                             ConfirmDismissDialog(
-                                onDismissRequest = { openDeleteContributionDialog.value = false },
+                                onDismissRequest = { openDeleteContributionDialog.value = null },
                                 onConfirmation = {
-                                    openDeleteContributionDialog.value = false
-                                    onEvent(BillDetailsEvent.DeleteContribution)
+                                    openDeleteContributionDialog.value = null
+                                    onEvent(BillDetailsEvent.DeleteContribution(contributionToDelete))
                                 },
                                 dialogTitle = "Delete contribution",
                                 dialogText = "Are you sure you want to delete this contribution?",
@@ -360,30 +306,26 @@ fun BillDetailsScreenPreview() {
                 amount = 100.0,
                 date = Date()
             ),
-            contributions = listOf(
-                Contribution(
+            membersAndContributions = listOf(
+                Member(
+                    id = 1,
+                    groupId = 1,
+                    name = "Member 1"
+                ) to Contribution(
                     billId = 1,
                     memberId = 1,
                     amountPaid = 50.0,
                     amountOwed = 50.0
                 ),
-                Contribution(
-                    billId = 1,
-                    memberId = 2,
-                    amountPaid = 50.0,
-                    amountOwed = 50.0
-                )
-            ),
-            membersWithContributions = listOf(
-                Member(
-                    id = 1,
-                    groupId = 1,
-                    name = "Member 1"
-                ),
                 Member(
                     id = 2,
                     groupId = 1,
                     name = "Member 2"
+                ) to Contribution(
+                    billId = 1,
+                    memberId = 2,
+                    amountPaid = 50.0,
+                    amountOwed = 50.0
                 )
             )
         ),

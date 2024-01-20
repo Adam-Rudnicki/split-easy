@@ -33,7 +33,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.presentation.components.FormTextInput
-import com.mammuten.spliteasy.presentation.components.MyDatePicker
+import com.mammuten.spliteasy.presentation.components.MyDatePickerDialog
 import com.mammuten.spliteasy.presentation.components.input_state.DateState
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -142,7 +142,7 @@ fun AddEditBillScreen(
                 }
             )
             if (showDatePicker) {
-                MyDatePicker(
+                MyDatePickerDialog(
                     date = dateState.value ?: Date(),
                     onConfirm = {
                         onEvent(AddEditBillEvent.EnteredDate(it))

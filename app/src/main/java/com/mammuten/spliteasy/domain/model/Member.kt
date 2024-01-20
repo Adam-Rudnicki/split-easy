@@ -3,6 +3,7 @@ package com.mammuten.spliteasy.domain.model
 data class Member(
     val id: Int? = null,
     val groupId: Int,
+    val userId: Int? = null,
     val name: String,
 ) {
     companion object {

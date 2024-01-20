@@ -6,16 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
-import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
-import com.mammuten.spliteasy.domain.util.ContributionOrder
+import com.mammuten.spliteasy.domain.usecase.general.GeneralUseCases
+import com.mammuten.spliteasy.domain.util.order.ContributionOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ import javax.inject.Inject
 class BillDetailsViewModel @Inject constructor(
     private val billUseCases: BillUseCases,
     private val contributionUseCases: ContributionUseCases,
-    private val memberUseCases: MemberUseCases,
+    private val generalUseCases: GeneralUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -37,15 +36,14 @@ class BillDetailsViewModel @Inject constructor(
 
     private val currentBillId: Int = checkNotNull(savedStateHandle["billId"])
 
-    private var getBillJob: Job? = null
-    private var getContributionsJob: Job? = null
+    private var recentlyDeletedContribution: Contribution? = null
 
-    private var groupMembers: List<Member> = emptyList()
+    private var getBillJob: Job? = null
+    private var getMembersAndContributionsJob: Job? = null
 
     init {
         getBill()
-        getGroupMembers()
-        getContributions()
+        getMemberAndContribution(state.contributionOrder)
     }
 
     fun onEvent(event: BillDetailsEvent) {
@@ -54,14 +52,42 @@ class BillDetailsViewModel @Inject constructor(
                 viewModelScope.launch {
                     state.bill?.let { bill ->
                         getBillJob?.cancel()
-                        getContributionsJob?.cancel()
+                        getMembersAndContributionsJob?.cancel()
                         billUseCases.deleteBillUseCase(bill)
                         _eventFlow.emit(UiEvent.DeleteBill)
                     }
                 }
             }
-            // TODO
-            is BillDetailsEvent.DeleteContribution -> {}
+
+            is BillDetailsEvent.DeleteContribution -> {
+                viewModelScope.launch {
+                    contributionUseCases.deleteContributionUseCase(event.contribution)
+                    recentlyDeletedContribution = event.contribution
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackbarRestoreContribution(
+                            message = "Contribution deleted",
+                            actionLabel = "Undo"
+                        )
+                    )
+                }
+            }
+
+            is BillDetailsEvent.RestoreContribution -> {
+                viewModelScope.launch {
+                    contributionUseCases.upsertContributionUseCase(
+                        recentlyDeletedContribution ?: return@launch
+                    )
+                    recentlyDeletedContribution = null
+                }
+            }
+
+            is BillDetailsEvent.ContributionsOrder -> {
+                if (state.contributionOrder::class != event.contributionOrder::class ||
+                    state.contributionOrder.orderType != event.contributionOrder.orderType
+                ) {
+                    getMemberAndContribution(event.contributionOrder)
+                }
+            }
         }
     }
 
@@ -73,37 +99,24 @@ class BillDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    private fun getGroupMembers() {
-        viewModelScope.launch {
-            val groupId = state.bill?.groupId
-            groupId?.let {
-                val members = memberUseCases.getMembersByGroupIdUseCase(groupId).firstOrNull()
-                members?.let { groupMembers = it }
-            }
-        }
-    }
-
-    private fun getContributions(contributionOrder: ContributionOrder? = null) {
-        getContributionsJob?.cancel()
-        getContributionsJob =
-            contributionUseCases.getContributionsByBillIdUseCase(currentBillId, contributionOrder)
-                .onEach { contributions ->
-                    val membersWithContributions = groupMembers.filter { member ->
-                        state.contributions.any { it.memberId == member.id }
-                    }
-                    val membersWithoutContributions = groupMembers.filter { member ->
-                        state.contributions.none { it.memberId == member.id }
-                    }
-                    state = state.copy(
-                        contributions = contributions,
-                        contributionOrder = contributionOrder,
-                        membersWithContributions = membersWithContributions,
-                        membersWithoutContributions = membersWithoutContributions
-                    )
-                }.launchIn(viewModelScope)
+    private fun getMemberAndContribution(contributionOrder: ContributionOrder) {
+        getMembersAndContributionsJob?.cancel()
+        getMembersAndContributionsJob =
+            generalUseCases.getMembersAndContributionsInBillUseCase(
+                currentBillId, contributionOrder
+            ).onEach { membersAndContributions ->
+                state = state.copy(
+                    membersAndContributions = membersAndContributions,
+                    contributionOrder = contributionOrder
+                )
+            }.launchIn(viewModelScope)
     }
 
     sealed class UiEvent {
+        data class ShowSnackbarRestoreContribution(
+            val message: String, val actionLabel: String? = null
+        ) : UiEvent()
+
         data object DeleteBill : UiEvent()
     }
 }

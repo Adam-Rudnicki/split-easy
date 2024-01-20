@@ -4,13 +4,14 @@ import com.mammuten.spliteasy.data.source.local.entity.bill.BillEntity
 import com.mammuten.spliteasy.data.source.local.entity.group.GroupEntity
 import com.mammuten.spliteasy.data.source.local.entity.member.MemberEntity
 import com.mammuten.spliteasy.data.source.local.entity.contribution.ContributionEntity
+import com.mammuten.spliteasy.data.source.local.entity.user.UserEntity
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.model.Contribution
+import com.mammuten.spliteasy.domain.model.User
 
 // Group mappers
-
 fun Group.asEntity(): GroupEntity {
     return GroupEntity(
         id = id,
@@ -31,7 +32,6 @@ fun GroupEntity.asModel(): Group {
 fun List<GroupEntity>.asGroupModelList(): List<Group> = this.map { it.asModel() }
 
 // Bill mappers
-
 fun Bill.asEntity(): BillEntity {
     return BillEntity(
         id = id,
@@ -57,11 +57,11 @@ fun BillEntity.asModel(): Bill {
 fun List<BillEntity>.asBillModelList(): List<Bill> = this.map { it.asModel() }
 
 // Member mappers
-
 fun Member.asEntity(): MemberEntity {
     return MemberEntity(
         id = id,
         groupId = groupId,
+        userId = userId,
         name = name
     )
 }
@@ -70,6 +70,7 @@ fun MemberEntity.asModel(): Member {
     return Member(
         id = id,
         groupId = groupId,
+        userId = userId,
         name = name
     )
 }
@@ -77,7 +78,6 @@ fun MemberEntity.asModel(): Member {
 fun List<MemberEntity>.asMemberModelList(): List<Member> = this.map { it.asModel() }
 
 // Contribution mappers
-
 fun Contribution.asEntity(): ContributionEntity {
     return ContributionEntity(
         billId = billId,
@@ -98,3 +98,31 @@ fun ContributionEntity.asModel(): Contribution {
 
 fun List<ContributionEntity>.asContributionModelList(): List<Contribution> =
     this.map { it.asModel() }
+
+fun List<Contribution>.asContributionEntityList(): List<ContributionEntity> =
+    this.map { it.asEntity() }
+
+// User mappers
+fun User.asEntity(): UserEntity {
+    return UserEntity(
+        id = id,
+        name = name,
+        surname = surname,
+        nick = nick,
+        phone = phone,
+        description = description
+    )
+}
+
+fun UserEntity.asModel(): User {
+    return User(
+        id = id,
+        name = name,
+        surname = surname,
+        nick = nick,
+        phone = phone,
+        description = description
+    )
+}
+
+fun List<UserEntity>.asUserModelList(): List<User> = this.map { it.asModel() }

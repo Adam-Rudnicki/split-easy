@@ -17,7 +17,7 @@ import com.mammuten.spliteasy.presentation.util.RegexUtil
 @Composable
 fun FormTextInput(
     modifier: Modifier = Modifier,
-    label: String,
+    label: String? = null,
     text: String,
     error: InvalidInputError?,
     onValueChange: (String) -> Unit,
@@ -28,10 +28,12 @@ fun FormTextInput(
     OutlinedTextField(
         modifier = modifier,
         label = {
-            Text(
-                text = label + if (!isRequired) " (optional)" else "",
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            label?.let {
+                Text(
+                    text = it + if (!isRequired) " (optional)" else "",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         },
         value = text,
         onValueChange = {
@@ -72,7 +74,7 @@ fun FormTextInput(
 private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
     return when (keyboardType) {
         KeyboardType.Text -> true
-        KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoDecimalPlaces)
+        KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoDecimalPlacesRegex)
         else -> false
     }
 }
@@ -85,6 +87,6 @@ fun FormTextInputPreview() {
         text = "",
         error = null,
         onValueChange = {},
-        isRequired = true
+        isRequired = false
     )
 }

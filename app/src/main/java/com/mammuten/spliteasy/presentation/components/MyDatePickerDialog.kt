@@ -12,7 +12,7 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyDatePicker(
+fun MyDatePickerDialog(
     date: Date,
     onConfirm: (Date) -> Unit,
     onDismiss: () -> Unit
@@ -45,8 +45,8 @@ fun MyDatePicker(
 
 @Preview
 @Composable
-fun MyDatePickerPreview() {
-    MyDatePicker(
+fun MyDatePickerDialogPreview() {
+    MyDatePickerDialog(
         date = Date(),
         onConfirm = {},
         onDismiss = {}

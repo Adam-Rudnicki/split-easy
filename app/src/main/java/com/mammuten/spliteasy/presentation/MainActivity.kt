@@ -14,8 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mammuten.spliteasy.presentation.add_edit_bill.AddEditBillScreen
 import com.mammuten.spliteasy.presentation.add_edit_bill.AddEditBillViewModel
-import com.mammuten.spliteasy.presentation.add_edit_contribution.AddEditContributionScreen
-import com.mammuten.spliteasy.presentation.add_edit_contribution.AddEditContributionViewModel
+import com.mammuten.spliteasy.presentation.manage_contributions.ManageContributionsScreen
+import com.mammuten.spliteasy.presentation.manage_contributions.ManageContributionsViewModel
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupScreen
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupViewModel
 import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberScreen
@@ -169,25 +169,18 @@ private fun SplitEasyApp() {
                 }
             )
             composable(
-                route = "${Screen.AddEditContributionScreen.route}/{billId}?memberId={memberId}",
+                route = "${Screen.ManageContributionsScreen.route}/{groupId}/{billId}",
                 arguments = listOf(
-                    navArgument(name = "billId") { type = NavType.IntType },
-                    navArgument(name = "memberId") {
-                        type = NavType.IntType
-                        defaultValue = -1
-                    }
+                    navArgument(name = "groupId") { type = NavType.IntType },
+                    navArgument(name = "billId") { type = NavType.IntType }
                 ),
                 content = {
-                    val viewModel = hiltViewModel<AddEditContributionViewModel>()
-                    val memberIdState = viewModel.memberId
-                    val amountPaidState = viewModel.amountPaid
-                    val amountOwedState = viewModel.amountOwed
+                    val viewModel = hiltViewModel<ManageContributionsViewModel>()
+                    val state = viewModel.state
                     val eventFlow = viewModel.eventFlow
-                    AddEditContributionScreen(
+                    ManageContributionsScreen(
                         navController = navController,
-                        memberIdState = memberIdState,
-                        amountPaidState = amountPaidState,
-                        amountOwedState = amountOwedState,
+                        state = state,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )

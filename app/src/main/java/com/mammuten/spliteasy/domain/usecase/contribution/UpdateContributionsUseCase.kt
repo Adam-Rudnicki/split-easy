@@ -1,0 +1,15 @@
+package com.mammuten.spliteasy.domain.usecase.contribution
+
+import com.mammuten.spliteasy.data.repo.ContributionRepo
+import com.mammuten.spliteasy.domain.model.Contribution
+
+class UpdateContributionsUseCase(
+    private val contributionRepo: ContributionRepo
+) {
+    suspend operator fun invoke(
+        contributionsToUpsert: List<Contribution>,
+        contributionsToDelete: List<Contribution>
+    ) {
+        contributionRepo.updateContributions(contributionsToUpsert, contributionsToDelete)
+    }
+}

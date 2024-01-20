@@ -19,7 +19,8 @@ import com.mammuten.spliteasy.data.source.local.entity.member.MemberEntity
         ForeignKey(
             entity = MemberEntity::class,
             parentColumns = ["id"],
-            childColumns = ["memberId"]
+            childColumns = ["memberId"],
+            onDelete = ForeignKey.RESTRICT
         )
     ]
 )

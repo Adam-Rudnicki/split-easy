@@ -6,8 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
-import com.mammuten.spliteasy.domain.util.GroupOrder
-import com.mammuten.spliteasy.domain.util.OrderType
+import com.mammuten.spliteasy.domain.util.order.GroupOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -25,12 +24,18 @@ class GroupsViewModel @Inject constructor(
     private var getGroupsJob: Job? = null
 
     init {
-        getGroups(GroupOrder.Date(OrderType.Descending))
+        getGroups(state.groupOrder)
     }
 
     fun onEvent(event: GroupsEvent) {
         when (event) {
-            is GroupsEvent.Order -> getGroups(event.groupOrder)
+            is GroupsEvent.Order -> {
+                if (state.groupOrder::class != event.groupOrder::class ||
+                    state.groupOrder.orderType != event.groupOrder.orderType
+                ) {
+                    getGroups(event.groupOrder)
+                }
+            }
         }
     }
 
@@ -38,7 +43,7 @@ class GroupsViewModel @Inject constructor(
         getGroupsJob?.cancel()
         getGroupsJob = groupUseCases.getGroupsUseCase(groupOrder)
             .onEach { groups ->
-                state = state.copy(groups = groups)
+                state = state.copy(groups = groups, groupOrder = groupOrder)
             }.launchIn(viewModelScope)
     }
 }

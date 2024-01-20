@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.domain.util
+package com.mammuten.spliteasy.domain.util.order
 
 sealed class ContributionOrder(val orderType: OrderType) {
     class AmountPaid(orderType: OrderType) : ContributionOrder(orderType)

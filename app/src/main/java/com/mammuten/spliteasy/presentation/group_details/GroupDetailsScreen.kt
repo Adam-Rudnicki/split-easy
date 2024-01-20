@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.group_details
 
+import MemberOrderSection
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
+import com.mammuten.spliteasy.presentation.group_details.component.BillOrderSection
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -48,8 +50,9 @@ fun GroupDetailsScreen(
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is GroupDetailsViewModel.UiEvent.ShowSnackbar ->
+                is GroupDetailsViewModel.UiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(message = event.message)
+                }
 
                 is GroupDetailsViewModel.UiEvent.ShowSnackbarRestoreMember -> {
                     val result = snackbarHostState.showSnackbar(
@@ -168,14 +171,10 @@ fun GroupDetailsScreen(
                             )
                         }
                     )
-                    Button(
+                    MemberOrderSection(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navController.navigate(
-                                Screen.AddEditMemberScreen.route + "/${state.group?.id}"
-                            )
-                        },
-                        content = { Text(text = "Add member") }
+                        memberOrder = state.memberOrder,
+                        onOrderChange = { onEvent(GroupDetailsEvent.MembersOrder(it)) }
                     )
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
@@ -209,11 +208,20 @@ fun GroupDetailsScreen(
                             )
                         }
                     )
-//                BillOrderSection(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    billOrder = state.billOrder,
-//                    onOrderChange = { viewModel.onEvent(GroupDetailsEvent.Order(it)) }
-//                )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            navController.navigate(
+                                Screen.AddEditMemberScreen.route + "/${state.group?.id}"
+                            )
+                        },
+                        content = { Text(text = "Add member") }
+                    )
+                    BillOrderSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        billOrder = state.billOrder,
+                        onOrderChange = { onEvent(GroupDetailsEvent.BillsOrder(it)) }
+                    )
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()

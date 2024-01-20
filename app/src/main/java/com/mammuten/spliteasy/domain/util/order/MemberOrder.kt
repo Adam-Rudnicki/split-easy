@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.domain.util
+package com.mammuten.spliteasy.domain.util.order
 
 sealed class MemberOrder(val orderType: OrderType) {
     class Name(orderType: OrderType) : MemberOrder(orderType)

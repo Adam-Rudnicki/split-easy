@@ -2,18 +2,18 @@ package com.mammuten.spliteasy.domain.usecase.group
 
 import com.mammuten.spliteasy.data.repo.GroupRepo
 import com.mammuten.spliteasy.domain.model.Group
-import com.mammuten.spliteasy.domain.util.GroupOrder
-import com.mammuten.spliteasy.domain.util.OrderType
+import com.mammuten.spliteasy.domain.util.order.GroupOrder
+import com.mammuten.spliteasy.domain.util.order.OrderType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetGroupsUseCase(
-    private val groupRepository: GroupRepo
+    private val groupRepo: GroupRepo
 ) {
     operator fun invoke(
         groupOrder: GroupOrder = GroupOrder.Date(OrderType.Descending)
     ): Flow<List<Group>> {
-        return groupRepository.getGroups().map { groups ->
+        return groupRepo.getGroups().map { groups ->
             when (groupOrder) {
                 is GroupOrder.Name -> {
                     when (groupOrder.orderType) {
