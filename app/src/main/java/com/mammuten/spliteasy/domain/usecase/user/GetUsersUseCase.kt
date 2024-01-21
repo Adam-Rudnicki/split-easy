@@ -11,7 +11,7 @@ class GetUsersUseCase(
     private val userRepo: UserRepo
 ) {
     operator fun invoke(
-        userOrder: UserOrder = UserOrder.Name(OrderType.Descending)
+        userOrder: UserOrder = UserOrder.Name(OrderType.Ascending)
     ): Flow<List<User>> {
         return userRepo.getUsers().map { users ->
             when (userOrder) {

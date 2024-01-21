@@ -36,6 +36,7 @@ import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
 import com.mammuten.spliteasy.domain.usecase.member.UpsertMemberUseCase
 import com.mammuten.spliteasy.domain.usecase.user.DeleteUserUseCase
 import com.mammuten.spliteasy.domain.usecase.user.GetUserByIdUseCase
+import com.mammuten.spliteasy.domain.usecase.user.GetUsersNotInGroupUseCase
 import com.mammuten.spliteasy.domain.usecase.user.GetUsersUseCase
 import com.mammuten.spliteasy.domain.usecase.user.UpsertUserUseCase
 import com.mammuten.spliteasy.domain.usecase.user.UserUseCases
@@ -163,7 +164,8 @@ object AppModule {
             upsertUserUseCase = UpsertUserUseCase(repo),
             deleteUserUseCase = DeleteUserUseCase(repo),
             getUserByIdUseCase = GetUserByIdUseCase(repo),
-            getUsersUseCase = GetUsersUseCase(repo)
+            getUsersUseCase = GetUsersUseCase(repo),
+            getUsersNotInGroupUseCase = GetUsersNotInGroupUseCase(repo)
         )
     }
 

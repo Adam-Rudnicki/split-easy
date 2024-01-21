@@ -19,4 +19,7 @@ class UserRepo(
         dataSource.getUserById(userId).map { it?.asModel() }
 
     fun getUsers(): Flow<List<User>> = dataSource.getUsers().map { it.asUserModelList() }
+
+    fun getUsersNotInGroup(groupId: Int): Flow<List<User>> =
+        dataSource.getUsersNotInGroup(groupId).map { it.asUserModelList() }
 }

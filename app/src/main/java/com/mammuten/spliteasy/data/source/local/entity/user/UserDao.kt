@@ -19,4 +19,7 @@ interface UserDao {
 
     @Query("SELECT * FROM ${UserEntity.TABLE_NAME}")
     fun getUsers(): Flow<List<UserEntity>>
+
+    @Query("SELECT * FROM users WHERE id NOT IN (SELECT userId FROM members WHERE groupId = :groupId AND userId IS NOT NULL)")
+    fun getUsersNotInGroup(groupId: Int): Flow<List<UserEntity>>
 }

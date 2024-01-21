@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.data.source.local
 
+import androidx.room.Query
 import com.mammuten.spliteasy.data.source.local.entity.GeneralDao
 import com.mammuten.spliteasy.data.source.local.entity.bill.BillDao
 import com.mammuten.spliteasy.data.source.local.entity.bill.BillEntity
@@ -66,6 +67,8 @@ class LocalSplitDataSource(
     suspend fun deleteUser(userEntity: UserEntity) = userDao.deleteUser(userEntity)
     fun getUserById(userId: Int): Flow<UserEntity?> = userDao.getUserById(userId)
     fun getUsers(): Flow<List<UserEntity>> = userDao.getUsers()
+    fun getUsersNotInGroup(groupId: Int): Flow<List<UserEntity>> =
+        userDao.getUsersNotInGroup(groupId)
 
     // General operations
     fun getMembersAndContributionsInBill(billId: Int): Flow<Map<MemberEntity, ContributionEntity>> =

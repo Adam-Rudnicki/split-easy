@@ -22,6 +22,8 @@ data class User (
         val MAX_NICK_LEN = 50
 
         val IS_PHONE_REQUIRED = false
+        val MIN_PHONE_LEN = 0
+        val MAX_PHONE_LEN = 20
 
         val IS_DESC_REQUIRED = false
         val MIN_DESC_LEN = 2

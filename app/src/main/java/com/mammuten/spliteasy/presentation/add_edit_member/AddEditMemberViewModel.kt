@@ -7,7 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.model.User
 import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
+import com.mammuten.spliteasy.domain.usecase.user.UserUseCases
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,10 +22,14 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditMemberViewModel @Inject constructor(
     private val memberUseCases: MemberUseCases,
+    private val userUseCases: UserUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var name by mutableStateOf(TextFieldState())
+        private set
+
+    var state by mutableStateOf(UserState())
         private set
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -39,17 +45,26 @@ class AddEditMemberViewModel @Inject constructor(
                     memberUseCases.getMemberByIdUseCase(id).firstOrNull()?.let { member ->
                         currentMemberId = member.id
                         name = name.copy(value = member.name)
+                        member.userId?.let { userId ->
+                            userUseCases.getUserByIdUseCase(userId).firstOrNull()?.let { user ->
+                                state = state.copy(
+                                    usersNotInGroup = listOf(user), selectedUser = user
+                                )
+                            }
+                        }
                     }
                 }
-            }
-            name = name.copy(
-                error = InvalidInputError.checkText(
-                    text = name.value,
-                    isRequired = Member.IS_NAME_REQUIRED,
-                    minLength = Member.MIN_NAME_LEN,
-                    maxLength = Member.MAX_NAME_LEN
+                name = name.copy(
+                    error = InvalidInputError.checkText(
+                        text = name.value,
+                        isRequired = Member.IS_NAME_REQUIRED,
+                        minLength = Member.MIN_NAME_LEN,
+                        maxLength = Member.MAX_NAME_LEN
+                    )
                 )
-            )
+            }
+
+            getUsersNotInGroup()
         }
     }
 
@@ -75,14 +90,39 @@ class AddEditMemberViewModel @Inject constructor(
                         Member(
                             id = currentMemberId,
                             groupId = currentGroupId,
+                            userId = state.selectedUser?.id,
                             name = name.value.trim(),
                         )
                     )
                     _eventFlow.emit(UiEvent.SaveMember)
                 }
             }
+
+            is AddEditMemberEvent.ToggleUserSelection -> {
+                if (state.selectedUser != event.user) {
+                    name = name.copy(value = event.user.name, error = null)
+                }
+                state = state.copy(
+                    selectedUser = if (state.selectedUser == event.user) null else event.user
+                )
+            }
         }
     }
+
+    private fun getUsersNotInGroup() {
+        viewModelScope.launch {
+            userUseCases.getUsersNotInGroupUseCase(currentGroupId).firstOrNull()?.let {
+                val usersNotInGroup = it.toMutableList()
+                state.selectedUser?.let { user -> usersNotInGroup.add(user) }
+                state = state.copy(usersNotInGroup = usersNotInGroup)
+            }
+        }
+    }
+
+    data class UserState(
+        val usersNotInGroup: List<User> = emptyList(),
+        val selectedUser: User? = null
+    )
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()

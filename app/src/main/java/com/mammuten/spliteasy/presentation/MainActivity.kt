@@ -20,6 +20,8 @@ import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupScreen
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupViewModel
 import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberScreen
 import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberViewModel
+import com.mammuten.spliteasy.presentation.add_edit_user.AddEditUserScreen
+import com.mammuten.spliteasy.presentation.add_edit_user.AddEditUserViewModel
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsViewModel
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsScreen
@@ -27,6 +29,8 @@ import com.mammuten.spliteasy.presentation.group_details.GroupDetailsViewModel
 import com.mammuten.spliteasy.presentation.groups.GroupsScreen
 import com.mammuten.spliteasy.presentation.groups.GroupsViewModel
 import com.mammuten.spliteasy.presentation.ui.theme.SplitEasyTheme
+import com.mammuten.spliteasy.presentation.users.UsersScreen
+import com.mammuten.spliteasy.presentation.users.UsersViewModel
 import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -159,10 +163,12 @@ private fun SplitEasyApp() {
                 content = {
                     val viewModel = hiltViewModel<AddEditMemberViewModel>()
                     val nameState = viewModel.name
+                    val state = viewModel.state
                     val eventFlow = viewModel.eventFlow
                     AddEditMemberScreen(
                         navController = navController,
                         nameState = nameState,
+                        state = state,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
@@ -181,6 +187,48 @@ private fun SplitEasyApp() {
                     ManageContributionsScreen(
                         navController = navController,
                         state = state,
+                        onEvent = viewModel::onEvent,
+                        eventFlow = eventFlow
+                    )
+                }
+            )
+            composable(
+                route = Screen.UsersScreen.route,
+                content = {
+                    val viewModel = hiltViewModel<UsersViewModel>()
+                    val state = viewModel.state
+                    val eventFlow = viewModel.eventFlow
+                    UsersScreen(
+                        navController = navController,
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                        eventFlow = eventFlow
+                    )
+                }
+            )
+            composable(
+                route = "${Screen.AddEditUserScreen.route}?userId={userId}",
+                arguments = listOf(
+                    navArgument(name = "userId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                ),
+                content = {
+                    val viewModel = hiltViewModel<AddEditUserViewModel>()
+                    val nameState = viewModel.name
+                    val surnameState = viewModel.surname
+                    val nickState = viewModel.nick
+                    val phoneState = viewModel.phone
+                    val descriptionState = viewModel.description
+                    val eventFlow = viewModel.eventFlow
+                    AddEditUserScreen(
+                        navController = navController,
+                        nameState = nameState,
+                        surnameState = surnameState,
+                        nickState = nickState,
+                        phoneState = phoneState,
+                        descriptionState = descriptionState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )

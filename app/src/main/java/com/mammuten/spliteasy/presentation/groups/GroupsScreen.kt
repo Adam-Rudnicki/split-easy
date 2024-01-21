@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
@@ -56,6 +57,11 @@ fun GroupsScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { navController.navigate(Screen.UsersScreen.route) },
+                        content = { Text(text = "Show users") }
+                    )
                     GroupOrderSection(
                         modifier = Modifier.fillMaxWidth(),
                         groupOrder = state.groupOrder,

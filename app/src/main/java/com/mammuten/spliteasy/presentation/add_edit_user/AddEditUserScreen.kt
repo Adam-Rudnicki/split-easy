@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.presentation.add_edit_group
+package com.mammuten.spliteasy.presentation.add_edit_user
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -17,11 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.mammuten.spliteasy.domain.model.Group
+import com.mammuten.spliteasy.domain.model.User
 import com.mammuten.spliteasy.presentation.components.FormTextInput
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
@@ -31,22 +32,25 @@ import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditGroupScreen(
+fun AddEditUserScreen(
     navController: NavController,
     nameState: TextFieldState,
+    surnameState: TextFieldState,
+    nickState: TextFieldState,
+    phoneState: TextFieldState,
     descriptionState: TextFieldState,
-    onEvent: (AddEditGroupEvent) -> Unit,
-    eventFlow: SharedFlow<AddEditGroupViewModel.UiEvent>
+    onEvent: (AddEditUserEvent) -> Unit,
+    eventFlow: SharedFlow<AddEditUserViewModel.UiEvent>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is AddEditGroupViewModel.UiEvent.ShowSnackbar ->
+                is AddEditUserViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
 
-                is AddEditGroupViewModel.UiEvent.SaveGroup -> navController.navigateUp()
+                is AddEditUserViewModel.UiEvent.SaveUser -> navController.navigateUp()
             }
         }
     }
@@ -54,7 +58,7 @@ fun AddEditGroupScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Save group") },
+                title = { Text(text = "Save user") },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.navigateUp() },
@@ -71,11 +75,11 @@ fun AddEditGroupScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(AddEditGroupEvent.SaveGroup) },
+                onClick = { onEvent(AddEditUserEvent.SaveUser) },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Save,
-                        contentDescription = "Save group"
+                        contentDescription = "Save user"
                     )
                 }
             )
@@ -92,8 +96,36 @@ fun AddEditGroupScreen(
                         label = "Name",
                         text = nameState.value,
                         error = nameState.error,
-                        onValueChange = { onEvent(AddEditGroupEvent.EnteredName(it)) },
-                        isRequired = Group.IS_NAME_REQUIRED,
+                        onValueChange = { onEvent(AddEditUserEvent.EnteredName(it)) },
+                        isRequired = User.IS_NAME_REQUIRED,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Surname",
+                        text = surnameState.value,
+                        error = surnameState.error,
+                        onValueChange = { onEvent(AddEditUserEvent.EnteredSurname(it)) },
+                        isRequired = User.IS_SURNAME_REQUIRED,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Nick",
+                        text = nickState.value,
+                        error = nickState.error,
+                        onValueChange = { onEvent(AddEditUserEvent.EnteredNick(it)) },
+                        isRequired = User.IS_NICK_REQUIRED,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FormTextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Phone",
+                        text = phoneState.value,
+                        error = phoneState.error,
+                        onValueChange = { onEvent(AddEditUserEvent.EnteredPhone(it)) },
+                        isRequired = User.IS_PHONE_REQUIRED,
+                        keyboardType = KeyboardType.Phone
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     FormTextInput(
@@ -101,8 +133,8 @@ fun AddEditGroupScreen(
                         label = "Description",
                         text = descriptionState.value,
                         error = descriptionState.error,
-                        onValueChange = { onEvent(AddEditGroupEvent.EnteredDescription(it)) },
-                        isRequired = Group.IS_DESC_REQUIRED,
+                        onValueChange = { onEvent(AddEditUserEvent.EnteredDescription(it)) },
+                        isRequired = User.IS_DESC_REQUIRED,
                         singleLine = false
                     )
                 }
@@ -113,13 +145,16 @@ fun AddEditGroupScreen(
 
 @Preview
 @Composable
-fun AddEditGroupScreenPreview() {
-    AddEditGroupScreen(
+fun AddEditUserScreenPreview() {
+    AddEditUserScreen(
         navController = rememberNavController(),
         nameState = TextFieldState(
             value = "gr",
             error = InvalidInputError.TooShortText(3)
         ),
+        surnameState = TextFieldState(),
+        nickState = TextFieldState(),
+        phoneState = TextFieldState(),
         descriptionState = TextFieldState(),
         onEvent = {},
         eventFlow = MutableSharedFlow()

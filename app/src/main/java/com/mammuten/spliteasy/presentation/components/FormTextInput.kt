@@ -23,6 +23,7 @@ fun FormTextInput(
     onValueChange: (String) -> Unit,
     isRequired: Boolean,
     singleLine: Boolean = true,
+    isEnabled: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
     OutlinedTextField(
@@ -42,6 +43,7 @@ fun FormTextInput(
             }
         },
         singleLine = singleLine,
+        enabled = isEnabled,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         trailingIcon = {
             if (text.isNotEmpty()) {
@@ -75,6 +77,7 @@ private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
     return when (keyboardType) {
         KeyboardType.Text -> true
         KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoDecimalPlacesRegex)
+        KeyboardType.Phone -> input.matches(RegexUtil.phoneRegex)
         else -> false
     }
 }
