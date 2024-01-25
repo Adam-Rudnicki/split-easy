@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.model.User
-import com.mammuten.spliteasy.presentation.add_users_to_group.AddEditMemberViewModel
 import com.mammuten.spliteasy.presentation.components.FormTextInput
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -103,9 +102,9 @@ fun AddEditMemberScreen(
                         error = nameState.error,
                         onValueChange = { onEvent(AddEditMemberEvent.EnteredName(it)) },
                         isRequired = Member.IS_NAME_REQUIRED,
-                        isEnabled = state.selectedUser == null,
+                        isEnabled = selectedUserState == null,
                     )
-                    state.usersNotInGroup.forEach { user ->
+                    users.forEach { user ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -115,7 +114,7 @@ fun AddEditMemberScreen(
                             content = {
                                 Text(text = user.name)
                                 RadioButton(
-                                    selected = state.selectedUser == user,
+                                    selected = selectedUserState == user,
                                     onClick = { onEvent(AddEditMemberEvent.ToggleUserSelection(user)) }
                                 )
                             }
@@ -130,7 +129,7 @@ fun AddEditMemberScreen(
 @Preview
 @Composable
 fun AddEditMemberScreenPreview() {
-    val usersNotInGroup = listOf(
+    val users = listOf(
         User(
             id = 1,
             name = "User 1",
@@ -148,10 +147,8 @@ fun AddEditMemberScreenPreview() {
                 error = null,
             )
         },
-        state = AddEditMemberViewModel.State(
-            usersNotInGroup = usersNotInGroup,
-            selectedUser = usersNotInGroup[0],
-        ),
+        selectedUserState = users[0],
+        users = users,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

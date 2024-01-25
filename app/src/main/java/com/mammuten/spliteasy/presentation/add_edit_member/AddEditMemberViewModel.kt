@@ -32,7 +32,7 @@ class AddEditMemberViewModel @Inject constructor(
     var selectedUser by mutableStateOf<User?>(null)
         private set
 
-    var users by mutableStateOf<List<User>>(emptyList())
+    var users: List<User> = emptyList()
         private set
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()

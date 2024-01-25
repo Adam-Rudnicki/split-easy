@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditMemberViewModel @Inject constructor(
+class AddUsersToGroupViewModel @Inject constructor(
     private val memberUseCases: MemberUseCases,
     private val userUseCases: UserUseCases,
     savedStateHandle: SavedStateHandle
@@ -27,6 +27,14 @@ class AddEditMemberViewModel @Inject constructor(
 
     var state by mutableStateOf(State())
         private set
+
+    var users = List<User> = emptyList()
+        private set
+
+    data class State(
+        val usersNotInGroup: List<User> = emptyList(),
+        val selectedUsers: MutableMap<User, Boolean> = mutableMapOf()
+    )
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -75,7 +83,7 @@ class AddEditMemberViewModel @Inject constructor(
                             memberUseCases.upsertMemberUseCase(member)
                         }
 
-                        _eventFlow.emit(UiEvent.SaveMember("Members saved successfully"))
+//                        _eventFlow.emit(UiEvent.SaveMember("Members saved successfully"))
                     } else {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Select at least one user"))
                     }
@@ -84,7 +92,7 @@ class AddEditMemberViewModel @Inject constructor(
 
             is AddEditMemberEvent.ToggleUserSelection -> {
                 val newSelectedUsers = state.selectedUsers.toMutableMap()
-                newSelectedUsers[event.user] = event.isChecked
+//                newSelectedUsers[event.user] = event.isChecked
                 state = state.copy(selectedUsers = newSelectedUsers)
             }
 
@@ -101,11 +109,6 @@ class AddEditMemberViewModel @Inject constructor(
             }
         }
     }
-
-    data class State(
-        val usersNotInGroup: List<User> = emptyList(),
-        val selectedUsers: MutableMap<User, Boolean> = mutableMapOf()
-    )
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()

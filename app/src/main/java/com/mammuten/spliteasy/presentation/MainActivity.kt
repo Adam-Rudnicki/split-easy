@@ -19,9 +19,11 @@ import com.mammuten.spliteasy.presentation.manage_contributions.ManageContributi
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupScreen
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupViewModel
 import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberScreen
-import com.mammuten.spliteasy.presentation.add_users_to_group.AddEditMemberViewModel
+import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberViewModel
 import com.mammuten.spliteasy.presentation.add_edit_user.AddEditUserScreen
 import com.mammuten.spliteasy.presentation.add_edit_user.AddEditUserViewModel
+import com.mammuten.spliteasy.presentation.add_users_to_group.AddUsersToGroupScreen
+import com.mammuten.spliteasy.presentation.add_users_to_group.AddUsersToGroupViewModel
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsViewModel
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsScreen
@@ -231,6 +233,23 @@ private fun SplitEasyApp() {
                         nickState = nickState,
                         phoneState = phoneState,
                         descriptionState = descriptionState,
+                        onEvent = viewModel::onEvent,
+                        eventFlow = eventFlow
+                    )
+                }
+            )
+            composable(
+                route = "${Screen.AddUsersToGroupScreen.route}/{groupId}",
+                arguments = listOf(
+                    navArgument(name = "groupId") { type = NavType.IntType },
+                ),
+                content = {
+                    val viewModel = hiltViewModel<AddUsersToGroupViewModel>()
+                    val state = viewModel.state
+                    val eventFlow = viewModel.eventFlow
+                    AddUsersToGroupScreen(
+                        navController = navController,
+                        state = state,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
