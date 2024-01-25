@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.presentation.add_edit_member
+package com.mammuten.spliteasy.presentation.add_users_to_group
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -28,22 +28,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.model.User
-import com.mammuten.spliteasy.presentation.add_users_to_group.AddEditMemberViewModel
-import com.mammuten.spliteasy.presentation.components.FormTextInput
-import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditMemberScreen(
+fun AddUsersToGroupScreen(
     navController: NavController,
-    nameState: TextFieldState,
-    selectedUserState: User?,
-    users: List<User>,
+    state: AddEditMemberViewModel.State,
     onEvent: (AddEditMemberEvent) -> Unit,
     eventFlow: SharedFlow<AddEditMemberViewModel.UiEvent>
 ) {
@@ -96,15 +90,15 @@ fun AddEditMemberScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-                    FormTextInput(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = "Name",
-                        text = nameState.value,
-                        error = nameState.error,
-                        onValueChange = { onEvent(AddEditMemberEvent.EnteredName(it)) },
-                        isRequired = Member.IS_NAME_REQUIRED,
-                        isEnabled = state.selectedUser == null,
-                    )
+//                    FormTextInput(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        label = "Name",
+//                        text = nameState.value,
+//                        error = nameState.error,
+//                        onValueChange = { onEvent(AddEditMemberEvent.EnteredName(it)) },
+//                        isRequired = Member.IS_NAME_REQUIRED,
+//                        isEnabled = state.selectedUser == null,
+//                    )
                     state.usersNotInGroup.forEach { user ->
                         Row(
                             modifier = Modifier
@@ -114,9 +108,11 @@ fun AddEditMemberScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             content = {
                                 Text(text = user.name)
-                                RadioButton(
-                                    selected = state.selectedUser == user,
-                                    onClick = { onEvent(AddEditMemberEvent.ToggleUserSelection(user)) }
+                                Checkbox(
+                                    checked = state.selectedUsers[user] == true,
+                                    onCheckedChange = { isChecked ->
+                                        onEvent(AddEditMemberEvent.ToggleUserSelection(user, isChecked))
+                                    }
                                 )
                             }
                         )
@@ -142,15 +138,15 @@ fun AddEditMemberScreenPreview() {
     )
     AddEditMemberScreen(
         navController = rememberNavController(),
-        nameState = remember {
-            TextFieldState(
-                value = "Name",
-                error = null,
-            )
-        },
+//        nameState = remember {
+//            TextFieldState(
+//                value = "Name",
+//                error = null,
+//            )
+//        },
         state = AddEditMemberViewModel.State(
             usersNotInGroup = usersNotInGroup,
-            selectedUser = usersNotInGroup[0],
+//            selectedUsers = usersNotInGroup,
         ),
         onEvent = {},
         eventFlow = MutableSharedFlow()

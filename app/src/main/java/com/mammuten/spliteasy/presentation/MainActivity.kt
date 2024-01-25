@@ -19,7 +19,7 @@ import com.mammuten.spliteasy.presentation.manage_contributions.ManageContributi
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupScreen
 import com.mammuten.spliteasy.presentation.add_edit_group.AddEditGroupViewModel
 import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberScreen
-import com.mammuten.spliteasy.presentation.add_edit_member.AddEditMemberViewModel
+import com.mammuten.spliteasy.presentation.add_users_to_group.AddEditMemberViewModel
 import com.mammuten.spliteasy.presentation.add_edit_user.AddEditUserScreen
 import com.mammuten.spliteasy.presentation.add_edit_user.AddEditUserViewModel
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
@@ -163,12 +163,14 @@ private fun SplitEasyApp() {
                 content = {
                     val viewModel = hiltViewModel<AddEditMemberViewModel>()
                     val nameState = viewModel.name
-                    val state = viewModel.state
+                    val selectedUserState = viewModel.selectedUser
+                    val users = viewModel.users
                     val eventFlow = viewModel.eventFlow
                     AddEditMemberScreen(
                         navController = navController,
                         nameState = nameState,
-                        state = state,
+                        selectedUserState = selectedUserState,
+                        users = users,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )

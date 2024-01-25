@@ -29,7 +29,10 @@ class AddEditMemberViewModel @Inject constructor(
     var name by mutableStateOf(TextFieldState())
         private set
 
-    var state by mutableStateOf(UserState())
+    var selectedUser by mutableStateOf<User?>(null)
+        private set
+
+    var users by mutableStateOf<List<User>>(emptyList())
         private set
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -47,9 +50,8 @@ class AddEditMemberViewModel @Inject constructor(
                         name = name.copy(value = member.name)
                         member.userId?.let { userId ->
                             userUseCases.getUserByIdUseCase(userId).firstOrNull()?.let { user ->
-                                state = state.copy(
-                                    usersNotInGroup = listOf(user), selectedUser = user
-                                )
+                                selectedUser = user
+                                users = listOf(user)
                             }
                         }
                     }
@@ -90,7 +92,7 @@ class AddEditMemberViewModel @Inject constructor(
                         Member(
                             id = currentMemberId,
                             groupId = currentGroupId,
-                            userId = state.selectedUser?.id,
+                            userId = selectedUser?.id,
                             name = name.value.trim(),
                         )
                     )
@@ -99,12 +101,10 @@ class AddEditMemberViewModel @Inject constructor(
             }
 
             is AddEditMemberEvent.ToggleUserSelection -> {
-                if (state.selectedUser != event.user) {
+                if (selectedUser != event.user) {
                     name = name.copy(value = event.user.name, error = null)
                 }
-                state = state.copy(
-                    selectedUser = if (state.selectedUser == event.user) null else event.user
-                )
+                selectedUser = if (selectedUser == event.user) null else event.user
             }
         }
     }
@@ -112,17 +112,12 @@ class AddEditMemberViewModel @Inject constructor(
     private fun getUsersNotInGroup() {
         viewModelScope.launch {
             userUseCases.getUsersNotInGroupUseCase(currentGroupId).firstOrNull()?.let {
-                val usersNotInGroup = it.toMutableList()
-                state.selectedUser?.let { user -> usersNotInGroup.add(user) }
-                state = state.copy(usersNotInGroup = usersNotInGroup)
+                val list = it.toMutableList()
+                selectedUser?.let { user -> list.add(user) }
+                users = list
             }
         }
     }
-
-    data class UserState(
-        val usersNotInGroup: List<User> = emptyList(),
-        val selectedUser: User? = null
-    )
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
