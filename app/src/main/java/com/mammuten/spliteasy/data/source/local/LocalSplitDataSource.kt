@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.data.source.local
 
-import androidx.room.Query
 import com.mammuten.spliteasy.data.source.local.entity.GeneralDao
 import com.mammuten.spliteasy.data.source.local.entity.bill.BillDao
 import com.mammuten.spliteasy.data.source.local.entity.bill.BillEntity

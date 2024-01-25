@@ -13,7 +13,7 @@ class GetMembersAndContributionsInBillUseCase(
 ) {
     operator fun invoke(
         billId: Int,
-        contributionOrder: ContributionOrder = ContributionOrder.AmountPaid(OrderType.Ascending)
+        contributionOrder: ContributionOrder = ContributionOrder.AmountPaid(OrderType.Descending)
     ): Flow<List<Pair<Member, Contribution>>> {
         return generalRepo.getMembersAndContributionsInBill(billId).map { map ->
             val list = map.toList()
@@ -21,13 +21,13 @@ class GetMembersAndContributionsInBillUseCase(
                 is ContributionOrder.AmountPaid -> {
                     when (contributionOrder.orderType) {
                         is OrderType.Ascending -> list.sortedBy { (_, value) -> value.amountPaid }
-                        is OrderType.Descending -> list.sortedByDescending { (_, value) -> value.amountOwed }
+                        is OrderType.Descending -> list.sortedByDescending { (_, value) -> value.amountPaid }
                     }
                 }
 
                 is ContributionOrder.AmountOwed -> {
                     when (contributionOrder.orderType) {
-                        is OrderType.Ascending -> list.sortedBy { (_, value) -> value.amountPaid }
+                        is OrderType.Ascending -> list.sortedBy { (_, value) -> value.amountOwed }
                         is OrderType.Descending -> list.sortedByDescending { (_, value) -> value.amountOwed }
                     }
                 }
