@@ -45,13 +45,13 @@ fun AddEditMemberScreen(
     onEvent: (AddEditMemberEvent) -> Unit,
     eventFlow: SharedFlow<AddEditMemberViewModel.UiEvent>
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditMemberViewModel.UiEvent.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackBarHostState.showSnackbar(message = event.message)
 
                 is AddEditMemberViewModel.UiEvent.SaveMember -> navController.navigateUp()
             }

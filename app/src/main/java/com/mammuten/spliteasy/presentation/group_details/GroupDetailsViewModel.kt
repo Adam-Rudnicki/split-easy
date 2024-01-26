@@ -85,7 +85,7 @@ class GroupDetailsViewModel @Inject constructor(
 
             is GroupDetailsEvent.BillsOrder -> {
                 if (state.billOrder::class != event.billOrder::class ||
-                    state.billOrder.orderType != event.billOrder.orderType
+                    state.billOrder != event.billOrder
                 ) {
                     getBills(event.billOrder)
                 }

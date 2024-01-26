@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.groups
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,15 +31,14 @@ class GroupsViewModel @Inject constructor(
     fun onEvent(event: GroupsEvent) {
         when (event) {
             is GroupsEvent.Order -> {
-                if (state.groupOrder::class != event.groupOrder::class ||
-                    state.groupOrder.orderType != event.groupOrder.orderType
+                if (state.groupOrder != event.groupOrder
                 ) {
                     getGroups(event.groupOrder)
                 }
             }
         }
     }
-
+    //state.groupOrder::class != event.groupOrder::class ||
     private fun getGroups(groupOrder: GroupOrder) {
         getGroupsJob?.cancel()
         getGroupsJob = groupUseCases.getGroupsUseCase(groupOrder)

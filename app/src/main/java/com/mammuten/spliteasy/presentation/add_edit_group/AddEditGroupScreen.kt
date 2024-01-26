@@ -38,13 +38,13 @@ fun AddEditGroupScreen(
     onEvent: (AddEditGroupEvent) -> Unit,
     eventFlow: SharedFlow<AddEditGroupViewModel.UiEvent>
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditGroupViewModel.UiEvent.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackBarHostState.showSnackbar(message = event.message)
 
                 is AddEditGroupViewModel.UiEvent.SaveGroup -> navController.navigateUp()
             }
@@ -68,7 +68,7 @@ fun AddEditGroupScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(AddEditGroupEvent.SaveGroup) },

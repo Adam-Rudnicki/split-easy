@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +12,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,8 +32,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +45,8 @@ import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.model.Member
-import com.mammuten.spliteasy.presentation.bill_details.component.ContributionOrderSection
+import com.mammuten.spliteasy.domain.util.order.ContributionOrder
+import com.mammuten.spliteasy.domain.util.order.OrderType
 import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
 import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
 import com.mammuten.spliteasy.presentation.util.Screen
@@ -60,13 +66,15 @@ fun BillDetailsScreen(
 ) {
     val openDeleteBillDialog = remember { mutableStateOf(false) }
     val openDeleteContributionDialog = remember { mutableStateOf<Contribution?>(null) }
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val expandedCard = remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is BillDetailsViewModel.UiEvent.ShowSnackbarRestoreContribution -> {
-                    val result = snackbarHostState.showSnackbar(
+                    val result = snackBarHostState.showSnackbar(
                         message = event.message,
                         actionLabel = event.actionLabel,
                         duration = SnackbarDuration.Short
@@ -98,6 +106,46 @@ fun BillDetailsScreen(
                 },
                 actions = {
                     IconButton(
+                        onClick = { expanded = !expanded }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Sort,
+                            contentDescription = "Sort"
+                        )
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.padding(4.dp)
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                            onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountPaid(OrderType.Ascending)))
+                                            expanded = false
+                                          },
+                                text = { Text(text = "Amount Paid Asc") }
+                            )
+                            DropdownMenuItem(
+                                onClick = { onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountPaid(OrderType.Descending)))
+                                            expanded = false
+                                          },
+                                text = { Text(text = "Amount Paid Desc") }
+                            )
+                            DropdownMenuItem(
+                                onClick = { onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountOwed(OrderType.Ascending)))
+                                            expanded = false
+                                          },
+                                text = { Text(text = "Amount Paid Desc") }
+                            )
+                            DropdownMenuItem(
+                                onClick = { onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountOwed(OrderType.Descending)))
+                                            expanded = false
+                                          },
+                                text = { Text(text = "Amount Paid Desc") }
+                            )
+                        }
+                    }
+                    IconButton(
                         onClick = { openDeleteBillDialog.value = true },
                         content = {
                             Icon(
@@ -124,12 +172,14 @@ fun BillDetailsScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     navController.navigate(
-                        Screen.AddEditBillScreen.route + "/${state.bill?.groupId}"
+                        Screen.ManageContributionsScreen.route +
+                                "/${state.bill?.groupId}" +
+                                "/${state.bill?.id}"
                     )
                 },
                 content = {
@@ -151,83 +201,93 @@ fun BillDetailsScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         ),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                expandedCard.value = !expandedCard.value
+                            },
                         content = {
                             Column(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(8.dp),
                                 content = {
-                                    state.bill?.let {
-                                        Text(
-                                            text = "Name",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            modifier = Modifier.padding(bottom = 4.dp)
-                                        )
-                                        Text(
-                                            text = it.name,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.padding(bottom = 16.dp)
-                                        )
+                                    // Warunkowo renderuj tylko nazwę lub pełne informacje w zależności od stanu expandedCard
+                                    if (!expandedCard.value) {
+                                        // Tylko nazwa
+                                        state.bill?.let {
+                                            Text(
+                                                text = "Name",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(bottom = 2.dp)
+                                            )
+                                            Text(
+                                                text = it.name,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                modifier = Modifier.padding(bottom = 4.dp)
+                                            )
+                                        }
+                                    } else {
+                                        // Pełne informacje
+                                        state.bill?.let {
+                                            Text(
+                                                text = "Name",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(bottom = 2.dp)
+                                            )
+                                            Text(
+                                                text = it.name,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                modifier = Modifier.padding(bottom = 4.dp)
+                                            )
 
-                                        Text(
-                                            text = "Description",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            modifier = Modifier.padding(bottom = 4.dp)
-                                        )
-                                        Text(
-                                            text = it.description ?: "N/A",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.padding(bottom = 16.dp)
-                                        )
+                                            it.description?.let { desc ->
+                                                Text(
+                                                    text = "Description",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier.padding(bottom = 2.dp)
+                                                )
+                                                Text(
+                                                    text = desc, //?: "N/A",
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    modifier = Modifier.padding(bottom = 4.dp)
+                                                )
+                                            }
 
-                                        Text(
-                                            text = "Amount",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            modifier = Modifier.padding(bottom = 4.dp)
-                                        )
-                                        Text(
-                                            text = it.amount?.let { amount ->
-                                                String.format("%.2f", amount)
-                                            } ?: "N/A",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.padding(bottom = 16.dp)
-                                        )
+                                            it.amount?.let { amount ->
+                                                Text(
+                                                    text = "Amount",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier.padding(bottom = 2.dp)
+                                                )
+                                                Text(
+                                                    text = String.format("%.2f", amount),
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    modifier = Modifier.padding(bottom = 4.dp)
+                                                )
+                                            }
 
-                                        Text(
-                                            text = "Date",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            modifier = Modifier.padding(bottom = 4.dp)
-                                        )
-                                        Text(
-                                            text = "${it.date ?: "N/A"} ",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.padding(bottom = 16.dp)
-                                        )
+                                            it.date?.let { date ->
+                                                Text(
+                                                    text = "Date",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier.padding(bottom = 2.dp)
+                                                )
+                                                Text(
+                                                    text = "$date ",
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    modifier = Modifier.padding(bottom = 4.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             )
                         }
-                    )
-                    ContributionOrderSection(
-                        modifier = Modifier.fillMaxWidth(),
-                        contributionOrder = state.contributionOrder,
-                        onOrderChange = { onEvent(BillDetailsEvent.ContributionsOrder(it)) }
                     )
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
                         color = Color.Black
-                    )
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navController.navigate(
-                                Screen.ManageContributionsScreen.route +
-                                        "/${state.bill?.groupId}" +
-                                        "/${state.bill?.id}"
-                            )
-                        },
-                        content = { Text(text = "Manage contributions") }
                     )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
@@ -236,8 +296,8 @@ fun BillDetailsScreen(
                                 content = {
                                     TableHeader(
                                         memberHeaderText = "Member",
-                                        amountPaidHeaderText = "Amount Paid",
-                                        amountOwedHeaderText = "Amount Owed"
+                                        amountPaidHeaderText = "Paid  ",
+                                        amountOwedHeaderText = "Owed  "
                                     )
                                 }
                             )

@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,16 +23,24 @@ fun TableRow(
     onDeleteClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         content = {
-            Text(text = memberName, modifier = Modifier.weight(1f))
-            Text(text = amountPaid, modifier = Modifier.weight(1f))
-            Text(text = amountOwed, modifier = Modifier.weight(1f))
+            Text(text = memberName, modifier = Modifier
+                .weight(1f)
+                .padding(top = 14.dp)
+            )
+            Text(text = amountPaid, modifier = Modifier
+                .weight(1f)
+                .padding(top = 14.dp)
+            )
+            Text(text = amountOwed, modifier = Modifier
+                .weight(1f)
+                .padding(top = 14.dp)
+            )
             IconButton(
                 onClick = onDeleteClick,
+                modifier = Modifier.align(Alignment.CenterVertically),
                 content = {
                     Icon(
                         imageVector = Icons.Default.Delete,

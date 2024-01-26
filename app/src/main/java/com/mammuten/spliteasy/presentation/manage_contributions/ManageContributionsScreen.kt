@@ -102,18 +102,21 @@ fun ManageContributionsScreen(
                         content = {
                             Text(
                                 modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .weight(1f),
-                                text = "Member"
+//                                    .padding(start = 8.dp)
+                                    .weight(0.6f),
+                                text = "Member",
+                                textAlign = TextAlign.Center
                             )
                             Text(
-                                modifier = Modifier.weight(2f),
-                                text = "Amount Paid"
+                                modifier = Modifier.weight(1f),
+                                text = "Amount Paid",
+                                textAlign = TextAlign.Center
                             )
 
                             Text(
-                                modifier = Modifier.weight(2f),
-                                text = "Amount Owed"
+                                modifier = Modifier.weight(1f),
+                                text = "Amount Owed",
+                                textAlign = TextAlign.Center
                             )
                         }
                     )
@@ -130,13 +133,12 @@ fun ManageContributionsScreen(
                             content = {
                                 Text(
                                     modifier = Modifier
-                                        .padding(end = 8.dp)
-                                        .weight(1f),
+                                        .weight(0.6f),
                                     text = memberState.member.name,
                                     textAlign = TextAlign.Center
                                 )
                                 FormTextInput(
-                                    modifier = Modifier.weight(2f),
+                                    modifier = Modifier.weight(1f),
                                     text = memberState.amountPaidState.value,
                                     error = memberState.amountPaidState.error,
                                     onValueChange = {
@@ -151,7 +153,7 @@ fun ManageContributionsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 FormTextInput(
-                                    modifier = Modifier.weight(2f),
+                                    modifier = Modifier.weight(1f),
                                     text = memberState.amountOwedState.value,
                                     error = memberState.amountOwedState.error,
                                     onValueChange = {

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 fun TableHeader(
     memberHeaderText: String,
     amountPaidHeaderText: String,
-    amountOwedHeaderText: String,
+    amountOwedHeaderText: String
 ) {
     Row(
         modifier = Modifier
@@ -22,8 +22,8 @@ fun TableHeader(
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         content = {
-            Text(text = memberHeaderText, modifier = Modifier.weight(1f))
-            Text(text = amountPaidHeaderText, modifier = Modifier.weight(1f))
+            Text(text = memberHeaderText, modifier = Modifier.weight(0.7f))
+            Text(text = amountPaidHeaderText, modifier = Modifier.weight(0.7f))
             Text(text = amountOwedHeaderText, modifier = Modifier.weight(1f))
         }
     )

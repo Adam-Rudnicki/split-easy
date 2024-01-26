@@ -5,40 +5,103 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Group
-import com.mammuten.spliteasy.presentation.groups.component.GroupOrderSection
+import com.mammuten.spliteasy.domain.util.order.GroupOrder
 import com.mammuten.spliteasy.presentation.util.Screen
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsScreen(
     navController: NavController,
     state: GroupsState,
     onEvent: (GroupsEvent) -> Unit
 ) {
+    var isContextMenuVisible by remember { mutableStateOf(false) }
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Groups") },
+                navigationIcon = {
+                    IconButton(onClick = { /* Handle navigation icon click */ }) {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+                    }
+                },
+                actions = {
+                    // Sorting icon
+                    IconButton(onClick = { isContextMenuVisible = !isContextMenuVisible }) {
+                        Icon(imageVector = Icons.Default.Sort, contentDescription = "Sort")
+                        DropdownMenu(
+                            expanded = isContextMenuVisible,
+                            onDismissRequest = { isContextMenuVisible = false },
+                        ) {
+                            DropdownMenuItem(
+                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.NameAscending))
+                                    isContextMenuVisible = false },
+                                text = { Text(text = "Name asc")}
+                            )
+
+                            DropdownMenuItem(
+                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.NameDescending))
+                                    isContextMenuVisible = false },
+                                text = { Text(text = "Name desc")})
+
+                            DropdownMenuItem(
+                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.DateAscending))
+                                    isContextMenuVisible = false },
+                                text = { Text(text = "Date asc")})
+
+                            DropdownMenuItem(
+                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.DateDescending))
+                                    isContextMenuVisible = false },
+                                text = { Text(text = "Date asc")})
+                        }
+                    }
+
+                    // Show users icon
+                    IconButton(onClick = { navController.navigate(Screen.UsersScreen.route) }) {
+                        Icon(imageVector = Icons.Default.Person, contentDescription = "Show Users")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Screen.AddEditGroupScreen.route) },
@@ -57,22 +120,6 @@ fun GroupsScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { navController.navigate(Screen.UsersScreen.route) },
-                        content = { Text(text = "Show users") }
-                    )
-                    GroupOrderSection(
-                        modifier = Modifier.fillMaxWidth(),
-                        groupOrder = state.groupOrder,
-                        onOrderChange = { onEvent(GroupsEvent.Order(it)) }
-                    )
-                    Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        color = Color.Black
-                    )
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         content = {

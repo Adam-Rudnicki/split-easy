@@ -19,14 +19,15 @@ fun ContributionOrderSection(
         content = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
                 content = {
                     DefaultRadioButton(
-                        text = "AmountPaid",
+                        text = "Amount Paid",
                         selected = contributionOrder is ContributionOrder.AmountPaid,
                         onSelect = { onOrderChange(ContributionOrder.AmountPaid(contributionOrder.orderType)) }
                     )
                     DefaultRadioButton(
-                        text = "AmountOwed",
+                        text = "Amount Owed",
                         selected = contributionOrder is ContributionOrder.AmountOwed,
                         onSelect = { onOrderChange(ContributionOrder.AmountOwed(contributionOrder.orderType)) }
                     )
@@ -34,6 +35,7 @@ fun ContributionOrderSection(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
                 content = {
                     DefaultRadioButton(
                         text = "Ascending",

@@ -6,5 +6,5 @@ import com.mammuten.spliteasy.domain.util.order.OrderType
 
 data class GroupsState(
     val groups: List<Group> = emptyList(),
-    val groupOrder: GroupOrder = GroupOrder.Date(OrderType.Descending),
+    val groupOrder: GroupOrder = GroupOrder.DateDescending,
 )

@@ -1,6 +1,7 @@
 package com.mammuten.spliteasy.presentation.add_edit_bill
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,14 +53,14 @@ fun AddEditBillScreen(
     onEvent: (AddEditBillEvent) -> Unit,
     eventFlow: SharedFlow<AddEditBillViewModel.UiEvent>
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     var showDatePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditBillViewModel.UiEvent.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackBarHostState.showSnackbar(message = event.message)
 
                 is AddEditBillViewModel.UiEvent.SaveBill -> navController.navigateUp()
             }
@@ -83,7 +84,7 @@ fun AddEditBillScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(AddEditBillEvent.SaveBill) },
@@ -131,13 +132,26 @@ fun AddEditBillScreen(
                         keyboardType = KeyboardType.Decimal
                     )
                     Text(text = "Date: ${dateState.value ?: "not set"}")
-                    Button(
-                        onClick = { showDatePicker = true },
-                        content = { Text(text = "Choose date") }
-                    )
-                    Button(
-                        onClick = { onEvent(AddEditBillEvent.EnteredDate(null)) },
-                        content = { Text(text = "Clear date") }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        content = {
+                            Button(
+                                onClick = { showDatePicker = true },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 4.dp),
+                                content = { Text(text = "Choose date") }
+                            )
+                            Button(
+                                onClick = { onEvent(AddEditBillEvent.EnteredDate(null)) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 4.dp),
+                                content = { Text(text = "Clear date") }
+                            )
+                        }
                     )
                 }
             )

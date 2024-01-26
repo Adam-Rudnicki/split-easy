@@ -164,12 +164,10 @@ private fun SplitEasyApp() {
                 ),
                 content = {
                     val viewModel = hiltViewModel<AddEditMemberViewModel>()
-                    val nameState = viewModel.name
                     val state = viewModel.state
                     val eventFlow = viewModel.eventFlow
                     AddEditMemberScreen(
                         navController = navController,
-                        nameState = nameState,
                         state = state,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
