@@ -76,6 +76,7 @@ fun MemberEntity.asModel(): Member {
 }
 
 fun List<MemberEntity>.asMemberModelList(): List<Member> = this.map { it.asModel() }
+fun List<Member>.asMemberEntityList(): List<MemberEntity> = this.map { it.asEntity() }
 
 // Contribution mappers
 fun Contribution.asEntity(): ContributionEntity {

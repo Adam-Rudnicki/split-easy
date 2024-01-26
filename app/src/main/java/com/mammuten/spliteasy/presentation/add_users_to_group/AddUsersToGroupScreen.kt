@@ -37,19 +37,19 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AddUsersToGroupScreen(
     navController: NavController,
-    state: AddEditMemberViewModel.State,
-    onEvent: (AddEditMemberEvent) -> Unit,
-    eventFlow: SharedFlow<AddEditMemberViewModel.UiEvent>
+    state: AddUsersToGroupViewModel.State,
+    onEvent: (AddUsersToGroupEvent) -> Unit,
+    eventFlow: SharedFlow<AddUsersToGroupViewModel.UiEvent>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is AddEditMemberViewModel.UiEvent.ShowSnackbar ->
+                is AddUsersToGroupViewModel.UiEvent.ShowSnackbar ->
                     snackbarHostState.showSnackbar(message = event.message)
 
-                is AddEditMemberViewModel.UiEvent.SaveMember -> navController.navigateUp()
+                is AddUsersToGroupViewModel.UiEvent.SaveUsersToGroup -> navController.navigateUp()
             }
         }
     }
@@ -57,7 +57,7 @@ fun AddUsersToGroupScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Save member") },
+                title = { Text(text = "Save users") },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.navigateUp() },
@@ -73,15 +73,17 @@ fun AddUsersToGroupScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onEvent(AddEditMemberEvent.SaveMember) },
-                content = {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save member"
-                    )
-                }
-            )
+            if (state.users.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = { onEvent(AddUsersToGroupEvent.SaveUsers) },
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = "Save users"
+                        )
+                    }
+                )
+            }
         },
         content = { innerPadding ->
             Column(
@@ -90,16 +92,7 @@ fun AddUsersToGroupScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-//                    FormTextInput(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        label = "Name",
-//                        text = nameState.value,
-//                        error = nameState.error,
-//                        onValueChange = { onEvent(AddEditMemberEvent.EnteredName(it)) },
-//                        isRequired = Member.IS_NAME_REQUIRED,
-//                        isEnabled = state.selectedUser == null,
-//                    )
-                    state.usersNotInGroup.forEach { user ->
+                    state.users.forEach { user ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -109,9 +102,13 @@ fun AddUsersToGroupScreen(
                             content = {
                                 Text(text = user.name)
                                 Checkbox(
-                                    checked = state.selectedUsers[user] == true,
+                                    checked = state.selectedUsers[user]!!,
                                     onCheckedChange = { isChecked ->
-                                        onEvent(AddEditMemberEvent.ToggleUserSelection(user, isChecked))
+                                        onEvent(
+                                            AddUsersToGroupEvent.ToggleUserSelection(
+                                                user, isChecked
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -125,8 +122,8 @@ fun AddUsersToGroupScreen(
 
 @Preview
 @Composable
-fun AddEditMemberScreenPreview() {
-    val usersNotInGroup = listOf(
+fun AddUsersToGroupScreenPreview() {
+    val users = listOf(
         User(
             id = 1,
             name = "User 1",
@@ -136,17 +133,14 @@ fun AddEditMemberScreenPreview() {
             name = "User 2",
         ),
     )
-    AddEditMemberScreen(
+    AddUsersToGroupScreen(
         navController = rememberNavController(),
-//        nameState = remember {
-//            TextFieldState(
-//                value = "Name",
-//                error = null,
-//            )
-//        },
-        state = AddEditMemberViewModel.State(
-            usersNotInGroup = usersNotInGroup,
-//            selectedUsers = usersNotInGroup,
+        state = AddUsersToGroupViewModel.State(
+            users = users,
+            selectedUsers = mapOf(
+                users[0] to false,
+                users[1] to true
+            )
         ),
         onEvent = {},
         eventFlow = MutableSharedFlow()

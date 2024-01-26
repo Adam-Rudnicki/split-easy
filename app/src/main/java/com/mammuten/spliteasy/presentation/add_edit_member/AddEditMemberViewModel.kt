@@ -29,10 +29,7 @@ class AddEditMemberViewModel @Inject constructor(
     var name by mutableStateOf(TextFieldState())
         private set
 
-    var selectedUser by mutableStateOf<User?>(null)
-        private set
-
-    var users: List<User> = emptyList()
+    var state by mutableStateOf(State())
         private set
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -50,8 +47,7 @@ class AddEditMemberViewModel @Inject constructor(
                         name = name.copy(value = member.name)
                         member.userId?.let { userId ->
                             userUseCases.getUserByIdUseCase(userId).firstOrNull()?.let { user ->
-                                selectedUser = user
-                                users = listOf(user)
+                                state = state.copy(users = listOf(user), selectedUser = user)
                             }
                         }
                     }
@@ -92,7 +88,7 @@ class AddEditMemberViewModel @Inject constructor(
                         Member(
                             id = currentMemberId,
                             groupId = currentGroupId,
-                            userId = selectedUser?.id,
+                            userId = state.selectedUser?.id,
                             name = name.value.trim(),
                         )
                     )
@@ -101,10 +97,11 @@ class AddEditMemberViewModel @Inject constructor(
             }
 
             is AddEditMemberEvent.ToggleUserSelection -> {
-                if (selectedUser != event.user) {
+                if (state.selectedUser != event.user) {
                     name = name.copy(value = event.user.name, error = null)
                 }
-                selectedUser = if (selectedUser == event.user) null else event.user
+                state =
+                    state.copy(selectedUser = if (state.selectedUser == event.user) null else event.user)
             }
         }
     }
@@ -112,12 +109,15 @@ class AddEditMemberViewModel @Inject constructor(
     private fun getUsersNotInGroup() {
         viewModelScope.launch {
             userUseCases.getUsersNotInGroupUseCase(currentGroupId).firstOrNull()?.let {
-                val list = it.toMutableList()
-                selectedUser?.let { user -> list.add(user) }
-                users = list
+                state = state.copy(users = state.users.toMutableList().apply { addAll(it) })
             }
         }
     }
+
+    data class State(
+        val users: List<User> = emptyList(),
+        val selectedUser: User? = null,
+    )
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()

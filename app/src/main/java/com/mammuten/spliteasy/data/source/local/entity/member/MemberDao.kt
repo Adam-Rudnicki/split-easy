@@ -11,6 +11,9 @@ interface MemberDao {
     @Upsert
     suspend fun upsertMember(memberEntity: MemberEntity)
 
+    @Upsert
+    suspend fun upsertMembers(memberEntities: List<MemberEntity>)
+
     @Delete
     suspend fun deleteMember(memberEntity: MemberEntity)
 

@@ -34,6 +34,7 @@ import com.mammuten.spliteasy.domain.usecase.member.GetMemberByIdUseCase
 import com.mammuten.spliteasy.domain.usecase.member.GetMembersByGroupIdUseCase
 import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
 import com.mammuten.spliteasy.domain.usecase.member.UpsertMemberUseCase
+import com.mammuten.spliteasy.domain.usecase.member.UpsertMembersUseCase
 import com.mammuten.spliteasy.domain.usecase.user.DeleteUserUseCase
 import com.mammuten.spliteasy.domain.usecase.user.GetUserByIdUseCase
 import com.mammuten.spliteasy.domain.usecase.user.GetUsersNotInGroupUseCase
@@ -137,6 +138,7 @@ object AppModule {
     fun provideMemberUseCases(memberRepo: MemberRepo): MemberUseCases {
         return MemberUseCases(
             upsertMemberUseCase = UpsertMemberUseCase(memberRepo),
+            upsertMembersUseCase = UpsertMembersUseCase(memberRepo),
             deleteMemberUseCase = DeleteMemberUseCase(memberRepo),
             getMemberByIdUseCase = GetMemberByIdUseCase(memberRepo),
             getMembersByGroupIdUseCase = GetMembersByGroupIdUseCase(memberRepo)

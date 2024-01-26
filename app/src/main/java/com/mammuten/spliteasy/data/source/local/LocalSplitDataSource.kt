@@ -35,6 +35,9 @@ class LocalSplitDataSource(
 
     // Member operations
     suspend fun upsertMember(memberEntity: MemberEntity) = memberDao.upsertMember(memberEntity)
+    suspend fun upsertMembers(memberEntities: List<MemberEntity>) =
+        memberDao.upsertMembers(memberEntities)
+
     suspend fun deleteMember(memberEntity: MemberEntity) = memberDao.deleteMember(memberEntity)
     fun getMemberById(memberId: Int): Flow<MemberEntity?> = memberDao.getMemberById(memberId)
     fun getMembersByGroupId(groupId: Int): Flow<List<MemberEntity>> =

@@ -41,8 +41,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun AddEditMemberScreen(
     navController: NavController,
     nameState: TextFieldState,
-    selectedUserState: User?,
-    users: List<User>,
+    state: AddEditMemberViewModel.State,
     onEvent: (AddEditMemberEvent) -> Unit,
     eventFlow: SharedFlow<AddEditMemberViewModel.UiEvent>
 ) {
@@ -102,9 +101,9 @@ fun AddEditMemberScreen(
                         error = nameState.error,
                         onValueChange = { onEvent(AddEditMemberEvent.EnteredName(it)) },
                         isRequired = Member.IS_NAME_REQUIRED,
-                        isEnabled = selectedUserState == null,
+                        isEnabled = state.selectedUser == null,
                     )
-                    users.forEach { user ->
+                    state.users.forEach { user ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -114,7 +113,7 @@ fun AddEditMemberScreen(
                             content = {
                                 Text(text = user.name)
                                 RadioButton(
-                                    selected = selectedUserState == user,
+                                    selected = state.selectedUser == user,
                                     onClick = { onEvent(AddEditMemberEvent.ToggleUserSelection(user)) }
                                 )
                             }
@@ -147,8 +146,10 @@ fun AddEditMemberScreenPreview() {
                 error = null,
             )
         },
-        selectedUserState = users[0],
-        users = users,
+        state = AddEditMemberViewModel.State(
+            users = users,
+            selectedUser = users.first()
+        ),
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

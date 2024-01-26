@@ -1,6 +1,7 @@
 package com.mammuten.spliteasy.data.repo
 
 import com.mammuten.spliteasy.data.mapper.asEntity
+import com.mammuten.spliteasy.data.mapper.asMemberEntityList
 import com.mammuten.spliteasy.data.mapper.asMemberModelList
 import com.mammuten.spliteasy.data.mapper.asModel
 import com.mammuten.spliteasy.data.source.local.LocalSplitDataSource
@@ -13,6 +14,9 @@ class MemberRepo(
     private val dataSource: LocalSplitDataSource
 ) {
     suspend fun upsertMember(member: Member) = dataSource.upsertMember(member.asEntity())
+
+    suspend fun upsertMembers(members: List<Member>) =
+        dataSource.upsertMembers(members.asMemberEntityList())
 
     suspend fun deleteMember(member: Member) {
         try {
