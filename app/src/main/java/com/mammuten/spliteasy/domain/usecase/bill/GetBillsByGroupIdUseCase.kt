@@ -1,12 +1,8 @@
 package com.mammuten.spliteasy.domain.usecase.bill
 
 import com.mammuten.spliteasy.data.repo.BillRepo
-import com.mammuten.spliteasy.data.repo.ContributionRepo
 import com.mammuten.spliteasy.domain.model.Bill
-import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.util.order.BillOrder
-import com.mammuten.spliteasy.domain.util.order.ContributionOrder
-import com.mammuten.spliteasy.domain.util.order.OrderType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
