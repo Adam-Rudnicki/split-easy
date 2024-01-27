@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.group_members
 
-import MemberOrderSection
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,7 +26,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.MemberOrder
-import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -96,21 +94,25 @@ fun GroupMembersScreen(
                                 imageVector = Icons.Default.Sort,
                                 contentDescription = "Sort menu"
                             )
-//                            DropdownMenu(
-//                                expanded = isContextSortMenuVisible,
-//                                onDismissRequest = { isContextSortMenuVisible = false },
-//                                modifier = Modifier.padding(4.dp)
-//                            ) {
-//                                DropdownMenuItem(
-//                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAscending))
-//                                        isContextSortMenuVisible = false },
-//                                    text = { Text(text = "Name asc")})
-//
-//                                DropdownMenuItem(
-//                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDescending))
-//                                        isContextSortMenuVisible = false },
-//                                    text = { Text(text = "Name desc")})
-//                            }
+                            DropdownMenu(
+                                expanded = isContextSortMenuVisible,
+                                onDismissRequest = { isContextSortMenuVisible = false },
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAsc))
+                                        isContextSortMenuVisible = false
+                                    },
+                                    text = { Text(text = "Name asc") })
+
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDesc))
+                                        isContextSortMenuVisible = false
+                                    },
+                                    text = { Text(text = "Name desc") })
+                            }
                         }
                     )
                     IconButton(
@@ -134,7 +136,7 @@ fun GroupMembersScreen(
 
                                 DropdownMenuItem(
                                     onClick = {
-                                        onEvent(GroupMembersEvent.NavigateToAddMemberScreen)
+                                        onEvent(GroupMembersEvent.NavigateToAddEditMemberScreen())
                                         isContextAddMenuVisible = false
                                     },
                                     text = { Text(text = "Add member") })
@@ -164,8 +166,14 @@ fun GroupMembersScreen(
                                             MaterialTheme.colorScheme.surface
                                         } ?: MaterialTheme.colorScheme.background,
                                         member = member,
-                                        navController = navController,
-                                        openDeleteMemberDialog = openDeleteMemberDialog
+                                        openDeleteMemberDialog = openDeleteMemberDialog,
+                                        onClick = {
+                                            onEvent(
+                                                GroupMembersEvent.NavigateToAddEditMemberScreen(
+                                                    member.id
+                                                )
+                                            )
+                                        }
                                     )
                                 }
                             )
@@ -197,8 +205,8 @@ fun GroupMembersScreen(
 fun MyOutlineCard(
     color: Color,
     member: Member,
-    navController: NavController,
-    openDeleteMemberDialog: MutableState<Member?>
+    openDeleteMemberDialog: MutableState<Member?>,
+    onClick: () -> Unit
 ) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
@@ -208,13 +216,7 @@ fun MyOutlineCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable {
-                navController.navigate(
-                    Screen.AddEditMemberScreen.route +
-                            "/${member.groupId}" +
-                            "?memberId=${member.id}"
-                )
-            },
+            .clickable { onClick() },
         content = {
             Row(
                 modifier = Modifier

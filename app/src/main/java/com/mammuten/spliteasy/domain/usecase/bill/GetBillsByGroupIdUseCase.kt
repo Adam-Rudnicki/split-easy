@@ -45,16 +45,16 @@ class GetBillsByGroupIdUseCase(
 ) {
     operator fun invoke(
         groupId: Int,
-        billOrder: BillOrder = BillOrder.DateAscending
+        billOrder: BillOrder = BillOrder.DateAsc
     ): Flow<List<Bill>>{
         return billRepo.getBillsByGroupId(groupId).map { bills ->
             when (billOrder) {
-                is BillOrder.NameAscending -> bills.sortedBy { it.name.lowercase() }
-                is BillOrder.NameDescending -> bills.sortedByDescending { it.name.lowercase() }
-                is BillOrder.DateAscending -> bills.sortedBy { it.date }
-                is BillOrder.DateDescending -> bills.sortedByDescending { it.date }
-                is BillOrder.AmountAscending -> bills.sortedBy { it.amount }
-                is BillOrder.AmountDescending -> bills.sortedByDescending { it.amount }
+                is BillOrder.NameAsc -> bills.sortedBy { it.name.lowercase() }
+                is BillOrder.NameDesc -> bills.sortedByDescending { it.name.lowercase() }
+                is BillOrder.DateAsc -> bills.sortedBy { it.date }
+                is BillOrder.DateDesc -> bills.sortedByDescending { it.date }
+                is BillOrder.AmountAsc -> bills.sortedBy { it.amount }
+                is BillOrder.AmountDesc -> bills.sortedByDescending { it.amount }
             }
         }
     }

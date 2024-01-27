@@ -37,8 +37,7 @@ class GroupsViewModel @Inject constructor(
     fun onEvent(event: GroupsEvent) {
         when (event) {
             is GroupsEvent.Order -> {
-                if (state.groupOrder != event.groupOrder
-                ) {
+                if (state.groupOrder != event.groupOrder) {
                     getGroups(event.groupOrder)
                 }
             }

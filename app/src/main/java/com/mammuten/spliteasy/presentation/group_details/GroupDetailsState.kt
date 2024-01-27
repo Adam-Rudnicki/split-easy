@@ -9,7 +9,7 @@ import com.mammuten.spliteasy.domain.util.order.MemberOrder
 data class GroupDetailsState(
     val group: Group? = null,
     val bills: List<Bill> = emptyList(),
-    val billOrder: BillOrder = BillOrder.DateDescending,
+    val billOrder: BillOrder = BillOrder.DateDesc,
     val members: List<Member> = emptyList(),
-    val memberOrder: MemberOrder = MemberOrder.NameAscending
+    val memberOrder: MemberOrder = MemberOrder.NameAsc
 )

@@ -104,42 +104,42 @@ fun GroupDetailsScreen(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAscending))
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAsc))
                                     isContextMenuVisible = false
                                 },
                                 text = { Text(text = "Name asc") })
 
                             DropdownMenuItem(
                                 onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDescending))
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDesc))
                                     isContextMenuVisible = false
                                 },
                                 text = { Text(text = "Name desc") })
 
                             DropdownMenuItem(
                                 onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAscending))
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAsc))
                                     isContextMenuVisible = false
                                 },
                                 text = { Text(text = "Date asc") })
 
                             DropdownMenuItem(
                                 onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDescending))
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc))
                                     isContextMenuVisible = false
                                 },
                                 text = { Text(text = "Date desc") })
 
                             DropdownMenuItem(
                                 onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAscending))
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAsc))
                                     isContextMenuVisible = false
                                 },
                                 text = { Text(text = "Amount asc") })
 
                             DropdownMenuItem(
                                 onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDescending))
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDesc))
                                     isContextMenuVisible = false
                                 },
                                 text = { Text(text = "Amount desc") })

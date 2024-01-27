@@ -43,18 +43,14 @@ class UsersViewModel @Inject constructor(
             }
 
             is UsersEvent.Order -> {
-                if (state.userOrder::class != event.userOrder::class ||
-                    state.userOrder.orderType != event.userOrder.orderType
-                ) {
+                if (state.userOrder != event.userOrder) {
                     getUsers(event.userOrder)
                 }
             }
 
             is UsersEvent.NavigateToAddEditUserScreen -> {
                 viewModelScope.launch {
-                    val route =
-                        Screen.AddEditUserScreen.route + (event.userId?.let { "?userId=$it" } ?: "")
-                    _eventFlow.emit(UiEvent.Navigate(route))
+                    _eventFlow.emit(UiEvent.Navigate(Screen.AddEditUserScreen.route + "?userId=${event.userId}"))
                 }
             }
         }

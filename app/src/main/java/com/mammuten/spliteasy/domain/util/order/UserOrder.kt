@@ -1,15 +1,12 @@
 package com.mammuten.spliteasy.domain.util.order
 
-sealed class UserOrder(val orderType: OrderType) {
-    class Name(orderType: OrderType) : UserOrder(orderType)
-    class Surname(orderType: OrderType) : UserOrder(orderType)
-    class Nick(orderType: OrderType) : UserOrder(orderType)
+sealed interface UserOrder {
+    data object NameAsc : UserOrder
+    data object NameDesc : UserOrder
 
-    fun copy(orderType: OrderType): UserOrder {
-        return when (this) {
-            is Name -> Name(orderType)
-            is Surname -> Surname(orderType)
-            is Nick -> Nick(orderType)
-        }
-    }
+    data object SurnameAsc : UserOrder
+    data object SurnameDesc : UserOrder
+
+    data object NickAsc : UserOrder
+    data object NickDesc : UserOrder
 }

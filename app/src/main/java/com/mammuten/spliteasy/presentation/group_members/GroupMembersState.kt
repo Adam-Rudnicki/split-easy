@@ -5,5 +5,5 @@ import com.mammuten.spliteasy.domain.util.order.MemberOrder
 
 data class GroupMembersState(
     val members: List<Member> = emptyList(),
-    val memberOrder: MemberOrder = MemberOrder.NameAscending,
+    val memberOrder: MemberOrder = MemberOrder.NameAsc,
 )

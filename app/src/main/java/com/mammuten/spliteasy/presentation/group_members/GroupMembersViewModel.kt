@@ -82,12 +82,6 @@ class GroupMembersViewModel @Inject constructor(
                 }
             }
 
-            is GroupMembersEvent.NavigateToAddMemberScreen -> {
-                viewModelScope.launch {
-                    _eventFlow.emit(UiEvent.Navigate(Screen.AddEditMemberScreen.route + "/${currentGroupId}"))
-                }
-            }
-
             is GroupMembersEvent.NavigateToAddUsersScreen -> {
                 viewModelScope.launch {
                     _eventFlow.emit(UiEvent.Navigate(Screen.AddUsersToGroupScreen.route + "/${currentGroupId}"))

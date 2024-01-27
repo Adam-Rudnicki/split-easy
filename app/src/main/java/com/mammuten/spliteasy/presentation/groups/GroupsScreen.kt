@@ -40,7 +40,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.util.order.GroupOrder
-import com.mammuten.spliteasy.presentation.util.Screen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -84,28 +83,28 @@ fun GroupsScreen(
                             content = {
                                 DropdownMenuItem(
                                     onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.NameAscending))
+                                        onEvent(GroupsEvent.Order(GroupOrder.NameAsc))
                                         isContextMenuVisible = false
                                     },
                                     text = { Text(text = "Name asc") }
                                 )
                                 DropdownMenuItem(
                                     onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.NameDescending))
+                                        onEvent(GroupsEvent.Order(GroupOrder.NameDesc))
                                         isContextMenuVisible = false
                                     },
                                     text = { Text(text = "Name desc") }
                                 )
                                 DropdownMenuItem(
                                     onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.DateAscending))
+                                        onEvent(GroupsEvent.Order(GroupOrder.DateAsc))
                                         isContextMenuVisible = false
                                     },
                                     text = { Text(text = "Date asc") }
                                 )
                                 DropdownMenuItem(
                                     onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.DateDescending))
+                                        onEvent(GroupsEvent.Order(GroupOrder.DateDesc))
                                         isContextMenuVisible = false
                                     },
                                     text = { Text(text = "Date asc") }
