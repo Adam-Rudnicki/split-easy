@@ -119,8 +119,8 @@ class AddEditMemberViewModel @Inject constructor(
         val selectedUser: User? = null,
     )
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
-        data object SaveMember : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data object SaveMember : UiEvent
     }
 }

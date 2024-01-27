@@ -78,8 +78,8 @@ class AddUsersToGroupViewModel @Inject constructor(
         val selectedUsers: Map<User, Boolean> = mapOf()
     )
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
-        data object SaveUsersToGroup : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data object SaveUsersToGroup : UiEvent
     }
 }

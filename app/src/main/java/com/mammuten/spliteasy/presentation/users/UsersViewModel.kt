@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.usecase.user.UserUseCases
 import com.mammuten.spliteasy.domain.util.order.UserOrder
+import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,6 +49,14 @@ class UsersViewModel @Inject constructor(
                     getUsers(event.userOrder)
                 }
             }
+
+            is UsersEvent.NavigateToAddEditUserScreen -> {
+                viewModelScope.launch {
+                    val route =
+                        Screen.AddEditUserScreen.route + (event.userId?.let { "?userId=$it" } ?: "")
+                    _eventFlow.emit(UiEvent.Navigate(route))
+                }
+            }
         }
     }
 
@@ -59,7 +68,8 @@ class UsersViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data class Navigate(val route: String) : UiEvent
     }
 }

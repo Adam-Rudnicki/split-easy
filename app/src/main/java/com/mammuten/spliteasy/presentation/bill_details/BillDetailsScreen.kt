@@ -48,7 +48,6 @@ import com.mammuten.spliteasy.domain.util.order.ContributionOrder
 import com.mammuten.spliteasy.domain.util.order.OrderType
 import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
 import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
-import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -84,6 +83,10 @@ fun BillDetailsScreen(
                 }
 
                 is BillDetailsViewModel.UiEvent.DeleteBill -> navController.navigateUp()
+
+                is BillDetailsViewModel.UiEvent.Navigate -> {
+                    navController.navigate(event.route)
+                }
             }
         }
     }
@@ -119,27 +122,46 @@ fun BillDetailsScreen(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
-                                            onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountPaid(OrderType.Ascending)))
-                                            expanded = false
-                                          },
+                                    onEvent(
+                                        BillDetailsEvent.ContributionsOrder(
+                                            ContributionOrder.AmountPaid(OrderType.Ascending)
+                                        )
+                                    )
+                                    expanded = false
+                                },
                                 text = { Text(text = "Amount Paid Asc") }
                             )
                             DropdownMenuItem(
-                                onClick = { onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountPaid(OrderType.Descending)))
-                                            expanded = false
-                                          },
+                                onClick = {
+                                    onEvent(
+                                        BillDetailsEvent.ContributionsOrder(
+                                            ContributionOrder.AmountPaid(OrderType.Descending)
+                                        )
+                                    )
+                                    expanded = false
+                                },
                                 text = { Text(text = "Amount Paid Desc") }
                             )
                             DropdownMenuItem(
-                                onClick = { onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountOwed(OrderType.Ascending)))
-                                            expanded = false
-                                          },
+                                onClick = {
+                                    onEvent(
+                                        BillDetailsEvent.ContributionsOrder(
+                                            ContributionOrder.AmountOwed(OrderType.Ascending)
+                                        )
+                                    )
+                                    expanded = false
+                                },
                                 text = { Text(text = "Amount Paid Desc") }
                             )
                             DropdownMenuItem(
-                                onClick = { onEvent(BillDetailsEvent.ContributionsOrder(ContributionOrder.AmountOwed(OrderType.Descending)))
-                                            expanded = false
-                                          },
+                                onClick = {
+                                    onEvent(
+                                        BillDetailsEvent.ContributionsOrder(
+                                            ContributionOrder.AmountOwed(OrderType.Descending)
+                                        )
+                                    )
+                                    expanded = false
+                                },
                                 text = { Text(text = "Amount Paid Desc") }
                             )
                         }
@@ -154,13 +176,7 @@ fun BillDetailsScreen(
                         }
                     )
                     IconButton(
-                        onClick = {
-                            navController.navigate(
-                                Screen.AddEditBillScreen.route +
-                                        "/${state.bill?.groupId}" +
-                                        "?billId=${state.bill?.id}"
-                            )
-                        },
+                        onClick = { onEvent(BillDetailsEvent.NavigateToAddEditBillScreen) },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Edit,
@@ -169,15 +185,11 @@ fun BillDetailsScreen(
                         }
                     )
                     IconButton(
-                        onClick = { navController.navigate(
-                            Screen.ManageContributionsScreen.route +
-                                    "/${state.bill?.groupId}" +
-                                    "/${state.bill?.id}"
-                        ) },
+                        onClick = { onEvent(BillDetailsEvent.NavigateToManageContributionsScreen) },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = "Delete bill"
+                                contentDescription = "Manage contributions"
                             )
                         }
                     )

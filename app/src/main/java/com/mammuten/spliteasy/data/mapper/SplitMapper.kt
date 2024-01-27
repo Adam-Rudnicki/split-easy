@@ -109,9 +109,7 @@ fun User.asEntity(): UserEntity {
         id = id,
         name = name,
         surname = surname,
-        nick = nick,
-        phone = phone,
-        description = description
+        nick = nick
     )
 }
 
@@ -120,9 +118,7 @@ fun UserEntity.asModel(): User {
         id = id,
         name = name,
         surname = surname,
-        nick = nick,
-        phone = phone,
-        description = description
+        nick = nick
     )
 }
 

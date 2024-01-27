@@ -69,10 +69,12 @@ private fun SplitEasyApp() {
                 content = {
                     val viewModel = hiltViewModel<GroupsViewModel>()
                     val state = viewModel.state
+                    val eventFlow = viewModel.eventFlow
                     GroupsScreen(
                         navController = navController,
                         state = state,
-                        onEvent = viewModel::onEvent
+                        onEvent = viewModel::onEvent,
+                        eventFlow = eventFlow
                     )
                 }
             )
@@ -223,16 +225,12 @@ private fun SplitEasyApp() {
                     val nameState = viewModel.name
                     val surnameState = viewModel.surname
                     val nickState = viewModel.nick
-                    val phoneState = viewModel.phone
-                    val descriptionState = viewModel.description
                     val eventFlow = viewModel.eventFlow
                     AddEditUserScreen(
                         navController = navController,
                         nameState = nameState,
                         surnameState = surnameState,
                         nickState = nickState,
-                        phoneState = phoneState,
-                        descriptionState = descriptionState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )

@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,8 +36,6 @@ fun AddEditUserScreen(
     nameState: TextFieldState,
     surnameState: TextFieldState,
     nickState: TextFieldState,
-    phoneState: TextFieldState,
-    descriptionState: TextFieldState,
     onEvent: (AddEditUserEvent) -> Unit,
     eventFlow: SharedFlow<AddEditUserViewModel.UiEvent>
 ) {
@@ -117,26 +114,6 @@ fun AddEditUserScreen(
                         onValueChange = { onEvent(AddEditUserEvent.EnteredNick(it)) },
                         isRequired = User.IS_NICK_REQUIRED,
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    FormTextInput(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = "Phone",
-                        text = phoneState.value,
-                        error = phoneState.error,
-                        onValueChange = { onEvent(AddEditUserEvent.EnteredPhone(it)) },
-                        isRequired = User.IS_PHONE_REQUIRED,
-                        keyboardType = KeyboardType.Phone
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    FormTextInput(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = "Description",
-                        text = descriptionState.value,
-                        error = descriptionState.error,
-                        onValueChange = { onEvent(AddEditUserEvent.EnteredDescription(it)) },
-                        isRequired = User.IS_DESC_REQUIRED,
-                        singleLine = false
-                    )
                 }
             )
         }
@@ -154,8 +131,6 @@ fun AddEditUserScreenPreview() {
         ),
         surnameState = TextFieldState(),
         nickState = TextFieldState(),
-        phoneState = TextFieldState(),
-        descriptionState = TextFieldState(),
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

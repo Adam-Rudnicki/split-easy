@@ -8,9 +8,7 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = 0,
     val name: String,
     val surname: String? = null,
-    val nick: String? = null,
-    val phone: String? = null,
-    val description: String? = null
+    val nick: String? = null
 ) {
     companion object {
         const val TABLE_NAME = "users"

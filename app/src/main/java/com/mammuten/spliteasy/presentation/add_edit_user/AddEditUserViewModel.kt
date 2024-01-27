@@ -32,12 +32,6 @@ class AddEditUserViewModel @Inject constructor(
     var nick by mutableStateOf(TextFieldState())
         private set
 
-    var phone by mutableStateOf(TextFieldState())
-        private set
-
-    var description by mutableStateOf(TextFieldState())
-        private set
-
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
@@ -52,8 +46,6 @@ class AddEditUserViewModel @Inject constructor(
                         name = name.copy(value = user.name)
                         user.surname?.let { surname = surname.copy(value = it) }
                         user.nick?.let { nick = nick.copy(value = it) }
-                        user.phone?.let { phone = phone.copy(value = it) }
-                        user.description?.let { description = description.copy(value = it) }
                     }
                 }
             }
@@ -79,22 +71,6 @@ class AddEditUserViewModel @Inject constructor(
                     isRequired = User.IS_NICK_REQUIRED,
                     minLength = User.MIN_NICK_LEN,
                     maxLength = User.MAX_NICK_LEN
-                )
-            )
-            phone = phone.copy(
-                error = InvalidInputError.checkText(
-                    text = phone.value,
-                    isRequired = User.IS_PHONE_REQUIRED,
-                    minLength = User.MIN_PHONE_LEN,
-                    maxLength = User.MAX_PHONE_LEN
-                )
-            )
-            description = description.copy(
-                error = InvalidInputError.checkText(
-                    text = description.value,
-                    isRequired = User.IS_DESC_REQUIRED,
-                    minLength = User.MIN_DESC_LEN,
-                    maxLength = User.MAX_DESC_LEN
                 )
             )
         }
@@ -132,29 +108,9 @@ class AddEditUserViewModel @Inject constructor(
                 nick = nick.copy(value = event.value, error = error)
             }
 
-            is AddEditUserEvent.EnteredPhone -> {
-                val error: InvalidInputError? = InvalidInputError.checkText(
-                    text = event.value,
-                    isRequired = User.IS_PHONE_REQUIRED,
-                    minLength = User.MIN_PHONE_LEN,
-                    maxLength = User.MAX_PHONE_LEN
-                )
-                phone = phone.copy(value = event.value, error = error)
-            }
-
-            is AddEditUserEvent.EnteredDescription -> {
-                val error: InvalidInputError? = InvalidInputError.checkText(
-                    text = event.value,
-                    isRequired = User.IS_DESC_REQUIRED,
-                    minLength = User.MIN_DESC_LEN,
-                    maxLength = User.MAX_DESC_LEN
-                )
-                description = description.copy(value = event.value, error = error)
-            }
-
             is AddEditUserEvent.SaveUser -> {
                 viewModelScope.launch {
-                    if (name.error != null || surname.error != null || nick.error != null || phone.error != null || description.error != null) {
+                    if (name.error != null || surname.error != null || nick.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))
                         return@launch
                     }
@@ -163,9 +119,7 @@ class AddEditUserViewModel @Inject constructor(
                             id = currentUserId,
                             name = name.value.trim(),
                             surname = surname.value.takeIf { it.isNotBlank() }?.trim(),
-                            nick = nick.value.takeIf { it.isNotBlank() }?.trim(),
-                            phone = phone.value.takeIf { it.isNotBlank() }?.trim(),
-                            description = description.value.takeIf { it.isNotBlank() }?.trim()
+                            nick = nick.value.takeIf { it.isNotBlank() }?.trim()
                         )
                     )
                     _eventFlow.emit(UiEvent.SaveUser)
@@ -174,8 +128,8 @@ class AddEditUserViewModel @Inject constructor(
         }
     }
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
-        data object SaveUser : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data object SaveUser : UiEvent
     }
 }

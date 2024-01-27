@@ -40,7 +40,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.User
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
-import com.mammuten.spliteasy.presentation.util.Screen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -62,6 +61,10 @@ fun UsersScreen(
                 is UsersViewModel.UiEvent.ShowSnackbar -> {
                     snackBarHostState.showSnackbar(message = event.message)
                 }
+
+                is UsersViewModel.UiEvent.Navigate -> {
+                    navController.navigate(event.route)
+                }
             }
         }
     }
@@ -72,9 +75,7 @@ fun UsersScreen(
                 title = { Text(text = "Users") },
                 actions = {
                     IconButton(
-                        onClick = {
-                            navController.navigate(Screen.AddEditUserScreen.route)
-                        },
+                        onClick = { onEvent(UsersEvent.NavigateToAddEditUserScreen()) },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.PersonAdd,
@@ -127,9 +128,7 @@ fun UsersScreen(
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
                                             .clickable {
-                                                navController.navigate(
-                                                    Screen.AddEditUserScreen.route + "?userId=${user.id}"
-                                                )
+                                                onEvent(UsersEvent.NavigateToAddEditUserScreen(user.id))
                                             },
                                         content = {
                                             Row(
@@ -137,70 +136,72 @@ fun UsersScreen(
                                                     .fillMaxWidth()
                                                     .padding(8.dp),
                                                 verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                // User Name, Surname, and Nick in one row
-                                                Column(
-                                                    modifier = Modifier
-                                                        .weight(1f)
-                                                        .padding(end = 8.dp)
-                                                ) {
-                                                    Row(
-                                                        modifier = Modifier.fillMaxWidth(),
-//                                                        horizontalArrangement = Arrangement.
-                                                    ) {
-
-                                                        Text(
-                                                            modifier = Modifier.weight(0.7f),
-                                                            text = user.name,
-                                                            style = MaterialTheme.typography.bodyLarge,
-                                                            maxLines = 1,
-                                                            overflow = TextOverflow.Ellipsis
-                                                        )
-                                                        user.surname?.let {
-                                                            Text(
-                                                                modifier = Modifier.weight(1f),
-                                                                text = it,
-                                                                style = MaterialTheme.typography.bodyLarge,
-                                                                maxLines = 1,
-                                                                overflow = TextOverflow.Ellipsis,
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                content = {
+                                                    // User Name, Surname, and Nick in one row
+                                                    Column(
+                                                        modifier = Modifier
+                                                            .weight(1f)
+                                                            .padding(end = 8.dp),
+                                                        content = {
+                                                            Row(
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                            ) {
+                                                                Text(
+                                                                    modifier = Modifier.weight(0.7f),
+                                                                    text = user.name,
+                                                                    style = MaterialTheme.typography.bodyLarge,
+                                                                    maxLines = 1,
+                                                                    overflow = TextOverflow.Ellipsis
+                                                                )
+                                                                user.surname?.let {
+                                                                    Text(
+                                                                        modifier = Modifier.weight(
+                                                                            1f
+                                                                        ),
+                                                                        text = it,
+                                                                        style = MaterialTheme.typography.bodyLarge,
+                                                                        maxLines = 1,
+                                                                        overflow = TextOverflow.Ellipsis,
+                                                                    )
+                                                                }
+                                                                user.nick?.let {
+                                                                    Text(
+                                                                        modifier = Modifier.weight(
+                                                                            0.8f
+                                                                        ),
+                                                                        text = it,
+                                                                        style = MaterialTheme.typography.bodyLarge,
+                                                                        maxLines = 1,
+                                                                        overflow = TextOverflow.Ellipsis,
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+                                                    )
+                                                    IconButton(
+                                                        modifier = Modifier.weight(0.1f),
+                                                        onClick = {
+                                                            openDeleteUserDialog.value = user
+                                                        },
+                                                        content = {
+                                                            Icon(
+                                                                imageVector = Icons.Default.Delete,
+                                                                contentDescription = "Delete"
                                                             )
                                                         }
-                                                        user.nick?.let {
-                                                            Text(
-                                                                modifier = Modifier.weight(0.8f),
-                                                                text = it,
-                                                                style = MaterialTheme.typography.bodyLarge,
-                                                                maxLines = 1,
-                                                                overflow = TextOverflow.Ellipsis,
-                                                            )
-                                                        }
-                                                    }
+                                                    )
                                                 }
-
-                                                // Delete icon on the right
-                                                IconButton(
-                                                    modifier = Modifier.weight(0.1f),
-                                                    onClick = {
-                                                        openDeleteUserDialog.value = user
-                                                    },
-                                                    content = {
-                                                        Icon(
-                                                            imageVector = Icons.Default.Delete,
-                                                            contentDescription = "Delete"
-                                                        )
-                                                    }
-                                                )
-                                            }
+                                            )
                                         }
                                     )
-
                                 }
                             )
                         }
                     )
                 }
             )
+
             when {
                 openDeleteUserDialog.value != null -> {
                     val userToDelete = openDeleteUserDialog.value!!
@@ -231,9 +232,7 @@ fun UsersScreenPreview() {
                     id = 1,
                     name = "User 1",
                     surname = "Surname 1",
-                    nick = "Nick 1",
-                    phone = "Phone 1",
-                    description = "Description 1",
+                    nick = "Nick 1"
                 ),
                 User(
                     id = 2,

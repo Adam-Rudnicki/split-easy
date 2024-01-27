@@ -77,7 +77,6 @@ private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
     return when (keyboardType) {
         KeyboardType.Text -> true
         KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoDecimalPlacesRegex)
-        KeyboardType.Phone -> input.matches(RegexUtil.phoneRegex)
         else -> false
     }
 }

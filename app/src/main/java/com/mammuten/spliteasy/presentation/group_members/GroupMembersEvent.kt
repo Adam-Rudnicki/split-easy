@@ -7,6 +7,7 @@ sealed interface GroupMembersEvent {
     data class DeleteMember(val member: Member) : GroupMembersEvent
     data object RestoreMember : GroupMembersEvent
     data class MembersOrder(val memberOrder: MemberOrder) : GroupMembersEvent
+    data class NavigateToAddEditMemberScreen(val memberId: Int) : GroupMembersEvent
     data object NavigateToAddMemberScreen : GroupMembersEvent
     data object NavigateToAddUsersScreen : GroupMembersEvent
 }

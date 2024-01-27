@@ -11,6 +11,7 @@ import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
 import com.mammuten.spliteasy.domain.usecase.general.GeneralUseCases
 import com.mammuten.spliteasy.domain.util.order.ContributionOrder
+import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -88,6 +89,30 @@ class BillDetailsViewModel @Inject constructor(
                     getMemberAndContribution(event.contributionOrder)
                 }
             }
+
+            is BillDetailsEvent.NavigateToAddEditBillScreen -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.Navigate(
+                            Screen.AddEditBillScreen.route +
+                                    "/${state.bill?.groupId}" +
+                                    "?billId=${currentBillId}"
+                        )
+                    )
+                }
+            }
+
+            is BillDetailsEvent.NavigateToManageContributionsScreen -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.Navigate(
+                            Screen.ManageContributionsScreen.route +
+                                    "/${state.bill?.groupId}" +
+                                    "/${currentBillId}"
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -112,11 +137,12 @@ class BillDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    sealed class UiEvent {
+    sealed interface UiEvent {
         data class ShowSnackbarRestoreContribution(
             val message: String, val actionLabel: String? = null
-        ) : UiEvent()
+        ) : UiEvent
 
-        data object DeleteBill : UiEvent()
+        data object DeleteBill : UiEvent
+        data class Navigate(val route: String) : UiEvent
     }
 }

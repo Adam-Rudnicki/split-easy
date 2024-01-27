@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.group_members
 
+import MemberOrderSection
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -95,21 +96,21 @@ fun GroupMembersScreen(
                                 imageVector = Icons.Default.Sort,
                                 contentDescription = "Sort menu"
                             )
-                            DropdownMenu(
-                                expanded = isContextSortMenuVisible,
-                                onDismissRequest = { isContextSortMenuVisible = false },
-                                modifier = Modifier.padding(4.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAscending))
-                                        isContextSortMenuVisible = false },
-                                    text = { Text(text = "Name asc")})
-
-                                DropdownMenuItem(
-                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDescending))
-                                        isContextSortMenuVisible = false },
-                                    text = { Text(text = "Name desc")})
-                            }
+//                            DropdownMenu(
+//                                expanded = isContextSortMenuVisible,
+//                                onDismissRequest = { isContextSortMenuVisible = false },
+//                                modifier = Modifier.padding(4.dp)
+//                            ) {
+//                                DropdownMenuItem(
+//                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAscending))
+//                                        isContextSortMenuVisible = false },
+//                                    text = { Text(text = "Name asc")})
+//
+//                                DropdownMenuItem(
+//                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDescending))
+//                                        isContextSortMenuVisible = false },
+//                                    text = { Text(text = "Name desc")})
+//                            }
                         }
                     )
                     IconButton(
@@ -127,14 +128,16 @@ fun GroupMembersScreen(
                                 DropdownMenuItem(
                                     onClick = {
                                         onEvent(GroupMembersEvent.NavigateToAddUsersScreen)
-                                        isContextAddMenuVisible = false },
-                                    text = { Text(text = "Add user")})
+                                        isContextAddMenuVisible = false
+                                    },
+                                    text = { Text(text = "Add user") })
 
                                 DropdownMenuItem(
                                     onClick = {
                                         onEvent(GroupMembersEvent.NavigateToAddMemberScreen)
-                                        isContextAddMenuVisible = false },
-                                    text = { Text(text = "Add member")})
+                                        isContextAddMenuVisible = false
+                                    },
+                                    text = { Text(text = "Add member") })
                             }
                         }
                     )
@@ -156,22 +159,14 @@ fun GroupMembersScreen(
                                 items = state.members,
                                 key = { member -> member.id!! },
                                 itemContent = { member ->
-                                    if (member.userId != null){
-                                        MyOutlineCard(
-                                            color = MaterialTheme.colorScheme.surface,
-                                            member = member,
-                                            navController = navController,
-                                            openDeleteMemberDialog = openDeleteMemberDialog
-                                        )
-                                    }
-                                    else {
-                                        MyOutlineCard(
-                                            color = MaterialTheme.colorScheme.background,
-                                            member = member,
-                                            navController = navController,
-                                            openDeleteMemberDialog = openDeleteMemberDialog
-                                        )
-                                    }
+                                    MyOutlineCard(
+                                        color = member.userId?.let {
+                                            MaterialTheme.colorScheme.surface
+                                        } ?: MaterialTheme.colorScheme.background,
+                                        member = member,
+                                        navController = navController,
+                                        openDeleteMemberDialog = openDeleteMemberDialog
+                                    )
                                 }
                             )
                         }
@@ -199,11 +194,12 @@ fun GroupMembersScreen(
 
 
 @Composable
-fun MyOutlineCard(color: Color,
-                  member: Member,
-                  navController: NavController,
-                  openDeleteMemberDialog: MutableState<Member?>
-){
+fun MyOutlineCard(
+    color: Color,
+    member: Member,
+    navController: NavController,
+    openDeleteMemberDialog: MutableState<Member?>
+) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = color
@@ -247,7 +243,6 @@ fun MyOutlineCard(color: Color,
         }
     )
 }
-
 
 @Preview
 @Composable

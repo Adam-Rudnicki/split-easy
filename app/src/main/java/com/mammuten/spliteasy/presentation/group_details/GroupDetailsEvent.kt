@@ -10,4 +10,7 @@ sealed interface GroupDetailsEvent {
     data object RestoreMember : GroupDetailsEvent
     data class BillsOrder(val billOrder: BillOrder) : GroupDetailsEvent
     data class MembersOrder(val memberOrder: MemberOrder) : GroupDetailsEvent
+    data object NavigateToAddEditGroupScreen : GroupDetailsEvent
+    data object NavigateToAddEditBillScreen : GroupDetailsEvent
+    data class NavigateToBillDetailsScreen(val billId: Int) : GroupDetailsEvent
 }

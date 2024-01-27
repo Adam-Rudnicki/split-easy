@@ -72,6 +72,10 @@ fun GroupDetailsScreen(
                 }
 
                 is GroupDetailsViewModel.UiEvent.DeleteGroup -> navController.navigateUp()
+
+                is GroupDetailsViewModel.UiEvent.Navigate -> {
+                    navController.navigate(event.route)
+                }
             }
         }
     }
@@ -99,34 +103,46 @@ fun GroupDetailsScreen(
                             onDismissRequest = { isContextMenuVisible = false },
                         ) {
                             DropdownMenuItem(
-                                onClick = { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAscending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Name asc")})
+                                onClick = {
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAscending))
+                                    isContextMenuVisible = false
+                                },
+                                text = { Text(text = "Name asc") })
 
                             DropdownMenuItem(
-                                onClick = { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDescending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Name desc")})
+                                onClick = {
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDescending))
+                                    isContextMenuVisible = false
+                                },
+                                text = { Text(text = "Name desc") })
 
                             DropdownMenuItem(
-                                onClick = { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAscending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Date asc")})
+                                onClick = {
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAscending))
+                                    isContextMenuVisible = false
+                                },
+                                text = { Text(text = "Date asc") })
 
                             DropdownMenuItem(
-                                onClick = { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDescending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Date desc")})
+                                onClick = {
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDescending))
+                                    isContextMenuVisible = false
+                                },
+                                text = { Text(text = "Date desc") })
 
                             DropdownMenuItem(
-                                onClick = { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAscending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Amount asc")})
+                                onClick = {
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAscending))
+                                    isContextMenuVisible = false
+                                },
+                                text = { Text(text = "Amount asc") })
 
                             DropdownMenuItem(
-                                onClick = { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDescending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Amount desc")})
+                                onClick = {
+                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDescending))
+                                    isContextMenuVisible = false
+                                },
+                                text = { Text(text = "Amount desc") })
                         }
                     }
                     IconButton(
@@ -139,11 +155,7 @@ fun GroupDetailsScreen(
                         }
                     )
                     IconButton(
-                        onClick = {
-                            navController.navigate(
-                                Screen.AddEditGroupScreen.route + "?groupId=${state.group?.id}"
-                            )
-                        },
+                        onClick = { onEvent(GroupDetailsEvent.NavigateToAddEditGroupScreen) },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Edit,
@@ -169,7 +181,7 @@ fun GroupDetailsScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.AddEditBillScreen.route + "/${state.group?.id}") },
+                onClick = { onEvent(GroupDetailsEvent.NavigateToAddEditBillScreen) },
                 content = { Icon(imageVector = Icons.Default.Add, contentDescription = "Add bill") }
             )
         },
@@ -248,57 +260,6 @@ fun GroupDetailsScreen(
                             )
                         }
                     )
-//                    MemberOrderSection(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        memberOrder = state.memberOrder,
-//                        onOrderChange = { onEvent(GroupDetailsEvent.MembersOrder(it)) }
-//                    )
-//                    LazyRow(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                        content = {
-//                            items(
-//                                items = state.members,
-//                                key = { member -> member.id!! },
-//                                itemContent = { member ->
-//                                    Button(
-//                                        onClick = {
-//                                            navController.navigate(
-//                                                Screen.AddEditMemberScreen.route +
-//                                                        "/${state.group?.id}" +
-//                                                        "?memberId=${member.id}"
-//                                            )
-//                                        },
-//                                        content = { Text(text = member.name) }
-//                                    )
-//                                    IconButton(
-//                                        onClick = { openDeleteMemberDialog.value = member },
-//                                        modifier = Modifier.padding(top = 8.dp),
-//                                        content = {
-//                                            Icon(
-//                                                imageVector = Icons.Default.Delete,
-//                                                contentDescription = "Delete member"
-//                                            )
-//                                        }
-//                                    )
-//                                }
-//                            )
-//                        }
-//                    )
-//                    Button(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        onClick = {
-//                            navController.navigate(
-//                                Screen.AddEditMemberScreen.route + "/${state.group?.id}"
-//                            )
-//                        },
-//                        content = { Text(text = "Add member") }
-//                    )
-//                    BillOrderSection(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        billOrder = state.billOrder,
-//                        onOrderChange = { onEvent(GroupDetailsEvent.BillsOrder(it)) }
-//                    )
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -321,8 +282,10 @@ fun GroupDetailsScreen(
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
                                             .clickable {
-                                                navController.navigate(
-                                                    Screen.BillDetailsScreen.route + "/${bill.id}"
+                                                onEvent(
+                                                    GroupDetailsEvent.NavigateToBillDetailsScreen(
+                                                        bill.id!!
+                                                    )
                                                 )
                                             },
                                         content = {
@@ -344,7 +307,10 @@ fun GroupDetailsScreen(
                                                             bill.amount?.let {
                                                                 Text(
                                                                     textAlign = TextAlign.End,
-                                                                    text = String.format("%.2f", it),
+                                                                    text = String.format(
+                                                                        "%.2f",
+                                                                        it
+                                                                    ),
                                                                     modifier = Modifier.weight(1f),
                                                                     style = MaterialTheme.typography.bodyLarge,
                                                                     maxLines = 1,
@@ -410,7 +376,6 @@ fun GroupDetailsScreen(
         }
     )
 }
-
 
 
 @Preview

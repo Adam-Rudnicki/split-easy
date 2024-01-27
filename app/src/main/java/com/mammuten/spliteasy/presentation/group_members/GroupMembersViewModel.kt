@@ -70,6 +70,18 @@ class GroupMembersViewModel @Inject constructor(
                 }
             }
 
+            is GroupMembersEvent.NavigateToAddEditMemberScreen -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.Navigate(
+                            Screen.AddEditMemberScreen.route +
+                                    "/${currentGroupId}" +
+                                    "?memberId=${event.memberId}"
+                        )
+                    )
+                }
+            }
+
             is GroupMembersEvent.NavigateToAddMemberScreen -> {
                 viewModelScope.launch {
                     _eventFlow.emit(UiEvent.Navigate(Screen.AddEditMemberScreen.route + "/${currentGroupId}"))
@@ -92,12 +104,12 @@ class GroupMembersViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
         data class ShowSnackbarRestoreMember(
             val message: String, val actionLabel: String? = null
-        ) : UiEvent()
+        ) : UiEvent
 
-        data class Navigate(val route: String) : UiEvent()
+        data class Navigate(val route: String) : UiEvent
     }
 }

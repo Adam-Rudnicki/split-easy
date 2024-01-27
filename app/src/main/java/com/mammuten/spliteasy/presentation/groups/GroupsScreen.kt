@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,9 @@ import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.util.order.GroupOrder
 import com.mammuten.spliteasy.presentation.util.Screen
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,9 +51,21 @@ import java.util.Date
 fun GroupsScreen(
     navController: NavController,
     state: GroupsState,
-    onEvent: (GroupsEvent) -> Unit
+    onEvent: (GroupsEvent) -> Unit,
+    eventFlow: SharedFlow<GroupsViewModel.UiEvent>
 ) {
     var isContextMenuVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        eventFlow.collectLatest { event ->
+            when (event) {
+                is GroupsViewModel.UiEvent.Navigate -> {
+                    navController.navigate(event.route)
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -60,38 +76,45 @@ fun GroupsScreen(
                     }
                 },
                 actions = {
-                    // Sorting icon
                     IconButton(onClick = { isContextMenuVisible = !isContextMenuVisible }) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = "Sort")
                         DropdownMenu(
                             expanded = isContextMenuVisible,
                             onDismissRequest = { isContextMenuVisible = false },
-                        ) {
-                            DropdownMenuItem(
-                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.NameAscending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Name asc")}
-                            )
-
-                            DropdownMenuItem(
-                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.NameDescending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Name desc")})
-
-                            DropdownMenuItem(
-                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.DateAscending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Date asc")})
-
-                            DropdownMenuItem(
-                                onClick = { onEvent(GroupsEvent.Order(GroupOrder.DateDescending))
-                                    isContextMenuVisible = false },
-                                text = { Text(text = "Date asc")})
-                        }
+                            content = {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupsEvent.Order(GroupOrder.NameAscending))
+                                        isContextMenuVisible = false
+                                    },
+                                    text = { Text(text = "Name asc") }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupsEvent.Order(GroupOrder.NameDescending))
+                                        isContextMenuVisible = false
+                                    },
+                                    text = { Text(text = "Name desc") }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupsEvent.Order(GroupOrder.DateAscending))
+                                        isContextMenuVisible = false
+                                    },
+                                    text = { Text(text = "Date asc") }
+                                )
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupsEvent.Order(GroupOrder.DateDescending))
+                                        isContextMenuVisible = false
+                                    },
+                                    text = { Text(text = "Date asc") }
+                                )
+                            }
+                        )
                     }
 
-                    // Show users icon
-                    IconButton(onClick = { navController.navigate(Screen.UsersScreen.route) }) {
+                    IconButton(onClick = { onEvent(GroupsEvent.NavigateToUsersScreen) }) {
                         Icon(imageVector = Icons.Default.Person, contentDescription = "Show Users")
                     }
                 }
@@ -99,7 +122,7 @@ fun GroupsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.AddEditGroupScreen.route) },
+                onClick = { onEvent(GroupsEvent.NavigateToAddEditGroupScreen) },
                 content = {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -131,8 +154,10 @@ fun GroupsScreen(
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
                                             .clickable {
-                                                navController.navigate(
-                                                    Screen.GroupDetailsScreen.route + "/${group.id}"
+                                                onEvent(
+                                                    GroupsEvent.NavigateToGroupDetailsScreen(
+                                                        group.id!!
+                                                    )
                                                 )
                                             },
                                         content = {
@@ -194,6 +219,7 @@ fun GroupsScreenPreview() {
                 )
             )
         ),
-        onEvent = {}
+        onEvent = {},
+        eventFlow = MutableSharedFlow()
     )
 }
