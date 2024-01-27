@@ -233,27 +233,29 @@ fun GroupDetailsScreen(
                                                 style = MaterialTheme.typography.bodyLarge,
                                                 modifier = Modifier.padding(bottom = 4.dp)
                                             )
-
-                                            Text(
-                                                text = "Description",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-                                            Text(
-                                                text = it.description ?: "N/A",
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-
-                                            Text(
-                                                text = "Creation Date",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-                                            Text(
-                                                text = it.created.toString(),
-                                                style = MaterialTheme.typography.bodyLarge,
-                                            )
+                                            it.description?.let { desc ->
+                                                Text(
+                                                    text = "Description",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier.padding(bottom = 4.dp)
+                                                )
+                                                Text(
+                                                    text = desc,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    modifier = Modifier.padding(bottom = 4.dp)
+                                                )
+                                            }
+                                            it.created?.let { date ->
+                                                Text(
+                                                    text = "Creation Date",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier.padding(bottom = 4.dp)
+                                                )
+                                                Text(
+                                                    text = date.toString(),
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                )
+                                            }
                                         }
                                     }
                                 }
