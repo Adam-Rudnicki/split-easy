@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -75,20 +74,20 @@ fun ManageContributionsScreen(
                         }
                     )
                 },
-            )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onEvent(ManageContributionsEvent.SaveContributions) },
-                content = {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save contribution"
+                actions = {
+                    IconButton(
+                        onClick = { onEvent(ManageContributionsEvent.SaveContributions) },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = "Save contribution"
+                            )
+                        }
                     )
                 }
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
@@ -102,7 +101,6 @@ fun ManageContributionsScreen(
                         content = {
                             Text(
                                 modifier = Modifier
-//                                    .padding(start = 8.dp)
                                     .weight(0.6f),
                                 text = "Member",
                                 textAlign = TextAlign.Center

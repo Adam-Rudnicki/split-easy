@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -150,6 +151,18 @@ fun GroupDetailsScreen(
                             )
                         }
                     )
+                    IconButton(
+                        onClick = {
+                            //todo make view for adding users/members
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Edit group"
+                            )
+                        }
+                    )
+
                 },
             )
         },

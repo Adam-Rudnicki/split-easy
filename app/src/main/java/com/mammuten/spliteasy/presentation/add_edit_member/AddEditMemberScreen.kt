@@ -75,7 +75,7 @@ fun AddEditMemberScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(AddEditMemberEvent.SaveMember) },

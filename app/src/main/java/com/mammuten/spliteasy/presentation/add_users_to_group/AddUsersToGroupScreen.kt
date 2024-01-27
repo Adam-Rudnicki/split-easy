@@ -41,13 +41,13 @@ fun AddUsersToGroupScreen(
     onEvent: (AddUsersToGroupEvent) -> Unit,
     eventFlow: SharedFlow<AddUsersToGroupViewModel.UiEvent>
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is AddUsersToGroupViewModel.UiEvent.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackBarHostState.showSnackbar(message = event.message)
 
                 is AddUsersToGroupViewModel.UiEvent.SaveUsersToGroup -> navController.navigateUp()
             }
@@ -71,7 +71,7 @@ fun AddUsersToGroupScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             if (state.users.isNotEmpty()) {
                 FloatingActionButton(
