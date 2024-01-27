@@ -5,12 +5,11 @@ import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.BillOrder
 import com.mammuten.spliteasy.domain.util.order.MemberOrder
-import com.mammuten.spliteasy.domain.util.order.OrderType
 
 data class GroupDetailsState(
     val group: Group? = null,
     val bills: List<Bill> = emptyList(),
     val billOrder: BillOrder = BillOrder.DateDescending,
     val members: List<Member> = emptyList(),
-    val memberOrder: MemberOrder = MemberOrder.Name(OrderType.Ascending),
+    val memberOrder: MemberOrder = MemberOrder.NameAscending
 )

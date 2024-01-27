@@ -93,7 +93,7 @@ class GroupDetailsViewModel @Inject constructor(
 
             is GroupDetailsEvent.MembersOrder -> {
                 if (state.memberOrder::class != event.memberOrder::class ||
-                    state.memberOrder.orderType != event.memberOrder.orderType
+                    state.memberOrder != event.memberOrder
                 ) {
                     getMembers(event.memberOrder)
                 }

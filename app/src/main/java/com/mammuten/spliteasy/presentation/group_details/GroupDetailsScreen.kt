@@ -153,7 +153,7 @@ fun GroupDetailsScreen(
                     )
                     IconButton(
                         onClick = {
-                            //todo make view for adding users/members
+                            navController.navigate(Screen.GroupMembersScreen.route + "/${state.group?.id}")
                         },
                         content = {
                             Icon(

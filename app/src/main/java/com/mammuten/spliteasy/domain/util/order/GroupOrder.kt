@@ -12,9 +12,9 @@ package com.mammuten.spliteasy.domain.util.order
 //    }
 //}
 
-sealed class GroupOrder {
-    data object NameAscending : GroupOrder()
-    data object NameDescending : GroupOrder()
-    data object DateAscending : GroupOrder()
-    data object DateDescending : GroupOrder()
+sealed interface GroupOrder {
+    data object NameAscending : GroupOrder
+    data object NameDescending : GroupOrder
+    data object DateAscending : GroupOrder
+    data object DateDescending : GroupOrder
 }

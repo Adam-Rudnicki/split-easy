@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
@@ -73,20 +72,20 @@ fun AddEditMemberScreen(
                         }
                     )
                 },
-            )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onEvent(AddEditMemberEvent.SaveMember) },
-                content = {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save member"
+                actions = {
+                    IconButton(
+                        onClick = { onEvent(AddEditMemberEvent.SaveMember) },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = "Save member"
+                            )
+                        }
                     )
                 }
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

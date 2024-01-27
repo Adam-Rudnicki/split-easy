@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.group_members
 
-import MemberOrderSection
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,11 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.util.order.MemberOrder
 import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,17 +41,19 @@ fun GroupMembersScreen(
     eventFlow: SharedFlow<GroupMembersViewModel.UiEvent>,
 ) {
     val openDeleteMemberDialog = remember { mutableStateOf<Member?>(null) }
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
+    var isContextSortMenuVisible by remember { mutableStateOf(false) }
+    var isContextAddMenuVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is GroupMembersViewModel.UiEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackBarHostState.showSnackbar(message = event.message)
                 }
 
                 is GroupMembersViewModel.UiEvent.ShowSnackbarRestoreMember -> {
-                    val result = snackbarHostState.showSnackbar(
+                    val result = snackBarHostState.showSnackbar(
                         message = event.message,
                         actionLabel = event.actionLabel,
                         duration = SnackbarDuration.Short
@@ -81,18 +87,61 @@ fun GroupMembersScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { onEvent(GroupMembersEvent.NavigateToAddUsersScreen) },
+                        onClick = {
+                            isContextSortMenuVisible = !isContextSortMenuVisible
+                        },
                         content = {
                             Icon(
-                                imageVector = Icons.Default.Edit,
+                                imageVector = Icons.Default.Sort,
+                                contentDescription = "Sort menu"
+                            )
+                            DropdownMenu(
+                                expanded = isContextSortMenuVisible,
+                                onDismissRequest = { isContextSortMenuVisible = false },
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAscending))
+                                        isContextSortMenuVisible = false },
+                                    text = { Text(text = "Name asc")})
+
+                                DropdownMenuItem(
+                                    onClick = { onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDescending))
+                                        isContextSortMenuVisible = false },
+                                    text = { Text(text = "Name desc")})
+                            }
+                        }
+                    )
+                    IconButton(
+                        onClick = { isContextAddMenuVisible = !isContextAddMenuVisible },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.PersonAdd,
                                 contentDescription = "Add users"
                             )
+                            DropdownMenu(
+                                expanded = isContextAddMenuVisible,
+                                onDismissRequest = { isContextAddMenuVisible = false },
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupMembersEvent.NavigateToAddUsersScreen)
+                                        isContextAddMenuVisible = false },
+                                    text = { Text(text = "Add user")})
+
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onEvent(GroupMembersEvent.NavigateToAddMemberScreen)
+                                        isContextAddMenuVisible = false },
+                                    text = { Text(text = "Add member")})
+                            }
                         }
                     )
                 },
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
@@ -100,11 +149,6 @@ fun GroupMembersScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-                    MemberOrderSection(
-                        modifier = Modifier.fillMaxWidth(),
-                        memberOrder = state.memberOrder,
-                        onOrderChange = { onEvent(GroupMembersEvent.MembersOrder(it)) }
-                    )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         content = {
@@ -112,41 +156,25 @@ fun GroupMembersScreen(
                                 items = state.members,
                                 key = { member -> member.id!! },
                                 itemContent = { member ->
-                                    OutlinedCard(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface
-                                        ),
-                                        border = BorderStroke(width = 1.dp, color = Color.Black),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clickable {
-                                                navController.navigate(
-                                                    Screen.AddEditMemberScreen.route +
-                                                            "/${member.groupId}" +
-                                                            "?memberId=${member.id}"
-                                                )
-                                            },
-                                        content = { Text(text = member.name) }
-                                    )
-                                    IconButton(
-                                        onClick = { openDeleteMemberDialog.value = member },
-                                        modifier = Modifier.padding(top = 8.dp),
-                                        content = {
-                                            Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = "Delete member"
-                                            )
-                                        }
-                                    )
+                                    if (member.userId != null){
+                                        MyOutlineCard(
+                                            color = MaterialTheme.colorScheme.surface,
+                                            member = member,
+                                            navController = navController,
+                                            openDeleteMemberDialog = openDeleteMemberDialog
+                                        )
+                                    }
+                                    else {
+                                        MyOutlineCard(
+                                            color = MaterialTheme.colorScheme.background,
+                                            member = member,
+                                            navController = navController,
+                                            openDeleteMemberDialog = openDeleteMemberDialog
+                                        )
+                                    }
                                 }
                             )
                         }
-                    )
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onEvent(GroupMembersEvent.NavigateToAddMemberScreen) },
-                        content = { Text(text = "Add member") }
                     )
                 }
             )
@@ -168,6 +196,58 @@ fun GroupMembersScreen(
         }
     )
 }
+
+
+@Composable
+fun MyOutlineCard(color: Color,
+                  member: Member,
+                  navController: NavController,
+                  openDeleteMemberDialog: MutableState<Member?>
+){
+    OutlinedCard(
+        colors = CardDefaults.cardColors(
+            containerColor = color
+        ),
+        border = BorderStroke(width = 1.dp, color = Color.Black),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable {
+                navController.navigate(
+                    Screen.AddEditMemberScreen.route +
+                            "/${member.groupId}" +
+                            "?memberId=${member.id}"
+                )
+            },
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = member.name,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp, top = 12.dp)
+                )
+
+                IconButton(
+                    onClick = { openDeleteMemberDialog.value = member },
+                    modifier = Modifier.padding(end = 8.dp),
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete member"
+                        )
+                    }
+                )
+            }
+        }
+    )
+}
+
 
 @Preview
 @Composable

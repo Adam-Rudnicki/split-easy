@@ -14,12 +14,12 @@ package com.mammuten.spliteasy.domain.util.order
 //    }
 //}
 
-sealed class BillOrder {
-    data object NameAscending : BillOrder()
-    data object NameDescending : BillOrder()
-    data object DateAscending : BillOrder()
-    data object DateDescending : BillOrder()
+sealed interface BillOrder {
+    data object NameAscending : BillOrder
+    data object NameDescending : BillOrder
+    data object DateAscending : BillOrder
+    data object DateDescending : BillOrder
 
-    data object AmountAscending : BillOrder()
-    data object AmountDescending : BillOrder()
+    data object AmountAscending : BillOrder
+    data object AmountDescending : BillOrder
 }
