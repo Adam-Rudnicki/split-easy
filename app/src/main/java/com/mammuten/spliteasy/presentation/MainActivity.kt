@@ -28,6 +28,8 @@ import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsViewModel
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsScreen
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsViewModel
+import com.mammuten.spliteasy.presentation.group_members.GroupMembersScreen
+import com.mammuten.spliteasy.presentation.group_members.GroupMembersViewModel
 import com.mammuten.spliteasy.presentation.groups.GroupsScreen
 import com.mammuten.spliteasy.presentation.groups.GroupsViewModel
 import com.mammuten.spliteasy.presentation.ui.theme.SplitEasyTheme
@@ -246,6 +248,23 @@ private fun SplitEasyApp() {
                     val state = viewModel.state
                     val eventFlow = viewModel.eventFlow
                     AddUsersToGroupScreen(
+                        navController = navController,
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                        eventFlow = eventFlow
+                    )
+                }
+            )
+            composable(
+                route = "${Screen.GroupMembersScreen.route}/{groupId}",
+                arguments = listOf(
+                    navArgument(name = "groupId") { type = NavType.IntType },
+                ),
+                content = {
+                    val viewModel = hiltViewModel<GroupMembersViewModel>()
+                    val state = viewModel.state
+                    val eventFlow = viewModel.eventFlow
+                    GroupMembersScreen(
                         navController = navController,
                         state = state,
                         onEvent = viewModel::onEvent,
