@@ -100,8 +100,7 @@ fun ManageContributionsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         content = {
                             Text(
-                                modifier = Modifier
-                                    .weight(0.6f),
+                                modifier = Modifier.weight(0.6f),
                                 text = "Member",
                                 textAlign = TextAlign.Center
                             )
@@ -130,8 +129,7 @@ fun ManageContributionsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             content = {
                                 Text(
-                                    modifier = Modifier
-                                        .weight(0.6f),
+                                    modifier = Modifier.weight(0.6f),
                                     text = memberState.member.name,
                                     textAlign = TextAlign.Center
                                 )

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -108,64 +109,65 @@ fun BillDetailsScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { expanded = !expanded }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Sort,
-                            contentDescription = "Sort"
-                        )
-
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(
-                                        BillDetailsEvent.ContributionsOrder(
-                                            ContributionOrder.AmountPaid(OrderType.Ascending)
-                                        )
-                                    )
-                                    expanded = false
-                                },
-                                text = { Text(text = "Amount Paid Asc") }
+                        onClick = { expanded = !expanded },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Sort,
+                                contentDescription = "Sort"
                             )
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(
-                                        BillDetailsEvent.ContributionsOrder(
-                                            ContributionOrder.AmountPaid(OrderType.Descending)
-                                        )
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                                modifier = Modifier.padding(4.dp),
+                                content = {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(
+                                                BillDetailsEvent.ContributionsOrder(
+                                                    ContributionOrder.AmountPaid(OrderType.Ascending)
+                                                )
+                                            )
+                                            expanded = false
+                                        },
+                                        text = { Text(text = "Amount Paid Asc") }
                                     )
-                                    expanded = false
-                                },
-                                text = { Text(text = "Amount Paid Desc") }
-                            )
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(
-                                        BillDetailsEvent.ContributionsOrder(
-                                            ContributionOrder.AmountOwed(OrderType.Ascending)
-                                        )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(
+                                                BillDetailsEvent.ContributionsOrder(
+                                                    ContributionOrder.AmountPaid(OrderType.Descending)
+                                                )
+                                            )
+                                            expanded = false
+                                        },
+                                        text = { Text(text = "Amount Paid Desc") }
                                     )
-                                    expanded = false
-                                },
-                                text = { Text(text = "Amount Paid Desc") }
-                            )
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(
-                                        BillDetailsEvent.ContributionsOrder(
-                                            ContributionOrder.AmountOwed(OrderType.Descending)
-                                        )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(
+                                                BillDetailsEvent.ContributionsOrder(
+                                                    ContributionOrder.AmountOwed(OrderType.Ascending)
+                                                )
+                                            )
+                                            expanded = false
+                                        },
+                                        text = { Text(text = "Amount Paid Desc") }
                                     )
-                                    expanded = false
-                                },
-                                text = { Text(text = "Amount Paid Desc") }
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(
+                                                BillDetailsEvent.ContributionsOrder(
+                                                    ContributionOrder.AmountOwed(OrderType.Descending)
+                                                )
+                                            )
+                                            expanded = false
+                                        },
+                                        text = { Text(text = "Amount Paid Desc") }
+                                    )
+                                }
                             )
                         }
-                    }
+                    )
                     IconButton(
                         onClick = { openDeleteBillDialog.value = true },
                         content = {
@@ -188,7 +190,7 @@ fun BillDetailsScreen(
                         onClick = { onEvent(BillDetailsEvent.NavigateToManageContributionsScreen) },
                         content = {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = Icons.Default.Payments,
                                 contentDescription = "Manage contributions"
                             )
                         }
@@ -210,78 +212,37 @@ fun BillDetailsScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                expandedCard.value = !expandedCard.value
-                            },
+                            .clickable { expandedCard.value = !expandedCard.value },
                         content = {
                             Column(
                                 modifier = Modifier.padding(8.dp),
                                 content = {
-                                    // Warunkowo renderuj tylko nazwę lub pełne informacje w zależności od stanu expandedCard
-                                    if (!expandedCard.value) {
-                                        // Tylko nazwa
-                                        state.bill?.let {
-                                            Text(
-                                                text = "Name",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(bottom = 2.dp)
-                                            )
-                                            Text(
-                                                text = it.name,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-                                        }
-                                    } else {
-                                        // Pełne informacje
-                                        state.bill?.let {
-                                            Text(
-                                                text = "Name",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(bottom = 2.dp)
-                                            )
-                                            Text(
-                                                text = it.name,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-
+                                    state.bill?.let {
+                                        Text(
+                                            text = "Name: ${it.name}",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.padding(bottom = 2.dp)
+                                        )
+                                        if (expandedCard.value) {
                                             it.description?.let { desc ->
                                                 Text(
-                                                    text = "Description",
+                                                    text = "Description: $desc",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     modifier = Modifier.padding(bottom = 2.dp)
                                                 )
-                                                Text(
-                                                    text = desc, //?: "N/A",
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    modifier = Modifier.padding(bottom = 4.dp)
-                                                )
                                             }
-
                                             it.amount?.let { amount ->
                                                 Text(
-                                                    text = "Amount",
+                                                    text = "Amount: ${String.format("%.2f", amount)}",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     modifier = Modifier.padding(bottom = 2.dp)
-                                                )
-                                                Text(
-                                                    text = String.format("%.2f", amount),
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    modifier = Modifier.padding(bottom = 4.dp)
                                                 )
                                             }
-
                                             it.date?.let { date ->
                                                 Text(
-                                                    text = "Date",
+                                                    text = "Date: $date",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     modifier = Modifier.padding(bottom = 2.dp)
-                                                )
-                                                Text(
-                                                    text = "$date ",
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    modifier = Modifier.padding(bottom = 4.dp)
                                                 )
                                             }
                                         }
@@ -293,7 +254,7 @@ fun BillDetailsScreen(
                     Divider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp),
+                            .padding(8.dp),
                         color = Color.Black
                     )
                     LazyColumn(

@@ -155,6 +155,7 @@ fun AddEditBillScreen(
                     )
                 }
             )
+
             if (showDatePicker) {
                 MyDatePickerDialog(
                     date = dateState.value ?: Date(),

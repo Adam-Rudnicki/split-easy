@@ -96,55 +96,63 @@ fun GroupDetailsScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = { isContextMenuVisible = !isContextMenuVisible }) {
-                        Icon(imageVector = Icons.Default.Sort, contentDescription = "Sort")
-                        DropdownMenu(
-                            expanded = isContextMenuVisible,
-                            onDismissRequest = { isContextMenuVisible = false },
-                        ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAsc))
-                                    isContextMenuVisible = false
-                                },
-                                text = { Text(text = "Name asc") })
-
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDesc))
-                                    isContextMenuVisible = false
-                                },
-                                text = { Text(text = "Name desc") })
-
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAsc))
-                                    isContextMenuVisible = false
-                                },
-                                text = { Text(text = "Date asc") })
-
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc))
-                                    isContextMenuVisible = false
-                                },
-                                text = { Text(text = "Date desc") })
-
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAsc))
-                                    isContextMenuVisible = false
-                                },
-                                text = { Text(text = "Amount asc") })
-
-                            DropdownMenuItem(
-                                onClick = {
-                                    onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDesc))
-                                    isContextMenuVisible = false
-                                },
-                                text = { Text(text = "Amount desc") })
+                    IconButton(
+                        onClick = { isContextMenuVisible = !isContextMenuVisible },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Sort,
+                                contentDescription = "Sort"
+                            )
+                            DropdownMenu(
+                                expanded = isContextMenuVisible,
+                                onDismissRequest = { isContextMenuVisible = false },
+                                content = {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAsc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Name asc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDesc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Name desc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAsc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Date asc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Date desc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAsc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Amount asc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDesc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Amount desc") }
+                                    )
+                                }
+                            )
                         }
-                    }
+                    )
                     IconButton(
                         onClick = { openDeleteGroupDialog.value = true },
                         content = {
@@ -170,11 +178,10 @@ fun GroupDetailsScreen(
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Person,
-                                contentDescription = "Edit group"
+                                contentDescription = "Group members"
                             )
                         }
                     )
-
                 },
             )
         },
@@ -198,64 +205,30 @@ fun GroupDetailsScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                expandedCard.value = !expandedCard.value
-                            },
+                            .clickable { expandedCard.value = !expandedCard.value },
                         content = {
                             Column(
                                 modifier = Modifier.padding(8.dp),
                                 content = {
-                                    // Warunkowo renderuj tylko nazwę lub pełne informacje w zależności od stanu expandedCard
-                                    if (!expandedCard.value) {
-                                        // Tylko nazwa
-                                        state.group?.let {
-                                            Text(
-                                                text = "Name",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-                                            Text(
-                                                text = it.name,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-                                        }
-                                    } else {
-                                        // Pełne informacje
-                                        state.group?.let {
-                                            Text(
-                                                text = "Name",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
-                                            Text(
-                                                text = it.name,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = Modifier.padding(bottom = 4.dp)
-                                            )
+                                    state.group?.let {
+                                        Text(
+                                            text = "Name: ${it.name}",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+                                        if (expandedCard.value) {
                                             it.description?.let { desc ->
                                                 Text(
-                                                    text = "Description",
+                                                    text = "Description: $desc",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     modifier = Modifier.padding(bottom = 4.dp)
                                                 )
-                                                Text(
-                                                    text = desc,
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    modifier = Modifier.padding(bottom = 4.dp)
-                                                )
                                             }
-                                            it.created?.let { date ->
-                                                Text(
-                                                    text = "Creation Date",
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    modifier = Modifier.padding(bottom = 4.dp)
-                                                )
-                                                Text(
-                                                    text = date.toString(),
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                )
-                                            }
+                                            Text(
+                                                text = "Creation Date: ${it.created}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(bottom = 4.dp)
+                                            )
                                         }
                                     }
                                 }
@@ -300,8 +273,7 @@ fun GroupDetailsScreen(
                                                         content = {
                                                             Text(
                                                                 text = bill.name,
-                                                                modifier = Modifier
-                                                                    .weight(1f),
+                                                                modifier = Modifier.weight(1f),
                                                                 style = MaterialTheme.typography.bodyLarge,
                                                                 maxLines = 1,
                                                                 overflow = TextOverflow.Ellipsis
@@ -309,10 +281,7 @@ fun GroupDetailsScreen(
                                                             bill.amount?.let {
                                                                 Text(
                                                                     textAlign = TextAlign.End,
-                                                                    text = String.format(
-                                                                        "%.2f",
-                                                                        it
-                                                                    ),
+                                                                    text = String.format("%.2f", it),
                                                                     modifier = Modifier.weight(1f),
                                                                     style = MaterialTheme.typography.bodyLarge,
                                                                     maxLines = 1,
@@ -347,6 +316,7 @@ fun GroupDetailsScreen(
                     )
                 }
             )
+
             when {
                 openDeleteGroupDialog.value -> {
                     ConfirmDismissDialog(

@@ -86,9 +86,7 @@ fun GroupMembersScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            isContextSortMenuVisible = !isContextSortMenuVisible
-                        },
+                        onClick = { isContextSortMenuVisible = !isContextSortMenuVisible },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Sort,
@@ -97,22 +95,24 @@ fun GroupMembersScreen(
                             DropdownMenu(
                                 expanded = isContextSortMenuVisible,
                                 onDismissRequest = { isContextSortMenuVisible = false },
-                                modifier = Modifier.padding(4.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAsc))
-                                        isContextSortMenuVisible = false
-                                    },
-                                    text = { Text(text = "Name asc") })
-
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDesc))
-                                        isContextSortMenuVisible = false
-                                    },
-                                    text = { Text(text = "Name desc") })
-                            }
+                                modifier = Modifier.padding(4.dp),
+                                content = {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAsc))
+                                            isContextSortMenuVisible = false
+                                        },
+                                        text = { Text(text = "Name asc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDesc))
+                                            isContextSortMenuVisible = false
+                                        },
+                                        text = { Text(text = "Name desc") }
+                                    )
+                                }
+                            )
                         }
                     )
                     IconButton(
@@ -125,22 +125,24 @@ fun GroupMembersScreen(
                             DropdownMenu(
                                 expanded = isContextAddMenuVisible,
                                 onDismissRequest = { isContextAddMenuVisible = false },
-                                modifier = Modifier.padding(4.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupMembersEvent.NavigateToAddUsersScreen)
-                                        isContextAddMenuVisible = false
-                                    },
-                                    text = { Text(text = "Add user") })
-
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupMembersEvent.NavigateToAddEditMemberScreen())
-                                        isContextAddMenuVisible = false
-                                    },
-                                    text = { Text(text = "Add member") })
-                            }
+                                modifier = Modifier.padding(4.dp),
+                                content = {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupMembersEvent.NavigateToAddUsersScreen)
+                                            isContextAddMenuVisible = false
+                                        },
+                                        text = { Text(text = "Add user") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupMembersEvent.NavigateToAddEditMemberScreen())
+                                            isContextAddMenuVisible = false
+                                        },
+                                        text = { Text(text = "Add member") }
+                                    )
+                                }
+                            )
                         }
                     )
                 },
@@ -148,32 +150,24 @@ fun GroupMembersScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        content = {
-                            items(
-                                items = state.members,
-                                key = { member -> member.id!! },
-                                itemContent = { member ->
-                                    MyOutlineCard(
-                                        color = member.userId?.let {
-                                            MaterialTheme.colorScheme.surface
-                                        } ?: MaterialTheme.colorScheme.background,
-                                        member = member,
-                                        openDeleteMemberDialog = openDeleteMemberDialog,
-                                        onClick = {
-                                            onEvent(
-                                                GroupMembersEvent.NavigateToAddEditMemberScreen(
-                                                    member.id
-                                                )
-                                            )
-                                        }
+                    items(
+                        items = state.members,
+                        key = { member -> member.id!! },
+                        itemContent = { member ->
+                            MyOutlineCard(
+                                color = member.userId?.let { MaterialTheme.colorScheme.surface }
+                                    ?: MaterialTheme.colorScheme.background,
+                                member = member,
+                                onDelete = { openDeleteMemberDialog.value = member },
+                                onClick = {
+                                    onEvent(
+                                        GroupMembersEvent.NavigateToAddEditMemberScreen(member.id)
                                     )
                                 }
                             )
@@ -181,6 +175,7 @@ fun GroupMembersScreen(
                     )
                 }
             )
+
             when {
                 openDeleteMemberDialog.value != null -> {
                     val memberToDelete = openDeleteMemberDialog.value!!
@@ -200,18 +195,15 @@ fun GroupMembersScreen(
     )
 }
 
-
 @Composable
 fun MyOutlineCard(
     color: Color,
     member: Member,
-    openDeleteMemberDialog: MutableState<Member?>,
+    onDelete: () -> Unit,
     onClick: () -> Unit
 ) {
     OutlinedCard(
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
+        colors = CardDefaults.cardColors(containerColor = color),
         border = BorderStroke(width = 1.dp, color = Color.Black),
         modifier = Modifier
             .fillMaxWidth()
@@ -222,26 +214,26 @@ fun MyOutlineCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = member.name,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp, top = 12.dp)
-                )
-
-                IconButton(
-                    onClick = { openDeleteMemberDialog.value = member },
-                    modifier = Modifier.padding(end = 8.dp),
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete member"
-                        )
-                    }
-                )
-            }
+                horizontalArrangement = Arrangement.SpaceBetween,
+                content = {
+                    Text(
+                        text = member.name,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp, top = 12.dp)
+                    )
+                    IconButton(
+                        onClick = { onDelete() },
+                        modifier = Modifier.padding(end = 8.dp),
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete member"
+                            )
+                        }
+                    )
+                }
+            )
         }
     )
 }

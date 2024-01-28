@@ -3,7 +3,6 @@ package com.mammuten.spliteasy.presentation.users
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -98,98 +96,49 @@ fun UsersScreen(
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-                    Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        color = Color.Black
-                    )
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        content = {
-                            items(
-                                items = state.users,
-                                key = { user -> user.id!! },
-                                itemContent = { user ->
-                                    OutlinedCard(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface
-                                        ),
-                                        border = BorderStroke(width = 1.dp, color = Color.Black),
+                    items(
+                        items = state.users,
+                        key = { user -> user.id!! },
+                        itemContent = { user ->
+                            OutlinedCard(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                border = BorderStroke(width = 1.dp, color = Color.Black),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clickable {
+                                        onEvent(UsersEvent.NavigateToAddEditUserScreen(user.id))
+                                    },
+                                content = {
+                                    Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clickable {
-                                                onEvent(UsersEvent.NavigateToAddEditUserScreen(user.id))
-                                            },
+                                            .padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
                                         content = {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(8.dp),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                            Text(
+                                                modifier = Modifier.weight(1f),
+                                                text = "${user.name} ${user.surname.orEmpty()} ${user.nick.orEmpty()}",
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            IconButton(
+                                                onClick = { openDeleteUserDialog.value = user },
                                                 content = {
-                                                    // User Name, Surname, and Nick in one row
-                                                    Column(
-                                                        modifier = Modifier
-                                                            .weight(1f)
-                                                            .padding(end = 8.dp),
-                                                        content = {
-                                                            Row(
-                                                                modifier = Modifier.fillMaxWidth(),
-                                                            ) {
-                                                                Text(
-                                                                    modifier = Modifier.weight(0.7f),
-                                                                    text = user.name,
-                                                                    style = MaterialTheme.typography.bodyLarge,
-                                                                    maxLines = 1,
-                                                                    overflow = TextOverflow.Ellipsis
-                                                                )
-                                                                user.surname?.let {
-                                                                    Text(
-                                                                        modifier = Modifier.weight(
-                                                                            1f
-                                                                        ),
-                                                                        text = it,
-                                                                        style = MaterialTheme.typography.bodyLarge,
-                                                                        maxLines = 1,
-                                                                        overflow = TextOverflow.Ellipsis,
-                                                                    )
-                                                                }
-                                                                user.nick?.let {
-                                                                    Text(
-                                                                        modifier = Modifier.weight(
-                                                                            0.8f
-                                                                        ),
-                                                                        text = it,
-                                                                        style = MaterialTheme.typography.bodyLarge,
-                                                                        maxLines = 1,
-                                                                        overflow = TextOverflow.Ellipsis,
-                                                                    )
-                                                                }
-                                                            }
-                                                        }
-                                                    )
-                                                    IconButton(
-                                                        modifier = Modifier.weight(0.1f),
-                                                        onClick = {
-                                                            openDeleteUserDialog.value = user
-                                                        },
-                                                        content = {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Delete,
-                                                                contentDescription = "Delete"
-                                                            )
-                                                        }
+                                                    Icon(
+                                                        imageVector = Icons.Default.Delete,
+                                                        contentDescription = "Delete"
                                                     )
                                                 }
                                             )

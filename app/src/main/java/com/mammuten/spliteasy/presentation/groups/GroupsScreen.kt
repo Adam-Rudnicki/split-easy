@@ -70,52 +70,69 @@ fun GroupsScreen(
             TopAppBar(
                 title = { Text(text = "Groups") },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation icon click */ }) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
-                    }
+                    IconButton(
+                        onClick = { /* Handle navigation icon click */ },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu"
+                            )
+                        }
+                    )
                 },
                 actions = {
-                    IconButton(onClick = { isContextMenuVisible = !isContextMenuVisible }) {
-                        Icon(imageVector = Icons.Default.Sort, contentDescription = "Sort")
-                        DropdownMenu(
-                            expanded = isContextMenuVisible,
-                            onDismissRequest = { isContextMenuVisible = false },
-                            content = {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.NameAsc))
-                                        isContextMenuVisible = false
-                                    },
-                                    text = { Text(text = "Name asc") }
-                                )
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.NameDesc))
-                                        isContextMenuVisible = false
-                                    },
-                                    text = { Text(text = "Name desc") }
-                                )
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.DateAsc))
-                                        isContextMenuVisible = false
-                                    },
-                                    text = { Text(text = "Date asc") }
-                                )
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onEvent(GroupsEvent.Order(GroupOrder.DateDesc))
-                                        isContextMenuVisible = false
-                                    },
-                                    text = { Text(text = "Date asc") }
-                                )
-                            }
-                        )
-                    }
-
-                    IconButton(onClick = { onEvent(GroupsEvent.NavigateToUsersScreen) }) {
-                        Icon(imageVector = Icons.Default.Person, contentDescription = "Show Users")
-                    }
+                    IconButton(
+                        onClick = { isContextMenuVisible = !isContextMenuVisible },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Sort,
+                                contentDescription = "Sort"
+                            )
+                            DropdownMenu(
+                                expanded = isContextMenuVisible,
+                                onDismissRequest = { isContextMenuVisible = false },
+                                content = {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupsEvent.Order(GroupOrder.NameAsc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Name asc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupsEvent.Order(GroupOrder.NameDesc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Name desc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupsEvent.Order(GroupOrder.DateAsc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Date asc") }
+                                    )
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            onEvent(GroupsEvent.Order(GroupOrder.DateDesc))
+                                            isContextMenuVisible = false
+                                        },
+                                        text = { Text(text = "Date asc") }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                    IconButton(
+                        onClick = { onEvent(GroupsEvent.NavigateToUsersScreen) },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Show Users"
+                            )
+                        }
+                    )
                 }
             )
         },
@@ -131,60 +148,53 @@ fun GroupsScreen(
             )
         },
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 8.dp),
                 content = {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        content = {
-                            items(
-                                items = state.groups,
-                                key = { group -> group.id!! },
-                                itemContent = { group ->
-                                    OutlinedCard(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surface
-                                        ),
-                                        border = BorderStroke(width = 1.dp, color = Color.Black),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clickable {
-                                                onEvent(
-                                                    GroupsEvent.NavigateToGroupDetailsScreen(
-                                                        group.id!!
-                                                    )
-                                                )
-                                            },
+                    items(
+                        items = state.groups,
+                        key = { group -> group.id!! },
+                        itemContent = { group ->
+                            OutlinedCard(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                border = BorderStroke(width = 1.dp, color = Color.Black),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clickable {
+                                        onEvent(
+                                            GroupsEvent.NavigateToGroupDetailsScreen(group.id!!)
+                                        )
+                                    },
+                                content = {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
                                         content = {
-                                            Column(
-                                                modifier = Modifier.padding(8.dp),
-                                                content = {
-                                                    Text(
-                                                        text = group.name,
-                                                        style = MaterialTheme.typography.bodyLarge,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis
-                                                    )
-                                                    Text(
-                                                        text = group.created.toString(),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis,
-                                                    )
-                                                    group.description?.let {
-                                                        Text(
-                                                            text = it,
-                                                            style = MaterialTheme.typography.bodyMedium,
-                                                            maxLines = 3,
-                                                            overflow = TextOverflow.Ellipsis,
-                                                        )
-                                                    }
-                                                }
+                                            Text(
+                                                text = group.name,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
+                                            Text(
+                                                text = group.created.toString(),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                            )
+                                            group.description?.let {
+                                                Text(
+                                                    text = it,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    maxLines = 3,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
+                                            }
                                         }
                                     )
                                 }
