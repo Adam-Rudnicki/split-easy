@@ -16,8 +16,6 @@ import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,12 +43,10 @@ import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.ContributionOrder
-import com.mammuten.spliteasy.domain.util.order.GroupOrder
 import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
 import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import com.mammuten.spliteasy.presentation.components.MyDropdownMenu
-import com.mammuten.spliteasy.presentation.groups.GroupsEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
