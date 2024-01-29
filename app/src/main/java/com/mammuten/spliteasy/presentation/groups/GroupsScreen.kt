@@ -57,9 +57,7 @@ fun GroupsScreen(
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is GroupsViewModel.UiEvent.Navigate -> {
-                    navController.navigate(event.route)
-                }
+                is GroupsViewModel.UiEvent.Navigate -> navController.navigate(event.route)
             }
         }
     }

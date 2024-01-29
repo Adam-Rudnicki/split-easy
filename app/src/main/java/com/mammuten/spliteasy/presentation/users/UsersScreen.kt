@@ -26,8 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,19 +52,14 @@ fun UsersScreen(
     onEvent: (UsersEvent) -> Unit,
     eventFlow: SharedFlow<UsersViewModel.UiEvent>
 ) {
-    val openDeleteUserDialog = remember { mutableStateOf<User?>(null) }
+    var openDeleteUserDialog by remember { mutableStateOf<User?>(null) }
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is UsersViewModel.UiEvent.ShowSnackbar -> {
-                    snackBarHostState.showSnackbar(message = event.message)
-                }
-
-                is UsersViewModel.UiEvent.Navigate -> {
-                    navController.navigate(event.route)
-                }
+                is UsersViewModel.UiEvent.ShowSnackbar -> snackBarHostState.showSnackbar(message = event.message)
+                is UsersViewModel.UiEvent.Navigate -> navController.navigate(event.route)
             }
         }
     }
@@ -134,7 +131,7 @@ fun UsersScreen(
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             IconButton(
-                                                onClick = { openDeleteUserDialog.value = user },
+                                                onClick = { openDeleteUserDialog = user },
                                                 content = {
                                                     Icon(
                                                         imageVector = Icons.Default.Delete,
@@ -152,12 +149,12 @@ fun UsersScreen(
             )
 
             when {
-                openDeleteUserDialog.value != null -> {
-                    val userToDelete = openDeleteUserDialog.value!!
+                openDeleteUserDialog != null -> {
+                    val userToDelete = openDeleteUserDialog!!
                     ConfirmDismissDialog(
-                        onDismissRequest = { openDeleteUserDialog.value = null },
+                        onDismissRequest = { openDeleteUserDialog = null },
                         onConfirmation = {
-                            openDeleteUserDialog.value = null
+                            openDeleteUserDialog = null
                             onEvent(UsersEvent.DeleteUser(userToDelete))
                         },
                         dialogTitle = "Delete user",

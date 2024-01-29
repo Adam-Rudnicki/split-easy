@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Group
-import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.BillOrder
 import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
@@ -48,35 +47,19 @@ fun GroupDetailsScreen(
     onEvent: (GroupDetailsEvent) -> Unit,
     eventFlow: SharedFlow<GroupDetailsViewModel.UiEvent>,
 ) {
-    val openDeleteGroupDialog = remember { mutableStateOf(false) }
-    val openDeleteMemberDialog = remember { mutableStateOf<Member?>(null) }
+    var openDeleteGroupDialog by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
-    val expandedCard = remember { mutableStateOf(false) }
+    var isCardExpanded by remember { mutableStateOf(false) }
     var isContextMenuVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is GroupDetailsViewModel.UiEvent.ShowSnackbar -> {
+                is GroupDetailsViewModel.UiEvent.ShowSnackbar ->
                     snackBarHostState.showSnackbar(message = event.message)
-                }
-
-                is GroupDetailsViewModel.UiEvent.ShowSnackbarRestoreMember -> {
-                    val result = snackBarHostState.showSnackbar(
-                        message = event.message,
-                        actionLabel = event.actionLabel,
-                        duration = SnackbarDuration.Short
-                    )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        onEvent(GroupDetailsEvent.RestoreMember)
-                    }
-                }
 
                 is GroupDetailsViewModel.UiEvent.DeleteGroup -> navController.navigateUp()
-
-                is GroupDetailsViewModel.UiEvent.Navigate -> {
-                    navController.navigate(event.route)
-                }
+                is GroupDetailsViewModel.UiEvent.Navigate -> navController.navigate(event.route)
             }
         }
     }
@@ -125,7 +108,7 @@ fun GroupDetailsScreen(
                         }
                     )
                     IconButton(
-                        onClick = { openDeleteGroupDialog.value = true },
+                        onClick = { openDeleteGroupDialog = true },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -176,7 +159,7 @@ fun GroupDetailsScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { expandedCard.value = !expandedCard.value },
+                            .clickable { isCardExpanded = !isCardExpanded },
                         content = {
                             Column(
                                 modifier = Modifier.padding(8.dp),
@@ -187,7 +170,7 @@ fun GroupDetailsScreen(
                                             style = MaterialTheme.typography.bodyLarge,
                                             modifier = Modifier.padding(bottom = 4.dp)
                                         )
-                                        if (expandedCard.value) {
+                                        if (isCardExpanded) {
                                             it.description?.let { desc ->
                                                 Text(
                                                     text = "Description: $desc",
@@ -292,29 +275,15 @@ fun GroupDetailsScreen(
             )
 
             when {
-                openDeleteGroupDialog.value -> {
+                openDeleteGroupDialog -> {
                     ConfirmDismissDialog(
-                        onDismissRequest = { openDeleteGroupDialog.value = false },
+                        onDismissRequest = { openDeleteGroupDialog = false },
                         onConfirmation = {
-                            openDeleteGroupDialog.value = false
+                            openDeleteGroupDialog = false
                             onEvent(GroupDetailsEvent.DeleteGroup)
                         },
                         dialogTitle = "Delete group",
                         dialogText = "Are you sure you want to delete this group?",
-                        icon = Icons.Default.Delete
-                    )
-                }
-
-                openDeleteMemberDialog.value != null -> {
-                    val memberToDelete = openDeleteMemberDialog.value!!
-                    ConfirmDismissDialog(
-                        onDismissRequest = { openDeleteMemberDialog.value = null },
-                        onConfirmation = {
-                            openDeleteMemberDialog.value = null
-                            onEvent(GroupDetailsEvent.DeleteMember(memberToDelete))
-                        },
-                        dialogTitle = "Delete member",
-                        dialogText = "Are you sure you want to delete this member?",
                         icon = Icons.Default.Delete
                     )
                 }
@@ -335,18 +304,6 @@ fun GroupDetailsScreenPreview() {
                 name = "Group 1",
                 description = "Description 1",
                 created = Date()
-            ),
-            members = listOf(
-                Member(
-                    id = 1,
-                    name = "Member 1",
-                    groupId = 1
-                ),
-                Member(
-                    id = 2,
-                    name = "Member 2",
-                    groupId = 1
-                )
             ),
             bills = listOf(
                 Bill(

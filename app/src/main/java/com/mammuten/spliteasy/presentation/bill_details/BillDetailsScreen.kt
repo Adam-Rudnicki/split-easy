@@ -61,11 +61,11 @@ fun BillDetailsScreen(
     onEvent: (BillDetailsEvent) -> Unit,
     eventFlow: SharedFlow<BillDetailsViewModel.UiEvent>,
 ) {
-    val openDeleteBillDialog = remember { mutableStateOf(false) }
-    val openDeleteContributionDialog = remember { mutableStateOf<Contribution?>(null) }
+    var openDeleteBillDialog by remember { mutableStateOf(false) }
+    var openDeleteContributionDialog by remember { mutableStateOf<Contribution?>(null) }
     val snackBarHostState = remember { SnackbarHostState() }
-    val expandedCard = remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(false) }
+    var isCardExpanded by remember { mutableStateOf(false) }
+    var isContextMenuVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
@@ -82,10 +82,7 @@ fun BillDetailsScreen(
                 }
 
                 is BillDetailsViewModel.UiEvent.DeleteBill -> navController.navigateUp()
-
-                is BillDetailsViewModel.UiEvent.Navigate -> {
-                    navController.navigate(event.route)
-                }
+                is BillDetailsViewModel.UiEvent.Navigate -> navController.navigate(event.route)
             }
         }
     }
@@ -119,15 +116,15 @@ fun BillDetailsScreen(
                         }
                     )
                     IconButton(
-                        onClick = { expanded = !expanded },
+                        onClick = { isContextMenuVisible = !isContextMenuVisible },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.SwapVerticalCircle,
                                 contentDescription = "Sort"
                             )
                             MyDropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
+                                expanded = isContextMenuVisible,
+                                onDismissRequest = { isContextMenuVisible = false },
                                 items = listOf(
                                     "Amount Paid Asc" to {
                                         BillDetailsEvent.ContributionsOrder(
@@ -160,7 +157,7 @@ fun BillDetailsScreen(
                         }
                     )
                     IconButton(
-                        onClick = { openDeleteBillDialog.value = true },
+                        onClick = { openDeleteBillDialog = true },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -203,7 +200,7 @@ fun BillDetailsScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { expandedCard.value = !expandedCard.value },
+                            .clickable { isCardExpanded = !isCardExpanded },
                         content = {
                             Column(
                                 modifier = Modifier.padding(8.dp),
@@ -214,7 +211,7 @@ fun BillDetailsScreen(
                                             style = MaterialTheme.typography.bodyLarge,
                                             modifier = Modifier.padding(bottom = 2.dp)
                                         )
-                                        if (expandedCard.value) {
+                                        if (isCardExpanded) {
                                             it.description?.let { desc ->
                                                 Text(
                                                     text = "Description: $desc",
@@ -274,7 +271,7 @@ fun BillDetailsScreen(
                                         amountPaid = contribution.amountPaid.toString(),
                                         amountOwed = contribution.amountOwed.toString(),
                                         onDeleteClick = {
-                                            openDeleteContributionDialog.value = contribution
+                                            openDeleteContributionDialog = contribution
                                         }
                                     )
                                 }
@@ -283,11 +280,11 @@ fun BillDetailsScreen(
                     )
 
                     when {
-                        openDeleteBillDialog.value -> {
+                        openDeleteBillDialog -> {
                             ConfirmDismissDialog(
-                                onDismissRequest = { openDeleteBillDialog.value = false },
+                                onDismissRequest = { openDeleteBillDialog = false },
                                 onConfirmation = {
-                                    openDeleteBillDialog.value = false
+                                    openDeleteBillDialog = false
                                     onEvent(BillDetailsEvent.DeleteBill)
                                 },
                                 dialogTitle = "Delete bill",
@@ -296,12 +293,12 @@ fun BillDetailsScreen(
                             )
                         }
 
-                        openDeleteContributionDialog.value != null -> {
-                            val contributionToDelete = openDeleteContributionDialog.value!!
+                        openDeleteContributionDialog != null -> {
+                            val contributionToDelete = openDeleteContributionDialog!!
                             ConfirmDismissDialog(
-                                onDismissRequest = { openDeleteContributionDialog.value = null },
+                                onDismissRequest = { openDeleteContributionDialog = null },
                                 onConfirmation = {
-                                    openDeleteContributionDialog.value = null
+                                    openDeleteContributionDialog = null
                                     onEvent(BillDetailsEvent.DeleteContribution(contributionToDelete))
                                 },
                                 dialogTitle = "Delete contribution",

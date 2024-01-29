@@ -39,7 +39,7 @@ fun GroupMembersScreen(
     onEvent: (GroupMembersEvent) -> Unit,
     eventFlow: SharedFlow<GroupMembersViewModel.UiEvent>,
 ) {
-    val openDeleteMemberDialog = remember { mutableStateOf<Member?>(null) }
+    var openDeleteMemberDialog by remember { mutableStateOf<Member?>(null) }
     val snackBarHostState = remember { SnackbarHostState() }
     var isContextSortMenuVisible by remember { mutableStateOf(false) }
     var isContextAddMenuVisible by remember { mutableStateOf(false) }
@@ -47,9 +47,8 @@ fun GroupMembersScreen(
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is GroupMembersViewModel.UiEvent.ShowSnackbar -> {
+                is GroupMembersViewModel.UiEvent.ShowSnackbar ->
                     snackBarHostState.showSnackbar(message = event.message)
-                }
 
                 is GroupMembersViewModel.UiEvent.ShowSnackbarRestoreMember -> {
                     val result = snackBarHostState.showSnackbar(
@@ -62,9 +61,7 @@ fun GroupMembersScreen(
                     }
                 }
 
-                is GroupMembersViewModel.UiEvent.Navigate -> {
-                    navController.navigate(event.route)
-                }
+                is GroupMembersViewModel.UiEvent.Navigate -> navController.navigate(event.route)
             }
         }
     }
@@ -150,7 +147,7 @@ fun GroupMembersScreen(
                                 color = member.userId?.let { MaterialTheme.colorScheme.surface }
                                     ?: MaterialTheme.colorScheme.background,
                                 member = member,
-                                onDelete = { openDeleteMemberDialog.value = member },
+                                onDelete = { openDeleteMemberDialog = member },
                                 onClick = {
                                     onEvent(
                                         GroupMembersEvent.NavigateToAddEditMemberScreen(member.id)
@@ -163,12 +160,12 @@ fun GroupMembersScreen(
             )
 
             when {
-                openDeleteMemberDialog.value != null -> {
-                    val memberToDelete = openDeleteMemberDialog.value!!
+                openDeleteMemberDialog != null -> {
+                    val memberToDelete = openDeleteMemberDialog!!
                     ConfirmDismissDialog(
-                        onDismissRequest = { openDeleteMemberDialog.value = null },
+                        onDismissRequest = { openDeleteMemberDialog = null },
                         onConfirmation = {
-                            openDeleteMemberDialog.value = null
+                            openDeleteMemberDialog = null
                             onEvent(GroupMembersEvent.DeleteMember(memberToDelete))
                         },
                         dialogTitle = "Delete member",

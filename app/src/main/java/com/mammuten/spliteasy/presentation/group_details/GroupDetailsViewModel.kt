@@ -6,13 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
-import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
 import com.mammuten.spliteasy.domain.util.order.BillOrder
-import com.mammuten.spliteasy.domain.util.MemberHasContributions
-import com.mammuten.spliteasy.domain.util.order.MemberOrder
 import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -27,7 +23,6 @@ import javax.inject.Inject
 class GroupDetailsViewModel @Inject constructor(
     private val groupUseCases: GroupUseCases,
     private val billUseCases: BillUseCases,
-    private val memberUseCases: MemberUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -39,16 +34,12 @@ class GroupDetailsViewModel @Inject constructor(
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
 
-    private var recentlyDeletedMember: Member? = null
-
     private var getGroupJob: Job? = null
     private var getBillsJob: Job? = null
-    private var getMembersJob: Job? = null
 
     init {
         getGroup()
         getBills(state.billOrder)
-        getMembers(state.memberOrder)
     }
 
     fun onEvent(event: GroupDetailsEvent) {
@@ -58,41 +49,15 @@ class GroupDetailsViewModel @Inject constructor(
                     state.group?.let { group ->
                         getGroupJob?.cancel()
                         getBillsJob?.cancel()
-                        getMembersJob?.cancel()
                         groupUseCases.deleteGroupUseCase(group)
                         _eventFlow.emit(UiEvent.DeleteGroup)
                     }
                 }
             }
 
-            is GroupDetailsEvent.DeleteMember -> {
-                viewModelScope.launch {
-                    try {
-                        memberUseCases.deleteMemberUseCase(event.member)
-                        recentlyDeletedMember = event.member
-                        _eventFlow.emit(UiEvent.ShowSnackbarRestoreMember("Member deleted", "Undo"))
-                    } catch (e: MemberHasContributions) {
-                        _eventFlow.emit(UiEvent.ShowSnackbar(e.message!!))
-                    }
-                }
-            }
-
-            is GroupDetailsEvent.RestoreMember -> {
-                viewModelScope.launch {
-                    memberUseCases.upsertMemberUseCase(recentlyDeletedMember ?: return@launch)
-                    recentlyDeletedMember = null
-                }
-            }
-
             is GroupDetailsEvent.BillsOrder -> {
                 if (state.billOrder != event.billOrder) {
                     getBills(event.billOrder)
-                }
-            }
-
-            is GroupDetailsEvent.MembersOrder -> {
-                if (state.memberOrder != event.memberOrder) {
-                    getMembers(event.memberOrder)
                 }
             }
 
@@ -132,20 +97,8 @@ class GroupDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    private fun getMembers(memberOrder: MemberOrder) {
-        getMembersJob?.cancel()
-        getMembersJob = memberUseCases.getMembersByGroupIdUseCase(currentGroupId, memberOrder)
-            .onEach { members ->
-                state = state.copy(members = members, memberOrder = memberOrder)
-            }.launchIn(viewModelScope)
-    }
-
     sealed interface UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent
-        data class ShowSnackbarRestoreMember(
-            val message: String, val actionLabel: String? = null
-        ) : UiEvent
-
         data object DeleteGroup : UiEvent
         data class Navigate(val route: String) : UiEvent
     }
