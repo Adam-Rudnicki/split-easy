@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.SwapVerticalCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -101,7 +102,7 @@ fun GroupDetailsScreen(
                         onClick = { isContextMenuVisible = !isContextMenuVisible },
                         content = {
                             Icon(
-                                imageVector = Icons.Default.Sort,
+                                imageVector = Icons.Default.SwapVerticalCircle,
                                 contentDescription = "Sort"
                             )
                             MyDropdownMenu(
