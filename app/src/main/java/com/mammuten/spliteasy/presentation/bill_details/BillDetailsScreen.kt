@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -46,7 +45,6 @@ import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.ContributionOrder
-import com.mammuten.spliteasy.domain.util.order.OrderType
 import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
 import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
@@ -124,7 +122,7 @@ fun BillDetailsScreen(
                                         onClick = {
                                             onEvent(
                                                 BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountPaid(OrderType.Ascending)
+                                                    ContributionOrder.AmountPaidAsc
                                                 )
                                             )
                                             expanded = false
@@ -135,7 +133,7 @@ fun BillDetailsScreen(
                                         onClick = {
                                             onEvent(
                                                 BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountPaid(OrderType.Descending)
+                                                    ContributionOrder.AmountPaidDesc
                                                 )
                                             )
                                             expanded = false
@@ -146,23 +144,23 @@ fun BillDetailsScreen(
                                         onClick = {
                                             onEvent(
                                                 BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountOwed(OrderType.Ascending)
+                                                    ContributionOrder.AmountOwedAsc
                                                 )
                                             )
                                             expanded = false
                                         },
-                                        text = { Text(text = "Amount Paid Desc") }
+                                        text = { Text(text = "Amount Owed Desc") }
                                     )
                                     DropdownMenuItem(
                                         onClick = {
                                             onEvent(
                                                 BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountOwed(OrderType.Descending)
+                                                    ContributionOrder.AmountOwedDesc
                                                 )
                                             )
                                             expanded = false
                                         },
-                                        text = { Text(text = "Amount Paid Desc") }
+                                        text = { Text(text = "Amount Owed Desc") }
                                     )
                                 }
                             )

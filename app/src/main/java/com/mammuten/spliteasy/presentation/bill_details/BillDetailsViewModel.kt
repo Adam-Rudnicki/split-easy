@@ -83,9 +83,7 @@ class BillDetailsViewModel @Inject constructor(
             }
 
             is BillDetailsEvent.ContributionsOrder -> {
-                if (state.contributionOrder::class != event.contributionOrder::class ||
-                    state.contributionOrder.orderType != event.contributionOrder.orderType
-                ) {
+                if (state.contributionOrder != event.contributionOrder) {
                     getMemberAndContribution(event.contributionOrder)
                 }
             }

@@ -1,13 +1,9 @@
 package com.mammuten.spliteasy.domain.util.order
 
-sealed class ContributionOrder(val orderType: OrderType) {
-    class AmountPaid(orderType: OrderType) : ContributionOrder(orderType)
-    class AmountOwed(orderType: OrderType) : ContributionOrder(orderType)
+sealed interface ContributionOrder {
+    data object AmountPaidAsc : ContributionOrder
+    data object AmountPaidDesc : ContributionOrder
 
-    fun copy(orderType: OrderType): ContributionOrder {
-        return when (this) {
-            is AmountPaid -> AmountPaid(orderType)
-            is AmountOwed -> AmountOwed(orderType)
-        }
-    }
+    data object AmountOwedAsc : ContributionOrder
+    data object AmountOwedDesc : ContributionOrder
 }

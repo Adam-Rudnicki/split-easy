@@ -16,8 +16,10 @@ class GetUsersUseCase(
             when (userOrder) {
                 is UserOrder.NameAsc -> users.sortedBy { it.name.lowercase() }
                 is UserOrder.NameDesc -> users.sortedByDescending { it.name.lowercase() }
+
                 is UserOrder.SurnameAsc -> users.sortedWith(compareBy(nullsLast()) { it.surname })
                 is UserOrder.SurnameDesc -> users.sortedWith(compareByDescending(nullsFirst()) { it.surname })
+
                 is UserOrder.NickAsc -> users.sortedWith(compareBy(nullsLast()) { it.nick })
                 is UserOrder.NickDesc -> users.sortedWith(compareByDescending(nullsFirst()) { it.nick })
             }
