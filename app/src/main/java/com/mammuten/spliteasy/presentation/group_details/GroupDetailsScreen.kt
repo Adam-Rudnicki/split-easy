@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.SwapVerticalCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
