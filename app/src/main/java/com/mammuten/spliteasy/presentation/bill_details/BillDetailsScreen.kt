@@ -45,9 +45,12 @@ import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.ContributionOrder
+import com.mammuten.spliteasy.domain.util.order.GroupOrder
 import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
 import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
+import com.mammuten.spliteasy.presentation.components.MyDropdownMenu
+import com.mammuten.spliteasy.presentation.groups.GroupsEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -113,56 +116,37 @@ fun BillDetailsScreen(
                                 imageVector = Icons.Default.Sort,
                                 contentDescription = "Sort"
                             )
-                            DropdownMenu(
+                            MyDropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
-                                modifier = Modifier.padding(4.dp),
-                                content = {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(
-                                                BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountPaidAsc
-                                                )
+                                items = listOf(
+                                    "Amount Paid Asc" to {
+                                        BillDetailsEvent.ContributionsOrder(
+                                            ContributionOrder.AmountPaidAsc
+                                        )
+                                    },
+                                    "Amount Paid Desc" to {
+                                        onEvent(
+                                            BillDetailsEvent.ContributionsOrder(
+                                                ContributionOrder.AmountPaidDesc
                                             )
-                                            expanded = false
-                                        },
-                                        text = { Text(text = "Amount Paid Asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(
-                                                BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountPaidDesc
-                                                )
+                                        )
+                                    },
+                                    "Amount Owed Asc" to {
+                                        onEvent(
+                                            BillDetailsEvent.ContributionsOrder(
+                                                ContributionOrder.AmountOwedAsc
                                             )
-                                            expanded = false
-                                        },
-                                        text = { Text(text = "Amount Paid Desc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(
-                                                BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountOwedAsc
-                                                )
+                                        )
+                                    },
+                                    "Amount Owed Desc" to {
+                                        onEvent(
+                                            BillDetailsEvent.ContributionsOrder(
+                                                ContributionOrder.AmountOwedDesc
                                             )
-                                            expanded = false
-                                        },
-                                        text = { Text(text = "Amount Owed Desc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(
-                                                BillDetailsEvent.ContributionsOrder(
-                                                    ContributionOrder.AmountOwedDesc
-                                                )
-                                            )
-                                            expanded = false
-                                        },
-                                        text = { Text(text = "Amount Owed Desc") }
-                                    )
-                                }
+                                        )
+                                    }
+                                )
                             )
                         }
                     )
@@ -231,7 +215,12 @@ fun BillDetailsScreen(
                                             }
                                             it.amount?.let { amount ->
                                                 Text(
-                                                    text = "Amount: ${String.format("%.2f", amount)}",
+                                                    text = "Amount: ${
+                                                        String.format(
+                                                            "%.2f",
+                                                            amount
+                                                        )
+                                                    }",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     modifier = Modifier.padding(bottom = 2.dp)
                                                 )

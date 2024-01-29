@@ -17,8 +17,8 @@ class GetGroupsUseCase(
                 is GroupOrder.NameAsc -> groups.sortedBy { it.name.lowercase() }
                 is GroupOrder.NameDesc -> groups.sortedByDescending { it.name.lowercase() }
 
-                is GroupOrder.DateAsc -> groups.sortedBy { it.name.lowercase() }
-                is GroupOrder.DateDesc -> groups.sortedByDescending { it.name.lowercase() }
+                is GroupOrder.DateAsc -> groups.sortedBy { it.created }
+                is GroupOrder.DateDesc -> groups.sortedByDescending { it.created }
             }
         }
     }

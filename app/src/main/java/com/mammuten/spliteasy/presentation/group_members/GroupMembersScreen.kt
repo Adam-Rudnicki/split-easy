@@ -25,8 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.util.order.GroupOrder
 import com.mammuten.spliteasy.domain.util.order.MemberOrder
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
+import com.mammuten.spliteasy.presentation.components.MyDropdownMenu
+import com.mammuten.spliteasy.presentation.groups.GroupsEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -92,26 +95,25 @@ fun GroupMembersScreen(
                                 imageVector = Icons.Default.Sort,
                                 contentDescription = "Sort menu"
                             )
-                            DropdownMenu(
+                            MyDropdownMenu(
                                 expanded = isContextSortMenuVisible,
                                 onDismissRequest = { isContextSortMenuVisible = false },
-                                modifier = Modifier.padding(4.dp),
-                                content = {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameAsc))
-                                            isContextSortMenuVisible = false
-                                        },
-                                        text = { Text(text = "Name asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupMembersEvent.MembersOrder(MemberOrder.NameDesc))
-                                            isContextSortMenuVisible = false
-                                        },
-                                        text = { Text(text = "Name desc") }
-                                    )
-                                }
+                                items = listOf(
+                                    "Name asc" to {
+                                        onEvent(
+                                            GroupMembersEvent.MembersOrder(
+                                                MemberOrder.NameAsc
+                                            )
+                                        )
+                                    },
+                                    "Name desc" to {
+                                        onEvent(
+                                            GroupMembersEvent.MembersOrder(
+                                                MemberOrder.NameDesc
+                                            )
+                                        )
+                                    },
+                                )
                             )
                         }
                     )
@@ -122,26 +124,13 @@ fun GroupMembersScreen(
                                 imageVector = Icons.Default.PersonAdd,
                                 contentDescription = "Add users"
                             )
-                            DropdownMenu(
+                            MyDropdownMenu(
                                 expanded = isContextAddMenuVisible,
                                 onDismissRequest = { isContextAddMenuVisible = false },
-                                modifier = Modifier.padding(4.dp),
-                                content = {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupMembersEvent.NavigateToAddUsersScreen)
-                                            isContextAddMenuVisible = false
-                                        },
-                                        text = { Text(text = "Add user") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupMembersEvent.NavigateToAddEditMemberScreen())
-                                            isContextAddMenuVisible = false
-                                        },
-                                        text = { Text(text = "Add member") }
-                                    )
-                                }
+                                items = listOf(
+                                    "Add user" to { onEvent(GroupMembersEvent.NavigateToAddUsersScreen) },
+                                    "Add member" to { onEvent(GroupMembersEvent.NavigateToAddEditMemberScreen()) },
+                                )
                             )
                         }
                     )

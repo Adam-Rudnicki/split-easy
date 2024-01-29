@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.util.order.GroupOrder
+import com.mammuten.spliteasy.presentation.components.MyDropdownMenu
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -88,39 +89,15 @@ fun GroupsScreen(
                                 imageVector = Icons.Default.Sort,
                                 contentDescription = "Sort"
                             )
-                            DropdownMenu(
+                            MyDropdownMenu(
                                 expanded = isContextMenuVisible,
                                 onDismissRequest = { isContextMenuVisible = false },
-                                content = {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupsEvent.Order(GroupOrder.NameAsc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Name asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupsEvent.Order(GroupOrder.NameDesc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Name desc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupsEvent.Order(GroupOrder.DateAsc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Date asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupsEvent.Order(GroupOrder.DateDesc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Date asc") }
-                                    )
-                                }
+                                items = listOf(
+                                    "Name asc" to { onEvent(GroupsEvent.Order(GroupOrder.NameAsc)) },
+                                    "Name desc" to { onEvent(GroupsEvent.Order(GroupOrder.NameDesc)) },
+                                    "Date asc" to { onEvent(GroupsEvent.Order(GroupOrder.DateAsc)) },
+                                    "Date desc" to { onEvent(GroupsEvent.Order(GroupOrder.DateDesc)) }
+                                )
                             )
                         }
                     )

@@ -34,6 +34,8 @@ import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.BillOrder
 import com.mammuten.spliteasy.presentation.util.Screen
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
+import com.mammuten.spliteasy.presentation.components.MyDropdownMenu
+import com.mammuten.spliteasy.presentation.group_members.GroupMembersEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -103,53 +105,23 @@ fun GroupDetailsScreen(
                                 imageVector = Icons.Default.Sort,
                                 contentDescription = "Sort"
                             )
-                            DropdownMenu(
+                            MyDropdownMenu(
                                 expanded = isContextMenuVisible,
                                 onDismissRequest = { isContextMenuVisible = false },
-                                content = {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAsc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Name asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDesc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Name desc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAsc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Date asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Date desc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAsc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Amount asc") }
-                                    )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountDesc))
-                                            isContextMenuVisible = false
-                                        },
-                                        text = { Text(text = "Amount desc") }
-                                    )
-                                }
+                                items = listOf(
+                                    "Name asc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAsc)) },
+                                    "Name desc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDesc)) },
+                                    "Date asc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAsc)) },
+                                    "Date desc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc)) },
+                                    "Amount asc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAsc)) },
+                                    "Amount desc" to {
+                                        onEvent(
+                                            GroupDetailsEvent.BillsOrder(
+                                                BillOrder.AmountDesc
+                                            )
+                                        )
+                                    },
+                                )
                             )
                         }
                     )
@@ -281,7 +253,10 @@ fun GroupDetailsScreen(
                                                             bill.amount?.let {
                                                                 Text(
                                                                     textAlign = TextAlign.End,
-                                                                    text = String.format("%.2f", it),
+                                                                    text = String.format(
+                                                                        "%.2f",
+                                                                        it
+                                                                    ),
                                                                     modifier = Modifier.weight(1f),
                                                                     style = MaterialTheme.typography.bodyLarge,
                                                                     maxLines = 1,

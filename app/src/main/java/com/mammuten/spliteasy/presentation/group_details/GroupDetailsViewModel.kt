@@ -13,7 +13,6 @@ import com.mammuten.spliteasy.domain.usecase.member.MemberUseCases
 import com.mammuten.spliteasy.domain.util.order.BillOrder
 import com.mammuten.spliteasy.domain.util.MemberHasContributions
 import com.mammuten.spliteasy.domain.util.order.MemberOrder
-import com.mammuten.spliteasy.presentation.group_members.GroupMembersViewModel
 import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
