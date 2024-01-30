@@ -32,6 +32,8 @@ class AddUsersToGroupViewModel @Inject constructor(
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
 
+    private var isSaving = false
+
     init {
         getUsersNotInGroup()
     }
@@ -39,6 +41,8 @@ class AddUsersToGroupViewModel @Inject constructor(
     fun onEvent(event: AddUsersToGroupEvent) {
         when (event) {
             is AddUsersToGroupEvent.SaveUsers -> {
+                if (isSaving) return
+                isSaving = true
                 viewModelScope.launch {
                     val selectedUsers = state.selectedUsers.filter { it.value }.keys
                     if (selectedUsers.isNotEmpty()) {

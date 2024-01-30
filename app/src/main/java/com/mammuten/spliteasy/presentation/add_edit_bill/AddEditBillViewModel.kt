@@ -42,6 +42,8 @@ class AddEditBillViewModel @Inject constructor(
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
     private var currentBillId: Int? = null
 
+    private var isSaving = false
+
     init {
         viewModelScope.launch {
             savedStateHandle.get<Int>("billId")?.let { id ->
@@ -127,6 +129,8 @@ class AddEditBillViewModel @Inject constructor(
             }
 
             is AddEditBillEvent.SaveBill -> {
+                if (isSaving) return
+                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null || description.error != null || amount.error != null || date.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))

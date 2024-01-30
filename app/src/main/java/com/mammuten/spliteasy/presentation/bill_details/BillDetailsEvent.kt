@@ -10,5 +10,5 @@ sealed interface BillDetailsEvent {
     data class ContributionsOrder(val contributionOrder: ContributionOrder) : BillDetailsEvent
     data object NavigateToAddEditBillScreen : BillDetailsEvent
     data object NavigateToManageContributionsScreen : BillDetailsEvent
-    data object NavigateToCalculateScreen : BillDetailsEvent
+    data object Check : BillDetailsEvent
 }

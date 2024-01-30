@@ -13,8 +13,7 @@ import java.util.Date
         ForeignKey(
             entity = GroupEntity::class,
             parentColumns = ["id"],
-            childColumns = ["groupId"],
-            onDelete = ForeignKey.CASCADE,
+            childColumns = ["groupId"]
         )
     ]
 )

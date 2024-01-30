@@ -14,7 +14,7 @@ import com.mammuten.spliteasy.data.source.local.entity.member.MemberEntity
             entity = BillEntity::class,
             parentColumns = ["id"],
             childColumns = ["billId"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = MemberEntity::class,

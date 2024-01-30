@@ -16,13 +16,14 @@ class GetMembersAndContributionsInBillUseCase(
     ): Flow<Map<Member, Contribution>> {
         return generalRepo.getMembersAndContributionsInBill(billId).map { map ->
             contributionOrder?.let { order ->
-                when (order) {
-                    is ContributionOrder.AmountPaidAsc -> map.toSortedMap(compareBy { map[it]!!.amountPaid })
-                    is ContributionOrder.AmountPaidDesc -> map.toSortedMap(compareByDescending { map[it]!!.amountPaid })
-
-                    is ContributionOrder.AmountOwedAsc -> map.toSortedMap(compareBy { map[it]!!.amountOwed })
-                    is ContributionOrder.AmountOwedDesc -> map.toSortedMap(compareByDescending { map[it]!!.amountOwed })
-                }
+                map.toList().let { list ->
+                    when (order) {
+                        is ContributionOrder.AmountPaidAsc -> list.sortedBy { it.second.amountPaid }
+                        is ContributionOrder.AmountPaidDesc -> list.sortedByDescending { it.second.amountPaid }
+                        is ContributionOrder.AmountOwedAsc -> list.sortedBy { it.second.amountOwed }
+                        is ContributionOrder.AmountOwedDesc -> list.sortedByDescending { it.second.amountOwed }
+                    }
+                }.toMap()
             } ?: map
         }
     }

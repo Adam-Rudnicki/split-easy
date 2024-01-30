@@ -3,6 +3,7 @@ package com.mammuten.spliteasy.data.repo
 import com.mammuten.spliteasy.data.mapper.asContributionEntityList
 import com.mammuten.spliteasy.data.mapper.asContributionModelList
 import com.mammuten.spliteasy.data.mapper.asEntity
+import com.mammuten.spliteasy.data.mapper.asModel
 import com.mammuten.spliteasy.data.source.local.LocalSplitDataSource
 import com.mammuten.spliteasy.domain.model.Contribution
 import kotlinx.coroutines.flow.Flow

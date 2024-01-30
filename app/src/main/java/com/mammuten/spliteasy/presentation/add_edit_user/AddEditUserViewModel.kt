@@ -37,6 +37,8 @@ class AddEditUserViewModel @Inject constructor(
 
     private var currentUserId: Int? = null
 
+    private var isSaving = false
+
     init {
         viewModelScope.launch {
             savedStateHandle.get<Int>("userId")?.let { id ->
@@ -109,6 +111,8 @@ class AddEditUserViewModel @Inject constructor(
             }
 
             is AddEditUserEvent.SaveUser -> {
+                if (isSaving) return
+                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null || surname.error != null || nick.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))

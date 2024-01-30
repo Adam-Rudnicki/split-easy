@@ -1,6 +1,7 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -11,6 +12,7 @@ import com.mammuten.spliteasy.domain.usecase.bill.BillUseCases
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
 import com.mammuten.spliteasy.domain.usecase.general.GeneralUseCases
 import com.mammuten.spliteasy.domain.util.order.ContributionOrder
+import com.mammuten.spliteasy.presentation.manage_contributions.ManageContributionsViewModel
 import com.mammuten.spliteasy.presentation.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -112,8 +114,16 @@ class BillDetailsViewModel @Inject constructor(
                 }
             }
 
-            is BillDetailsEvent.NavigateToCalculateScreen -> {
+            is BillDetailsEvent.Check -> {
                 viewModelScope.launch {
+                    if (!isSumValid()) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbarRestoreContribution(
+                                message = "Sum of amount paid and owed must be equal"
+                            )
+                        )
+                        return@launch
+                    }
                     _eventFlow.emit(
                         UiEvent.Navigate(
                             Screen.CalculateScreen.route + "/${currentBillId}"
@@ -145,7 +155,22 @@ class BillDetailsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
+    private fun isSumValid(): Boolean {
+        val (sumOfAmountPaid, sumOfAmountOwed) =
+            state.membersAndContributions.fold(
+                initial = Pair(mutableDoubleStateOf(0.0), mutableDoubleStateOf(0.0)),
+                operation = { pair, (_, contribution) ->
+                    pair.apply {
+                        first.doubleValue += contribution.amountPaid
+                        second.doubleValue += contribution.amountOwed
+                    }
+                }
+            )
+        return sumOfAmountPaid.doubleValue == sumOfAmountOwed.doubleValue
+    }
+
     sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
         data class ShowSnackbarRestoreContribution(
             val message: String, val actionLabel: String? = null
         ) : UiEvent

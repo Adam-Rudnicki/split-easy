@@ -34,6 +34,8 @@ class ManageContributionsViewModel @Inject constructor(
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
     private val currentBillId: Int = checkNotNull(savedStateHandle["billId"])
 
+    private var isSaving = false
+
     init {
         getAllMembersAndContributions()
     }
@@ -69,11 +71,9 @@ class ManageContributionsViewModel @Inject constructor(
             }
 
             is ManageContributionsEvent.SaveContributions -> {
+                if (isSaving) return
+                isSaving = true
                 viewModelScope.launch {
-                    if (!isSumValid()) {
-                        _eventFlow.emit(UiEvent.ShowSnackbar("Sum of amount paid and owed must be equal"))
-                        return@launch
-                    }
                     if (state.any { it.amountPaidState.error != null || it.amountOwedState.error != null }) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
@@ -151,23 +151,15 @@ class ManageContributionsViewModel @Inject constructor(
         }
     }
 
-    private fun isSumValid(): Boolean {
-        val sumOfAmountPaid =
-            state.mapNotNull { it.amountPaidState.value.toDoubleOrNull() }.sumOf { it }
-        val sumOfAmountOwed =
-            state.mapNotNull { it.amountOwedState.value.toDoubleOrNull() }.sumOf { it }
-        return sumOfAmountPaid == sumOfAmountOwed
-    }
-
     data class MemberState(
         val member: Member,
         var amountPaidState: TextFieldState,
         var amountOwedState: TextFieldState,
     )
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
-        data object SaveContributions : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data object SaveContributions : UiEvent
     }
 }
 

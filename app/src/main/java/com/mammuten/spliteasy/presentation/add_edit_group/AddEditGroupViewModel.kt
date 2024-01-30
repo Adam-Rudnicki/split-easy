@@ -34,6 +34,8 @@ class AddEditGroupViewModel @Inject constructor(
 
     private var currentGroupId: Int? = null
 
+    private var isSaving = false
+
     init {
         viewModelScope.launch {
             savedStateHandle.get<Int>("groupId")?.let { id ->
@@ -87,6 +89,8 @@ class AddEditGroupViewModel @Inject constructor(
             }
 
             is AddEditGroupEvent.SaveGroup -> {
+                if (isSaving) return
+                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null || description.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))

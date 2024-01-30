@@ -69,6 +69,9 @@ fun BillDetailsScreen(
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
+                is BillDetailsViewModel.UiEvent.ShowSnackbar ->
+                    snackBarHostState.showSnackbar(message = event.message)
+
                 is BillDetailsViewModel.UiEvent.ShowSnackbarRestoreContribution -> {
                     val result = snackBarHostState.showSnackbar(
                         message = event.message,
@@ -248,7 +251,7 @@ fun BillDetailsScreen(
                                         memberHeaderText = "Member",
                                         amountPaidHeaderText = "Paid",
                                         amountOwedHeaderText = "Owed",
-                                        onCalculateClick = { onEvent(BillDetailsEvent.NavigateToCalculateScreen) }
+                                        onCalculateClick = { onEvent(BillDetailsEvent.Check) }
                                     )
                                 }
                             )

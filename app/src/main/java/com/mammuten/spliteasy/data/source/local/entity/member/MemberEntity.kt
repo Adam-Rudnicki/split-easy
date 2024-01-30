@@ -14,7 +14,7 @@ import com.mammuten.spliteasy.data.source.local.entity.user.UserEntity
             entity = GroupEntity::class,
             parentColumns = ["id"],
             childColumns = ["groupId"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = UserEntity::class,

@@ -38,6 +38,8 @@ class AddEditMemberViewModel @Inject constructor(
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
     private var currentMemberId: Int? = null
 
+    private var isSaving = false
+
     init {
         viewModelScope.launch {
             savedStateHandle.get<Int>("memberId")?.let { id ->
@@ -79,6 +81,8 @@ class AddEditMemberViewModel @Inject constructor(
             }
 
             is AddEditMemberEvent.SaveMember -> {
+                if (isSaving) return
+                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
