@@ -17,7 +17,6 @@ import com.mammuten.spliteasy.domain.usecase.bill.GetBillsByGroupIdUseCase
 import com.mammuten.spliteasy.domain.usecase.bill.UpsertBillUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
 import com.mammuten.spliteasy.domain.usecase.contribution.DeleteContributionUseCase
-import com.mammuten.spliteasy.domain.usecase.contribution.GetContributionByBillIdAndMemberIdUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.GetContributionsByBillIdUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.UpdateContributionsUseCase
 import com.mammuten.spliteasy.domain.usecase.contribution.UpsertContributionUseCase
