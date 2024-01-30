@@ -46,13 +46,13 @@ fun ManageContributionsScreen(
     onEvent: (ManageContributionsEvent) -> Unit,
     eventFlow: SharedFlow<ManageContributionsViewModel.UiEvent>
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is ManageContributionsViewModel.UiEvent.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(message = event.message)
+                    snackBarHostState.showSnackbar(message = event.message)
 
                 is ManageContributionsViewModel.UiEvent.SaveContributions -> navController.navigateUp()
             }
@@ -87,7 +87,7 @@ fun ManageContributionsScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

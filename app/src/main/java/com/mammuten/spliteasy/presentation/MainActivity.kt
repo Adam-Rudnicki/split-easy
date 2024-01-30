@@ -270,6 +270,13 @@ private fun SplitEasyApp() {
                     )
                 }
             )
+            //todo make nav to that screen
+//            composable(
+//                route = "${Screen.CalculateScreen.route}",
+//                arguments = listOf(
+//
+//                )
+//            )
         }
     )
 }
