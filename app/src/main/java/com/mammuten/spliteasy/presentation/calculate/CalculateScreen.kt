@@ -1,4 +1,4 @@
-package com.mammuten.spliteasy.presentation.bill_details.component
+package com.mammuten.spliteasy.presentation.calculate
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,17 +25,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.mammuten.spliteasy.domain.model.Member
+import com.mammuten.spliteasy.domain.util.algorithm.Payer
+import com.mammuten.spliteasy.domain.util.algorithm.Receiver
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculateScreen(
     navController: NavController,
-    userList: List<Pair<String, List<Pair<String, Double>>>>
+    state: CalculateViewModel.State
 ) {
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Manage contribution") },
+                title = { Text(text = "Payoffs") },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.navigateUp() },
@@ -50,7 +53,7 @@ fun CalculateScreen(
             )
         },
         content = { innerPadding ->
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding)
@@ -77,7 +80,7 @@ fun CalculateScreen(
                             )
                         }
                     )
-                    userList.forEach{ user ->
+                    state.payoffs.forEach { payoff ->
                         Divider(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -93,32 +96,30 @@ fun CalculateScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     content = {
                                         Text(
-                                            modifier = Modifier
-                                                .weight(0.5f),
-                                            text = user.first,
+                                            modifier = Modifier.weight(0.5f),
+                                            text = payoff.payer.name,
                                             textAlign = TextAlign.Center
                                         )
                                         Column(
-                                            modifier = Modifier
-                                                .weight(1f),
+                                            modifier = Modifier.weight(1f),
                                             content = {
-                                                user.second.forEach { info ->
+                                                payoff.receivers.forEach { (receiver, amount) ->
                                                     Row(
                                                         verticalAlignment =
-                                                            Alignment.CenterVertically,
+                                                        Alignment.CenterVertically,
                                                         content = {
                                                             Text(
                                                                 modifier = Modifier
                                                                     .weight(1f)
                                                                     .padding(1.dp),
-                                                                text = info.first,
+                                                                text = receiver.name,
                                                                 textAlign = TextAlign.Center
                                                             )
                                                             Text(
                                                                 modifier = Modifier
                                                                     .weight(1f)
                                                                     .padding(1.dp),
-                                                                text = info.second.toString(),
+                                                                text = amount.toString(),
                                                                 textAlign = TextAlign.Center
                                                             )
                                                         }
@@ -140,34 +141,56 @@ fun CalculateScreen(
 
 @Preview
 @Composable
-fun CalculateDialogPreview(){
-    CalculateScreen(navController = rememberNavController(),
-        userList = listOf(
-            Pair("Member 1", listOf(
-                Pair("Member 2", 12.0),
-                Pair("Member 3", 12.0),
-                Pair("Member 4", 12.0),
-                Pair("Member 5", 12.0),
-                Pair("Member 6", 12.0),
-                Pair("Member 7", 12.0)
-            )),
-            Pair("Member 8", listOf(
-                Pair("Member 2", 12.0),
-                Pair("Member 3", 12.0),
-                Pair("Member 4", 12.0),
-                Pair("Member 5", 12.0),
-                Pair("Member 6", 12.0),
-                Pair("Member 7", 12.0)
-            )),
-            Pair("Member 9", listOf(
-                Pair("Member 2", 12.0),
-                Pair("Member 3", 12.0),
-                Pair("Member 4", 12.0),
-                Pair("Member 5", 12.0),
-                Pair("Member 6", 12.0),
-                Pair("Member 7", 12.0)
-            ))
-        )
+fun CalculateDialogPreview() {
+    val members = listOf(
+        Member(id = 1, groupId = 1, name = "John"),
+        Member(id = 2, groupId = 1, name = "Jack"),
+        Member(id = 3, groupId = 1, name = "Jill"),
+        Member(id = 4, groupId = 1, name = "James"),
+        Member(id = 5, groupId = 1, name = "Jenny"),
+        Member(id = 6, groupId = 1, name = "Jade"),
+        Member(id = 7, groupId = 1, name = "Jade")
+    )
+
+    val payoffs = listOf(
+        Payer(
+            payer = members[0],
+            receivers = listOf(
+                Receiver(receiver = members[1], amount = 10.0),
+                Receiver(receiver = members[2], amount = 10.0),
+                Receiver(receiver = members[3], amount = 10.0),
+                Receiver(receiver = members[4], amount = 10.0),
+                Receiver(receiver = members[5], amount = 10.0),
+                Receiver(receiver = members[6], amount = 10.0)
+            )
+        ),
+        Payer(
+            payer = members[1],
+            receivers = listOf(
+                Receiver(receiver = members[1], amount = 10.0),
+                Receiver(receiver = members[2], amount = 10.0),
+                Receiver(receiver = members[3], amount = 10.0),
+                Receiver(receiver = members[4], amount = 10.0),
+                Receiver(receiver = members[5], amount = 10.0),
+                Receiver(receiver = members[6], amount = 10.0)
+            )
+        ),
+        Payer(
+            payer = members[2],
+            receivers = listOf(
+                Receiver(receiver = members[1], amount = 10.0),
+                Receiver(receiver = members[2], amount = 10.0),
+                Receiver(receiver = members[3], amount = 10.0),
+                Receiver(receiver = members[4], amount = 10.0),
+                Receiver(receiver = members[5], amount = 10.0),
+                Receiver(receiver = members[6], amount = 10.0)
+            )
+        ),
+    )
+
+    CalculateScreen(
+        navController = rememberNavController(),
+        state = CalculateViewModel.State(payoffs = payoffs)
     )
 }
 

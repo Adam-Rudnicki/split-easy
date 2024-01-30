@@ -70,6 +70,10 @@ class ManageContributionsViewModel @Inject constructor(
 
             is ManageContributionsEvent.SaveContributions -> {
                 viewModelScope.launch {
+                    if (!isSumValid()) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar("Sum of amount paid and owed must be equal"))
+                        return@launch
+                    }
                     if (state.any { it.amountPaidState.error != null || it.amountOwedState.error != null }) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
@@ -145,6 +149,14 @@ class ManageContributionsViewModel @Inject constructor(
                 )
             })
         }
+    }
+
+    private fun isSumValid(): Boolean {
+        val sumOfAmountPaid =
+            state.mapNotNull { it.amountPaidState.value.toDoubleOrNull() }.sumOf { it }
+        val sumOfAmountOwed =
+            state.mapNotNull { it.amountOwedState.value.toDoubleOrNull() }.sumOf { it }
+        return sumOfAmountPaid == sumOfAmountOwed
     }
 
     data class MemberState(

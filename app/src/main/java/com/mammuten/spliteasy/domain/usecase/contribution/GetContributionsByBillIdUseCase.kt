@@ -14,8 +14,8 @@ class GetContributionsByBillIdUseCase(
         contributionOrder: ContributionOrder? = null
     ): Flow<List<Contribution>> {
         return contributionRepo.getContributionsByBillId(billId).map { contributions ->
-            contributionOrder?.let { order ->
-                when (order) {
+            contributionOrder?.let {
+                when (contributionOrder) {
                     is ContributionOrder.AmountPaidAsc -> contributions.sortedBy { it.amountPaid }
                     is ContributionOrder.AmountPaidDesc -> contributions.sortedByDescending { it.amountPaid }
 

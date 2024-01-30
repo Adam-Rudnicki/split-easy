@@ -152,10 +152,7 @@ object AppModule {
             upsertContributionUseCase = UpsertContributionUseCase(repo),
             deleteContributionUseCase = DeleteContributionUseCase(repo),
             updateContributionsUseCase = UpdateContributionsUseCase(repo),
-            getContributionsByBillIdUseCase = GetContributionsByBillIdUseCase(repo),
-            getContributionByBillIdAndMemberIdUseCase = GetContributionByBillIdAndMemberIdUseCase(
-                repo
-            )
+            getContributionsByBillIdUseCase = GetContributionsByBillIdUseCase(repo)
         )
     }
 

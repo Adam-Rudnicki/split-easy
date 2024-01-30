@@ -1,13 +1,21 @@
 package com.mammuten.spliteasy.domain.util.algorithm
 
 import com.mammuten.spliteasy.domain.model.Contribution
+import com.mammuten.spliteasy.domain.model.Member
 
-data class Payoff(
-    val id: Int,
-    var amount: Double
+data class Payer(
+    val payer: Member,
+    val receivers: List<Receiver>
+)
+
+data class Receiver(
+    val receiver: Member,
+    val amount: Double
 )
 
 fun algorithm(contributions: List<Contribution>): Map<Int, List<Pair<Int, Double>>> {
+    data class Payoff(val id: Int, var amount: Double)
+
     val payoffs: List<Payoff> = contributions
         .map { Payoff(it.memberId, it.amountOwed - it.amountPaid) }
         .sortedByDescending { it.amount }
@@ -40,14 +48,12 @@ private fun main() {
     val listBill: MutableList<Contribution> = mutableListOf(
         Contribution(1, 1, 100.0, 50.0),
         Contribution(1, 2, 30.0, 10.0),
-        Contribution(1, 3, 20.0, 20.0),
-        Contribution(1, 4, 40.0, 10.0),
-        Contribution(1, 5, 10.0, 50.0),
-        Contribution(1, 6, 15.0, 50.0),
-        Contribution(1, 7, 5.0, 25.0),
-        Contribution(1, 8, 60.0, 60.0),
-        Contribution(1, 9, 25.0, 50.0),
-        Contribution(1, 10, 70.0, 50.0)
+        Contribution(1, 3, 40.0, 10.0),
+        Contribution(1, 4, 10.0, 50.0),
+        Contribution(1, 5, 15.0, 50.0),
+        Contribution(1, 6, 5.0, 25.0),
+        Contribution(1, 7, 25.0, 50.0),
+        Contribution(1, 8, 70.0, 50.0)
     )
 
     println(algorithm(listBill))

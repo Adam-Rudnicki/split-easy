@@ -58,9 +58,6 @@ class LocalSplitDataSource(
         contributionEntitiesToDelete
     )
 
-    fun getContributionByBillIdAndMemberId(billId: Int, memberId: Int): Flow<ContributionEntity?> =
-        contributionDao.getContributionByBillIdAndMemberId(billId, memberId)
-
     fun getContributionsByBillId(billId: Int): Flow<List<ContributionEntity>> =
         contributionDao.getContributionsByBillId(billId)
 

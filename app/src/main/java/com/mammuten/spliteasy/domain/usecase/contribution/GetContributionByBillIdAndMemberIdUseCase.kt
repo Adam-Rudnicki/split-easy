@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetContributionByBillIdAndMemberIdUseCase(
     private val contributionRepo: ContributionRepo
 ) {
-    operator fun invoke(billId: Int, memberId: Int): Flow<Contribution?> {
-        return contributionRepo.getContributionByBillIdAndMemberId(billId, memberId)
+    operator fun invoke(billId: Int, memberId: Int) {
+
     }
 }

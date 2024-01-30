@@ -40,7 +40,7 @@ class AddUsersToGroupViewModel @Inject constructor(
         when (event) {
             is AddUsersToGroupEvent.SaveUsers -> {
                 viewModelScope.launch {
-                    val selectedUsers = state.selectedUsers.filter { it.value }.keys.toList()
+                    val selectedUsers = state.selectedUsers.filter { it.value }.keys
                     if (selectedUsers.isNotEmpty()) {
                         val members = selectedUsers.map {
                             Member(

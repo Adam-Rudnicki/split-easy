@@ -3,7 +3,6 @@ package com.mammuten.spliteasy.data.repo
 import com.mammuten.spliteasy.data.mapper.asContributionEntityList
 import com.mammuten.spliteasy.data.mapper.asContributionModelList
 import com.mammuten.spliteasy.data.mapper.asEntity
-import com.mammuten.spliteasy.data.mapper.asModel
 import com.mammuten.spliteasy.data.source.local.LocalSplitDataSource
 import com.mammuten.spliteasy.domain.model.Contribution
 import kotlinx.coroutines.flow.Flow
@@ -25,9 +24,6 @@ class ContributionRepo(
         contributionEntitiesToUpsert.asContributionEntityList(),
         contributionEntitiesToDelete.asContributionEntityList()
     )
-
-    fun getContributionByBillIdAndMemberId(billId: Int, memberId: Int): Flow<Contribution?> =
-        dataSource.getContributionByBillIdAndMemberId(billId, memberId).map { it?.asModel() }
 
     fun getContributionsByBillId(billId: Int): Flow<List<Contribution>> =
         dataSource.getContributionsByBillId(billId).map { it.asContributionModelList() }

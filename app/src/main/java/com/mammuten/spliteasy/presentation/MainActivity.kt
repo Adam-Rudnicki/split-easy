@@ -26,6 +26,8 @@ import com.mammuten.spliteasy.presentation.add_users_to_group.AddUsersToGroupScr
 import com.mammuten.spliteasy.presentation.add_users_to_group.AddUsersToGroupViewModel
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsScreen
 import com.mammuten.spliteasy.presentation.bill_details.BillDetailsViewModel
+import com.mammuten.spliteasy.presentation.calculate.CalculateScreen
+import com.mammuten.spliteasy.presentation.calculate.CalculateViewModel
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsScreen
 import com.mammuten.spliteasy.presentation.group_details.GroupDetailsViewModel
 import com.mammuten.spliteasy.presentation.group_members.GroupMembersScreen
@@ -238,9 +240,7 @@ private fun SplitEasyApp() {
             )
             composable(
                 route = "${Screen.AddUsersToGroupScreen.route}/{groupId}",
-                arguments = listOf(
-                    navArgument(name = "groupId") { type = NavType.IntType },
-                ),
+                arguments = listOf(navArgument(name = "groupId") { type = NavType.IntType }),
                 content = {
                     val viewModel = hiltViewModel<AddUsersToGroupViewModel>()
                     val state = viewModel.state
@@ -255,9 +255,7 @@ private fun SplitEasyApp() {
             )
             composable(
                 route = "${Screen.GroupMembersScreen.route}/{groupId}",
-                arguments = listOf(
-                    navArgument(name = "groupId") { type = NavType.IntType },
-                ),
+                arguments = listOf(navArgument(name = "groupId") { type = NavType.IntType }),
                 content = {
                     val viewModel = hiltViewModel<GroupMembersViewModel>()
                     val state = viewModel.state
@@ -270,13 +268,18 @@ private fun SplitEasyApp() {
                     )
                 }
             )
-            //todo make nav to that screen
-//            composable(
-//                route = "${Screen.CalculateScreen.route}",
-//                arguments = listOf(
-//
-//                )
-//            )
+            composable(
+                route = "${Screen.CalculateScreen.route}/{billId}",
+                arguments = listOf(navArgument(name = "billId") { type = NavType.IntType }),
+                content = {
+                    val viewModel = hiltViewModel<CalculateViewModel>()
+                    val state = viewModel.state
+                    CalculateScreen(
+                        navController = navController,
+                        state = state,
+                    )
+                }
+            )
         }
     )
 }

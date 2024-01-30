@@ -123,8 +123,10 @@ fun BillDetailsScreen(
                                 onDismissRequest = { isContextMenuVisible = false },
                                 items = listOf(
                                     "Amount Paid Asc" to {
-                                        BillDetailsEvent.ContributionsOrder(
-                                            ContributionOrder.AmountPaidAsc
+                                        onEvent(
+                                            BillDetailsEvent.ContributionsOrder(
+                                                ContributionOrder.AmountPaidAsc
+                                            )
                                         )
                                     },
                                     "Amount Paid Desc" to {
@@ -246,7 +248,7 @@ fun BillDetailsScreen(
                                         memberHeaderText = "Member",
                                         amountPaidHeaderText = "Paid",
                                         amountOwedHeaderText = "Owed",
-                                        onCalculateClick = {}
+                                        onCalculateClick = { onEvent(BillDetailsEvent.NavigateToCalculateScreen) }
                                     )
                                 }
                             )

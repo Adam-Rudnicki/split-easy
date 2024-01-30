@@ -4,6 +4,5 @@ data class ContributionUseCases(
     val upsertContributionUseCase: UpsertContributionUseCase,
     val deleteContributionUseCase: DeleteContributionUseCase,
     val updateContributionsUseCase: UpdateContributionsUseCase,
-    val getContributionsByBillIdUseCase: GetContributionsByBillIdUseCase,
-    val getContributionByBillIdAndMemberIdUseCase: GetContributionByBillIdAndMemberIdUseCase
+    val getContributionsByBillIdUseCase: GetContributionsByBillIdUseCase
 )

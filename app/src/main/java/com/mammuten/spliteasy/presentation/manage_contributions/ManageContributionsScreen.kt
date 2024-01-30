@@ -109,7 +109,6 @@ fun ManageContributionsScreen(
                                 text = "Amount Paid",
                                 textAlign = TextAlign.Center
                             )
-
                             Text(
                                 modifier = Modifier.weight(1f),
                                 text = "Amount Owed",

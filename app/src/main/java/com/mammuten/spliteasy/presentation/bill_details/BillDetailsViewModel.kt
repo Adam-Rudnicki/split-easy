@@ -111,6 +111,16 @@ class BillDetailsViewModel @Inject constructor(
                     )
                 }
             }
+
+            is BillDetailsEvent.NavigateToCalculateScreen -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.Navigate(
+                            Screen.CalculateScreen.route + "/${currentBillId}"
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -129,7 +139,7 @@ class BillDetailsViewModel @Inject constructor(
                 currentBillId, contributionOrder
             ).onEach { membersAndContributions ->
                 state = state.copy(
-                    membersAndContributions = membersAndContributions,
+                    membersAndContributions = membersAndContributions.toList(),
                     contributionOrder = contributionOrder
                 )
             }.launchIn(viewModelScope)

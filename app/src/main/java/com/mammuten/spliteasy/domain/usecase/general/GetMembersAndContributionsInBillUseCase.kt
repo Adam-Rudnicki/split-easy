@@ -12,17 +12,18 @@ class GetMembersAndContributionsInBillUseCase(
 ) {
     operator fun invoke(
         billId: Int,
-        contributionOrder: ContributionOrder = ContributionOrder.AmountPaidAsc
-    ): Flow<List<Pair<Member, Contribution>>> {
+        contributionOrder: ContributionOrder? = null
+    ): Flow<Map<Member, Contribution>> {
         return generalRepo.getMembersAndContributionsInBill(billId).map { map ->
-            val list = map.toList()
-            when (contributionOrder) {
-                is ContributionOrder.AmountPaidAsc -> list.sortedBy { (_, value) -> value.amountPaid }
-                is ContributionOrder.AmountPaidDesc -> list.sortedByDescending { (_, value) -> value.amountPaid }
+            contributionOrder?.let { order ->
+                when (order) {
+                    is ContributionOrder.AmountPaidAsc -> map.toSortedMap(compareBy { map[it]!!.amountPaid })
+                    is ContributionOrder.AmountPaidDesc -> map.toSortedMap(compareByDescending { map[it]!!.amountPaid })
 
-                is ContributionOrder.AmountOwedAsc -> list.sortedBy { (_, value) -> value.amountOwed }
-                is ContributionOrder.AmountOwedDesc -> list.sortedByDescending { (_, value) -> value.amountOwed }
-            }
+                    is ContributionOrder.AmountOwedAsc -> map.toSortedMap(compareBy { map[it]!!.amountOwed })
+                    is ContributionOrder.AmountOwedDesc -> map.toSortedMap(compareByDescending { map[it]!!.amountOwed })
+                }
+            } ?: map
         }
     }
 }

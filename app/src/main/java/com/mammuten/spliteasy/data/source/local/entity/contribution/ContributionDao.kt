@@ -30,9 +30,6 @@ interface ContributionDao {
         deleteContributions(contributionEntitiesToDelete)
     }
 
-    @Query("SELECT * FROM ${ContributionEntity.TABLE_NAME} WHERE billId = :billId AND memberId = :memberId")
-    fun getContributionByBillIdAndMemberId(billId: Int, memberId: Int): Flow<ContributionEntity?>
-
     @Query("SELECT * FROM ${ContributionEntity.TABLE_NAME} WHERE billId = :billId")
     fun getContributionsByBillId(billId: Int): Flow<List<ContributionEntity>>
 }
