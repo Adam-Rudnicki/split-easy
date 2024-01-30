@@ -81,6 +81,15 @@ fun GroupDetailsScreen(
                 },
                 actions = {
                     IconButton(
+                        onClick = { openDeleteGroupDialog = true },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete group"
+                            )
+                        }
+                    )
+                    IconButton(
                         onClick = { isContextMenuVisible = !isContextMenuVisible },
                         content = {
                             Icon(
@@ -104,15 +113,6 @@ fun GroupDetailsScreen(
                                         )
                                     },
                                 )
-                            )
-                        }
-                    )
-                    IconButton(
-                        onClick = { openDeleteGroupDialog = true },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete group"
                             )
                         }
                     )

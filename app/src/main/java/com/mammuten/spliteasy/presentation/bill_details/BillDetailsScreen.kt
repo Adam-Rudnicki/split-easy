@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Payments
@@ -104,14 +103,11 @@ fun BillDetailsScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            navController.navigateUp()
-                            //todo make a logic to calculate
-                        },
+                        onClick = { openDeleteBillDialog = true },
                         content = {
                             Icon(
-                                imageVector = Icons.Default.Calculate,
-                                contentDescription = "Back"
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete bill"
                             )
                         }
                     )
@@ -153,15 +149,6 @@ fun BillDetailsScreen(
                                         )
                                     }
                                 )
-                            )
-                        }
-                    )
-                    IconButton(
-                        onClick = { openDeleteBillDialog = true },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete bill"
                             )
                         }
                     )
@@ -258,7 +245,8 @@ fun BillDetailsScreen(
                                     TableHeader(
                                         memberHeaderText = "Member",
                                         amountPaidHeaderText = "Paid",
-                                        amountOwedHeaderText = "Owed"
+                                        amountOwedHeaderText = "Owed",
+                                        onCalculateClick = {}
                                     )
                                 }
                             )

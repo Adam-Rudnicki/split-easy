@@ -89,7 +89,7 @@ class ManageContributionsViewModel @Inject constructor(
                             memberId = memberState.member.id!!,
                             amountPaid = amountPaid ?: 0.0,
                             amountOwed = amountOwed ?: 0.0
-                        ).takeIf { it.amountPaid != 0.0 || it.amountOwed != 0.0 }
+                        ).takeIf { it.amountPaid != it.amountOwed }
 
                         if (tempContribution == null) {
                             contribution?.let { contributionsToDelete.add(it) }
