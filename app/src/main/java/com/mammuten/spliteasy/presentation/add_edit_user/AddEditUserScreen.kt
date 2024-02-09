@@ -36,6 +36,7 @@ fun AddEditUserScreen(
     nameState: TextFieldState,
     surnameState: TextFieldState,
     nickState: TextFieldState,
+    isSavingState: Boolean,
     onEvent: (AddEditUserEvent) -> Unit,
     eventFlow: SharedFlow<AddEditUserViewModel.UiEvent>
 ) {
@@ -72,11 +73,17 @@ fun AddEditUserScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(AddEditUserEvent.SaveUser) },
+                onClick = {},
                 content = {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save user"
+                    IconButton(
+                        onClick = { onEvent(AddEditUserEvent.SaveUser) },
+                        enabled = !isSavingState,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = "Save user"
+                            )
+                        }
                     )
                 }
             )
@@ -131,6 +138,7 @@ fun AddEditUserScreenPreview() {
         ),
         surnameState = TextFieldState(),
         nickState = TextFieldState(),
+        isSavingState = true,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

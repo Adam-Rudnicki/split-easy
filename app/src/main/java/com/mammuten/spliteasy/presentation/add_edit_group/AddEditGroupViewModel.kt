@@ -29,12 +29,13 @@ class AddEditGroupViewModel @Inject constructor(
     var description by mutableStateOf(TextFieldState())
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentGroupId: Int? = null
-
-    private var isSaving = false
 
     init {
         viewModelScope.launch {
@@ -89,13 +90,12 @@ class AddEditGroupViewModel @Inject constructor(
             }
 
             is AddEditGroupEvent.SaveGroup -> {
-                if (isSaving) return
-                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null || description.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))
                         return@launch
                     }
+                    isSaving = true
                     groupUseCases.upsertGroupUseCase(
                         Group(
                             id = currentGroupId,

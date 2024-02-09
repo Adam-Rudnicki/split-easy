@@ -115,11 +115,15 @@ class BillDetailsViewModel @Inject constructor(
 
             is BillDetailsEvent.Check -> {
                 viewModelScope.launch {
+                    if (state.membersAndContributions.isEmpty()) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar("No contributions available")
+                        )
+                        return@launch
+                    }
                     if (!isSumValid()) {
                         _eventFlow.emit(
-                            UiEvent.ShowSnackbarRestoreContribution(
-                                message = "Sum of amount paid and owed must be equal"
-                            )
+                            UiEvent.ShowSnackbar("Sum of amount paid and owed must be equal")
                         )
                         return@launch
                     }

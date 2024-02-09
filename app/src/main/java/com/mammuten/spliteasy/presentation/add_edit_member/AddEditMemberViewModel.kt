@@ -32,13 +32,14 @@ class AddEditMemberViewModel @Inject constructor(
     var state by mutableStateOf(State())
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
     private var currentMemberId: Int? = null
-
-    private var isSaving = false
 
     init {
         viewModelScope.launch {
@@ -81,13 +82,12 @@ class AddEditMemberViewModel @Inject constructor(
             }
 
             is AddEditMemberEvent.SaveMember -> {
-                if (isSaving) return
-                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
                     }
+                    isSaving = true
                     memberUseCases.upsertMemberUseCase(
                         Member(
                             id = currentMemberId,

@@ -92,11 +92,13 @@ private fun SplitEasyApp() {
                     val viewModel = hiltViewModel<AddEditGroupViewModel>()
                     val nameState = viewModel.name
                     val descriptionState = viewModel.description
+                    val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
                     AddEditGroupScreen(
                         navController = navController,
                         nameState = nameState,
                         descriptionState = descriptionState,
+                        isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
@@ -132,6 +134,7 @@ private fun SplitEasyApp() {
                     val descriptionState = viewModel.description
                     val amountState = viewModel.amount
                     val dateState = viewModel.date
+                    val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
                     AddEditBillScreen(
                         navController = navController,
@@ -139,6 +142,7 @@ private fun SplitEasyApp() {
                         descriptionState = descriptionState,
                         amountState = amountState,
                         dateState = dateState,
+                        isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
@@ -172,11 +176,13 @@ private fun SplitEasyApp() {
                     val viewModel = hiltViewModel<AddEditMemberViewModel>()
                     val nameState = viewModel.name
                     val state = viewModel.state
+                    val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
                     AddEditMemberScreen(
                         navController = navController,
                         state = state,
                         nameState = nameState,
+                        isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
@@ -191,10 +197,12 @@ private fun SplitEasyApp() {
                 content = {
                     val viewModel = hiltViewModel<ManageContributionsViewModel>()
                     val state = viewModel.state
+                    val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
                     ManageContributionsScreen(
                         navController = navController,
                         state = state,
+                        isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
@@ -227,12 +235,14 @@ private fun SplitEasyApp() {
                     val nameState = viewModel.name
                     val surnameState = viewModel.surname
                     val nickState = viewModel.nick
+                    val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
                     AddEditUserScreen(
                         navController = navController,
                         nameState = nameState,
                         surnameState = surnameState,
                         nickState = nickState,
+                        isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )
@@ -244,10 +254,12 @@ private fun SplitEasyApp() {
                 content = {
                     val viewModel = hiltViewModel<AddUsersToGroupViewModel>()
                     val state = viewModel.state
+                    val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
                     AddUsersToGroupScreen(
                         navController = navController,
                         state = state,
+                        isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,
                         eventFlow = eventFlow
                     )

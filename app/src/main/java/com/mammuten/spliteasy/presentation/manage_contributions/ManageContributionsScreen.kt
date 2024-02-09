@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun ManageContributionsScreen(
     navController: NavController,
     state: List<ManageContributionsViewModel.MemberState>,
+    isSavingState: Boolean,
     onEvent: (ManageContributionsEvent) -> Unit,
     eventFlow: SharedFlow<ManageContributionsViewModel.UiEvent>
 ) {
@@ -77,6 +78,7 @@ fun ManageContributionsScreen(
                 actions = {
                     IconButton(
                         onClick = { onEvent(ManageContributionsEvent.SaveContributions) },
+                        enabled = !isSavingState,
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Save,
@@ -213,6 +215,7 @@ fun AddEditBillContributionPreview() {
                 amountOwedState = TextFieldState(value = "")
             ),
         ),
+        isSavingState = true,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

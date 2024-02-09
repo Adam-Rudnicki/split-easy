@@ -41,6 +41,7 @@ fun AddEditMemberScreen(
     navController: NavController,
     nameState: TextFieldState,
     state: AddEditMemberViewModel.State,
+    isSavingState: Boolean,
     onEvent: (AddEditMemberEvent) -> Unit,
     eventFlow: SharedFlow<AddEditMemberViewModel.UiEvent>
 ) {
@@ -75,6 +76,7 @@ fun AddEditMemberScreen(
                 actions = {
                     IconButton(
                         onClick = { onEvent(AddEditMemberEvent.SaveMember) },
+                        enabled = !isSavingState,
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Save,
@@ -149,6 +151,7 @@ fun AddEditMemberScreenPreview() {
             users = users,
             selectedUser = users.first()
         ),
+        isSavingState = true,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

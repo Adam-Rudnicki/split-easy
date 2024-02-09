@@ -27,12 +27,13 @@ class AddUsersToGroupViewModel @Inject constructor(
     var state by mutableStateOf(State())
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
-
-    private var isSaving = false
 
     init {
         getUsersNotInGroup()
@@ -41,11 +42,10 @@ class AddUsersToGroupViewModel @Inject constructor(
     fun onEvent(event: AddUsersToGroupEvent) {
         when (event) {
             is AddUsersToGroupEvent.SaveUsers -> {
-                if (isSaving) return
-                isSaving = true
                 viewModelScope.launch {
                     val selectedUsers = state.selectedUsers.filter { it.value }.keys
                     if (selectedUsers.isNotEmpty()) {
+                        isSaving = true
                         val members = selectedUsers.map {
                             Member(
                                 groupId = currentGroupId,

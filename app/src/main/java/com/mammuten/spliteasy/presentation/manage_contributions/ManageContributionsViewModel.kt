@@ -1,6 +1,9 @@
 package com.mammuten.spliteasy.presentation.manage_contributions
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,13 +31,14 @@ class ManageContributionsViewModel @Inject constructor(
 
     val state = mutableStateListOf<MemberState>()
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
     private val currentBillId: Int = checkNotNull(savedStateHandle["billId"])
-
-    private var isSaving = false
 
     init {
         getAllMembersAndContributions()
@@ -71,13 +75,12 @@ class ManageContributionsViewModel @Inject constructor(
             }
 
             is ManageContributionsEvent.SaveContributions -> {
-                if (isSaving) return
-                isSaving = true
                 viewModelScope.launch {
                     if (state.any { it.amountPaidState.error != null || it.amountOwedState.error != null }) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
                     }
+                    isSaving = true
 
                     val contributionsToUpsert = mutableListOf<Contribution>()
                     val contributionsToDelete = mutableListOf<Contribution>()

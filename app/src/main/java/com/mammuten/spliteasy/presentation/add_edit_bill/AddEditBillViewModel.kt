@@ -36,13 +36,14 @@ class AddEditBillViewModel @Inject constructor(
     var date by mutableStateOf(DateState())
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private val currentGroupId: Int = checkNotNull(savedStateHandle["groupId"])
     private var currentBillId: Int? = null
-
-    private var isSaving = false
 
     init {
         viewModelScope.launch {
@@ -129,13 +130,12 @@ class AddEditBillViewModel @Inject constructor(
             }
 
             is AddEditBillEvent.SaveBill -> {
-                if (isSaving) return
-                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null || description.error != null || amount.error != null || date.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
                     }
+                    isSaving = true
                     billUseCases.upsertBillUseCase(
                         Bill(
                             id = currentBillId,

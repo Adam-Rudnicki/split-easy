@@ -35,6 +35,7 @@ fun AddEditGroupScreen(
     navController: NavController,
     nameState: TextFieldState,
     descriptionState: TextFieldState,
+    isSavingState: Boolean,
     onEvent: (AddEditGroupEvent) -> Unit,
     eventFlow: SharedFlow<AddEditGroupViewModel.UiEvent>
 ) {
@@ -71,11 +72,17 @@ fun AddEditGroupScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(AddEditGroupEvent.SaveGroup) },
+                onClick = {},
                 content = {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save group"
+                    IconButton(
+                        onClick = { onEvent(AddEditGroupEvent.SaveGroup) },
+                        enabled = !isSavingState,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = "Save group"
+                            )
+                        }
                     )
                 }
             )
@@ -121,6 +128,7 @@ fun AddEditGroupScreenPreview() {
             error = InvalidInputError.TooShortText(3)
         ),
         descriptionState = TextFieldState(),
+        isSavingState = true,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

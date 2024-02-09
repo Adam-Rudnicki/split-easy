@@ -32,12 +32,13 @@ class AddEditUserViewModel @Inject constructor(
     var nick by mutableStateOf(TextFieldState())
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentUserId: Int? = null
-
-    private var isSaving = false
 
     init {
         viewModelScope.launch {
@@ -111,13 +112,12 @@ class AddEditUserViewModel @Inject constructor(
             }
 
             is AddEditUserEvent.SaveUser -> {
-                if (isSaving) return
-                isSaving = true
                 viewModelScope.launch {
                     if (name.error != null || surname.error != null || nick.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))
                         return@launch
                     }
+                    isSaving = true
                     userUseCases.upsertUserUseCase(
                         User(
                             id = currentUserId,

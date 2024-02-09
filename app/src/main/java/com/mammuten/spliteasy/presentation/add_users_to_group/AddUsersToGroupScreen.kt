@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun AddUsersToGroupScreen(
     navController: NavController,
     state: AddUsersToGroupViewModel.State,
+    isSavingState: Boolean,
     onEvent: (AddUsersToGroupEvent) -> Unit,
     eventFlow: SharedFlow<AddUsersToGroupViewModel.UiEvent>
 ) {
@@ -71,6 +72,7 @@ fun AddUsersToGroupScreen(
                 actions = {
                     IconButton(
                         onClick = { onEvent(AddUsersToGroupEvent.SaveUsers) },
+                        enabled = !isSavingState,
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Save,
@@ -139,6 +141,7 @@ fun AddUsersToGroupScreenPreview() {
                 users[1] to true
             )
         ),
+        isSavingState = true,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )

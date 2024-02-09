@@ -50,6 +50,7 @@ fun AddEditBillScreen(
     descriptionState: TextFieldState,
     amountState: TextFieldState,
     dateState: DateState,
+    isSavingState: Boolean,
     onEvent: (AddEditBillEvent) -> Unit,
     eventFlow: SharedFlow<AddEditBillViewModel.UiEvent>
 ) {
@@ -87,11 +88,17 @@ fun AddEditBillScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEvent(AddEditBillEvent.SaveBill) },
+                onClick = {},
                 content = {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save bill"
+                    IconButton(
+                        onClick = { onEvent(AddEditBillEvent.SaveBill) },
+                        enabled = !isSavingState,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Save,
+                                contentDescription = "Save bill"
+                            )
+                        }
                     )
                 }
             )
@@ -179,6 +186,7 @@ fun AddEditBillScreenPreview() {
         descriptionState = TextFieldState(),
         amountState = TextFieldState(),
         dateState = DateState(),
+        isSavingState = true,
         onEvent = {},
         eventFlow = MutableSharedFlow()
     )
