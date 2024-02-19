@@ -286,6 +286,16 @@ fun BillDetailsScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
+                    Text(
+                        text = "Difference: ${
+                            String.format(
+                                "%.2f",
+                                state.absoluteDifference.div(100.0)
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
 
                     when {
                         openDeleteBillDialog -> {

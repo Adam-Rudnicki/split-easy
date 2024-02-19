@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class ManageContributionsViewModel @Inject constructor(
@@ -183,6 +184,9 @@ class ManageContributionsViewModel @Inject constructor(
                 it.amountOwedState.value.toDoubleOrNull()?.times(100)
                     ?.toInt() ?: 0
             }
+
+        val absoluteDifference: Int
+            get() = abs(sumOfAmountPaid - sumOfAmountOwed)
     }
 
     sealed interface UiEvent {

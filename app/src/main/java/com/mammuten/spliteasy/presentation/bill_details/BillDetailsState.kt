@@ -4,6 +4,7 @@ import com.mammuten.spliteasy.domain.model.Bill
 import com.mammuten.spliteasy.domain.model.Contribution
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.order.ContributionOrder
+import kotlin.math.abs
 
 data class BillDetailsState(
     val bill: Bill? = null,
@@ -15,4 +16,7 @@ data class BillDetailsState(
 
     val sumOfAmountOwed: Int
         get() = membersAndContributions.sumOf { it.second.amountOwed }
+
+    val absoluteDifference: Int
+        get() = abs(sumOfAmountPaid - sumOfAmountOwed)
 }

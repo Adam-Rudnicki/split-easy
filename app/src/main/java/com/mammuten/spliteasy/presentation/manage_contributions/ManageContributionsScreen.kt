@@ -169,12 +169,32 @@ fun ManageContributionsScreen(
                     }
 
                     Text(
-                        text = "Sum of amount paid: ${String.format("%.2f", state.sumOfAmountPaid.div(100.0))}",
+                        text = "Sum of amount paid: ${
+                            String.format(
+                                "%.2f",
+                                state.sumOfAmountPaid.div(100.0)
+                            )
+                        }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
-                        text = "Sum of amount owed: ${String.format("%.2f", state.sumOfAmountOwed.div(100.0))}",
+                        text = "Sum of amount owed: ${
+                            String.format(
+                                "%.2f",
+                                state.sumOfAmountOwed.div(100.0)
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "Difference: ${
+                            String.format(
+                                "%.2f",
+                                state.absoluteDifference.div(100.0)
+                            )
+                        }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
