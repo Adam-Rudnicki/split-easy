@@ -9,4 +9,10 @@ data class BillDetailsState(
     val bill: Bill? = null,
     val membersAndContributions: List<Pair<Member, Contribution>> = emptyList(),
     val contributionOrder: ContributionOrder = ContributionOrder.AmountPaidAsc,
-)
+) {
+    val sumOfAmountPaid: Int
+        get() = membersAndContributions.sumOf { it.second.amountPaid }
+
+    val sumOfAmountOwed: Int
+        get() = membersAndContributions.sumOf { it.second.amountOwed }
+}

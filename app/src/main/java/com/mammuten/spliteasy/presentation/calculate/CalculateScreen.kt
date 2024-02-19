@@ -119,7 +119,10 @@ fun CalculateScreen(
                                                                 modifier = Modifier
                                                                     .weight(1f)
                                                                     .padding(1.dp),
-                                                                text = amount.toString(),
+                                                                text = String.format(
+                                                                    "%.2f",
+                                                                    amount.div(100.0)
+                                                                ),
                                                                 textAlign = TextAlign.Center
                                                             )
                                                         }
@@ -156,34 +159,34 @@ fun CalculateDialogPreview() {
         Payer(
             payer = members[0],
             receivers = listOf(
-                Receiver(receiver = members[1], amount = 10.0),
-                Receiver(receiver = members[2], amount = 10.0),
-                Receiver(receiver = members[3], amount = 10.0),
-                Receiver(receiver = members[4], amount = 10.0),
-                Receiver(receiver = members[5], amount = 10.0),
-                Receiver(receiver = members[6], amount = 10.0)
+                Receiver(receiver = members[1], amount = 1000),
+                Receiver(receiver = members[2], amount = 1000),
+                Receiver(receiver = members[3], amount = 1000),
+                Receiver(receiver = members[4], amount = 1000),
+                Receiver(receiver = members[5], amount = 1000),
+                Receiver(receiver = members[6], amount = 1000)
             )
         ),
         Payer(
             payer = members[1],
             receivers = listOf(
-                Receiver(receiver = members[1], amount = 10.0),
-                Receiver(receiver = members[2], amount = 10.0),
-                Receiver(receiver = members[3], amount = 10.0),
-                Receiver(receiver = members[4], amount = 10.0),
-                Receiver(receiver = members[5], amount = 10.0),
-                Receiver(receiver = members[6], amount = 10.0)
+                Receiver(receiver = members[1], amount = 1000),
+                Receiver(receiver = members[2], amount = 1000),
+                Receiver(receiver = members[3], amount = 1000),
+                Receiver(receiver = members[4], amount = 1000),
+                Receiver(receiver = members[5], amount = 1000),
+                Receiver(receiver = members[6], amount = 1000)
             )
         ),
         Payer(
             payer = members[2],
             receivers = listOf(
-                Receiver(receiver = members[1], amount = 10.0),
-                Receiver(receiver = members[2], amount = 10.0),
-                Receiver(receiver = members[3], amount = 10.0),
-                Receiver(receiver = members[4], amount = 10.0),
-                Receiver(receiver = members[5], amount = 10.0),
-                Receiver(receiver = members[6], amount = 10.0)
+                Receiver(receiver = members[1], amount = 1000),
+                Receiver(receiver = members[2], amount = 1000),
+                Receiver(receiver = members[3], amount = 1000),
+                Receiver(receiver = members[4], amount = 1000),
+                Receiver(receiver = members[5], amount = 1000),
+                Receiver(receiver = members[6], amount = 1000)
             )
         ),
     )

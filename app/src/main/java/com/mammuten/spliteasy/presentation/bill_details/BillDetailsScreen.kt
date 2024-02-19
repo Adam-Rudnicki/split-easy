@@ -211,18 +211,6 @@ fun BillDetailsScreen(
                                                     modifier = Modifier.padding(bottom = 2.dp)
                                                 )
                                             }
-                                            it.amount?.let { amount ->
-                                                Text(
-                                                    text = "Amount: ${
-                                                        String.format(
-                                                            "%.2f",
-                                                            amount
-                                                        )
-                                                    }",
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    modifier = Modifier.padding(bottom = 2.dp)
-                                                )
-                                            }
                                             it.date?.let { date ->
                                                 Text(
                                                     text = "Date: $date",
@@ -261,8 +249,14 @@ fun BillDetailsScreen(
                                 itemContent = { (member, contribution) ->
                                     TableRow(
                                         memberName = member.name,
-                                        amountPaid = contribution.amountPaid.toString(),
-                                        amountOwed = contribution.amountOwed.toString(),
+                                        amountPaid = String.format(
+                                            "%.2f",
+                                            contribution.amountPaid.div(100.0)
+                                        ),
+                                        amountOwed = String.format(
+                                            "%.2f",
+                                            contribution.amountOwed.div(100.0)
+                                        ),
                                         onDeleteClick = {
                                             openDeleteContributionDialog = contribution
                                         }
@@ -270,6 +264,27 @@ fun BillDetailsScreen(
                                 }
                             )
                         }
+                    )
+
+                    Text(
+                        text = "Sum of amount paid: ${
+                            String.format(
+                                "%.2f",
+                                state.sumOfAmountPaid.div(100.0)
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "Sum of amount owed: ${
+                            String.format(
+                                "%.2f",
+                                state.sumOfAmountOwed.div(100.0)
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
                     )
 
                     when {
@@ -317,7 +332,6 @@ fun BillDetailsScreenPreview() {
                 groupId = 1,
                 name = "Bill 1",
                 description = "Bill 1 description",
-                amount = 100.0,
                 date = Date()
             ),
             membersAndContributions = listOf(
@@ -328,8 +342,8 @@ fun BillDetailsScreenPreview() {
                 ) to Contribution(
                     billId = 1,
                     memberId = 1,
-                    amountPaid = 50.0,
-                    amountOwed = 50.0
+                    amountPaid = 5000,
+                    amountOwed = 5000
                 ),
                 Member(
                     id = 2,
@@ -338,8 +352,8 @@ fun BillDetailsScreenPreview() {
                 ) to Contribution(
                     billId = 1,
                     memberId = 2,
-                    amountPaid = 50.0,
-                    amountOwed = 50.0
+                    amountPaid = 5000,
+                    amountOwed = 5000
                 )
             )
         ),

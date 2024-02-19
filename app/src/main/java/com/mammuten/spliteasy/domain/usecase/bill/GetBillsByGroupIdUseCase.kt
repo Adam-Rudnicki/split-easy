@@ -20,9 +20,6 @@ class GetBillsByGroupIdUseCase(
 
                 is BillOrder.DateAsc -> bills.sortedWith(compareBy(nullsLast()) { it.date })
                 is BillOrder.DateDesc -> bills.sortedWith(compareByDescending(nullsFirst()) { it.date })
-
-                is BillOrder.AmountAsc -> bills.sortedWith(compareBy(nullsLast()) { it.amount })
-                is BillOrder.AmountDesc -> bills.sortedWith(compareByDescending(nullsFirst()) { it.amount })
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -161,15 +161,15 @@ class BillDetailsViewModel @Inject constructor(
     private fun isSumValid(): Boolean {
         val (sumOfAmountPaid, sumOfAmountOwed) =
             state.membersAndContributions.fold(
-                initial = Pair(mutableDoubleStateOf(0.0), mutableDoubleStateOf(0.0)),
+                initial = Pair(mutableIntStateOf(0), mutableIntStateOf(0)),
                 operation = { pair, (_, contribution) ->
                     pair.apply {
-                        first.doubleValue += contribution.amountPaid
-                        second.doubleValue += contribution.amountOwed
+                        first.intValue += contribution.amountPaid
+                        second.intValue += contribution.amountOwed
                     }
                 }
             )
-        return sumOfAmountPaid.doubleValue == sumOfAmountOwed.doubleValue
+        return sumOfAmountPaid.intValue == sumOfAmountOwed.intValue
     }
 
     sealed interface UiEvent {

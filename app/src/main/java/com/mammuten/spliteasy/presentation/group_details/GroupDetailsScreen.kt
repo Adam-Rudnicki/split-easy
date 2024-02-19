@@ -103,15 +103,7 @@ fun GroupDetailsScreen(
                                     "Name asc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameAsc)) },
                                     "Name desc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.NameDesc)) },
                                     "Date asc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateAsc)) },
-                                    "Date desc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc)) },
-                                    "Amount asc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.AmountAsc)) },
-                                    "Amount desc" to {
-                                        onEvent(
-                                            GroupDetailsEvent.BillsOrder(
-                                                BillOrder.AmountDesc
-                                            )
-                                        )
-                                    },
+                                    "Date desc" to { onEvent(GroupDetailsEvent.BillsOrder(BillOrder.DateDesc)) }
                                 )
                             )
                         }
@@ -232,19 +224,6 @@ fun GroupDetailsScreen(
                                                                 maxLines = 1,
                                                                 overflow = TextOverflow.Ellipsis
                                                             )
-                                                            bill.amount?.let {
-                                                                Text(
-                                                                    textAlign = TextAlign.End,
-                                                                    text = String.format(
-                                                                        "%.2f",
-                                                                        it
-                                                                    ),
-                                                                    modifier = Modifier.weight(1f),
-                                                                    style = MaterialTheme.typography.bodyLarge,
-                                                                    maxLines = 1,
-                                                                    overflow = TextOverflow.Ellipsis,
-                                                                )
-                                                            }
                                                         }
                                                     )
                                                     bill.date?.let {
@@ -310,7 +289,6 @@ fun GroupDetailsScreenPreview() {
                     id = 1,
                     name = "Bill 1",
                     description = "Description 1",
-                    amount = 100.0,
                     groupId = 1,
                     date = Date()
                 ),
@@ -318,7 +296,6 @@ fun GroupDetailsScreenPreview() {
                     id = 2,
                     name = "Bill 2",
                     description = "Description 2",
-                    amount = 200.0,
                     groupId = 1,
                     date = Date()
                 )

@@ -22,7 +22,6 @@ data class BillEntity(
     val groupId: Int,
     val name: String,
     val description: String? = null,
-    val amount: Double? = null,
     val date: Date? = null
 ) {
     companion object {

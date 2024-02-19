@@ -6,7 +6,4 @@ sealed interface BillOrder {
 
     data object DateAsc : BillOrder
     data object DateDesc : BillOrder
-
-    data object AmountAsc : BillOrder
-    data object AmountDesc : BillOrder
 }

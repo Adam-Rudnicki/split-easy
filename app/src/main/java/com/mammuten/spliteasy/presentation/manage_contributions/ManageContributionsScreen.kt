@@ -14,6 +14,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -42,7 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun ManageContributionsScreen(
     navController: NavController,
-    state: List<ManageContributionsViewModel.MemberState>,
+    state: ManageContributionsViewModel.ManageContributionsState,
     isSavingState: Boolean,
     onEvent: (ManageContributionsEvent) -> Unit,
     eventFlow: SharedFlow<ManageContributionsViewModel.UiEvent>
@@ -124,7 +125,7 @@ fun ManageContributionsScreen(
                             .padding(bottom = 8.dp),
                         color = Color.Black
                     )
-                    state.forEach { memberState ->
+                    state.memberStates.forEach { memberState ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(),
@@ -166,6 +167,17 @@ fun ManageContributionsScreen(
                             }
                         )
                     }
+
+                    Text(
+                        text = "Sum of amount paid: ${String.format("%.2f", state.sumOfAmountPaid.div(100.0))}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "Sum of amount owed: ${String.format("%.2f", state.sumOfAmountOwed.div(100.0))}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             )
         }
@@ -177,43 +189,45 @@ fun ManageContributionsScreen(
 fun AddEditBillContributionPreview() {
     ManageContributionsScreen(
         navController = rememberNavController(),
-        state = listOf(
-            ManageContributionsViewModel.MemberState(
-                member = Member(
-                    id = 1,
-                    groupId = 1,
-                    name = "John"
+        state = ManageContributionsViewModel.ManageContributionsState(
+            memberStates = listOf(
+                ManageContributionsViewModel.MemberState(
+                    member = Member(
+                        id = 1,
+                        groupId = 1,
+                        name = "John"
+                    ),
+                    amountPaidState = TextFieldState(value = "10.0"),
+                    amountOwedState = TextFieldState(value = "10.0")
                 ),
-                amountPaidState = TextFieldState(value = "10.0"),
-                amountOwedState = TextFieldState(value = "10.0")
-            ),
-            ManageContributionsViewModel.MemberState(
-                member = Member(
-                    id = 2,
-                    groupId = 1,
-                    name = "Alex"
+                ManageContributionsViewModel.MemberState(
+                    member = Member(
+                        id = 2,
+                        groupId = 1,
+                        name = "Alex"
+                    ),
+                    amountPaidState = TextFieldState(value = "10.00"),
+                    amountOwedState = TextFieldState(value = "")
                 ),
-                amountPaidState = TextFieldState(value = "10.0"),
-                amountOwedState = TextFieldState(value = "")
-            ),
-            ManageContributionsViewModel.MemberState(
-                member = Member(
-                    id = 3,
-                    groupId = 1,
-                    name = "Bob"
+                ManageContributionsViewModel.MemberState(
+                    member = Member(
+                        id = 3,
+                        groupId = 1,
+                        name = "Bob"
+                    ),
+                    amountPaidState = TextFieldState(value = "0.00"),
+                    amountOwedState = TextFieldState(value = "0.0")
                 ),
-                amountPaidState = TextFieldState(value = "0.0"),
-                amountOwedState = TextFieldState(value = "0.0")
-            ),
-            ManageContributionsViewModel.MemberState(
-                member = Member(
-                    id = 4,
-                    groupId = 1,
-                    name = "Alice"
+                ManageContributionsViewModel.MemberState(
+                    member = Member(
+                        id = 4,
+                        groupId = 1,
+                        name = "Alice"
+                    ),
+                    amountPaidState = TextFieldState(value = ""),
+                    amountOwedState = TextFieldState(value = "")
                 ),
-                amountPaidState = TextFieldState(value = ""),
-                amountOwedState = TextFieldState(value = "")
-            ),
+            )
         ),
         isSavingState = true,
         onEvent = {},

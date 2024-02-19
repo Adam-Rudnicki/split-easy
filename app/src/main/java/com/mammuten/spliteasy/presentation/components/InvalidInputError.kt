@@ -6,8 +6,8 @@ sealed interface InvalidInputError {
     data object Required : InvalidInputError
     data class TooShortText(val minLength: Int) : InvalidInputError
     data class TooLongText(val maxLength: Int) : InvalidInputError
-    data class TooBigDecimal(val maxValue: Double) : InvalidInputError
-    data class TooSmallDecimal(val minValue: Double) : InvalidInputError
+    data class TooBigAmount(val maxAmount: Int) : InvalidInputError
+    data class TooSmallAmount(val minAmount: Int) : InvalidInputError
 
     companion object {
         fun checkText(
@@ -26,17 +26,18 @@ sealed interface InvalidInputError {
             }
         }
 
-        fun checkDecimal(
-            decimal: Double?,
+        fun checkAmount(
+            amount: Double?,
             isRequired: Boolean,
-            maxValue: Double,
-            minValue: Double = 0.0
+            maxAmount: Int,
+            minAmount: Int = 0
         ): InvalidInputError? {
+            val value = amount?.times(100)?.toInt()
             return when {
-                decimal == null && !isRequired -> null
-                decimal == null && isRequired -> Required
-                decimal != null && decimal > maxValue -> TooBigDecimal(maxValue)
-                decimal != null && decimal < minValue -> TooSmallDecimal(minValue)
+                value == null && !isRequired -> null
+                value == null && isRequired -> Required
+                value != null && value > maxAmount -> TooBigAmount(maxAmount)
+                value != null && value < minAmount -> TooSmallAmount(minAmount)
                 else -> null
             }
         }

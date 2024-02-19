@@ -1,7 +1,6 @@
 package com.mammuten.spliteasy.presentation.manage_contributions
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -29,7 +28,8 @@ class ManageContributionsViewModel @Inject constructor(
 
     private var allMembersAndContributions: List<Pair<Member, Contribution?>> = emptyList()
 
-    val state = mutableStateListOf<MemberState>()
+    var state by mutableStateOf(ManageContributionsState())
+        private set
 
     var isSaving by mutableStateOf(false)
         private set
@@ -47,36 +47,40 @@ class ManageContributionsViewModel @Inject constructor(
     fun onEvent(event: ManageContributionsEvent) {
         when (event) {
             is ManageContributionsEvent.EnteredAmountPaid -> {
-                val index = state.indexOfFirst { it.member.id == event.memberId }
-                state[index] = state[index].copy(
+                val index = state.memberStates.indexOfFirst { it.member.id == event.memberId }
+                val updatedMemberStates = state.memberStates.toMutableList()
+                updatedMemberStates[index] = updatedMemberStates[index].copy(
                     amountPaidState = TextFieldState(
                         value = event.value,
-                        error = InvalidInputError.checkDecimal(
-                            decimal = event.value.toDoubleOrNull(),
+                        error = InvalidInputError.checkAmount(
+                            amount = event.value.toDoubleOrNull(),
                             isRequired = false,
-                            maxValue = Contribution.MAX_AMOUNT
+                            maxAmount = Contribution.MAX_AMOUNT
                         )
                     )
                 )
+                state = ManageContributionsState(updatedMemberStates)
             }
 
             is ManageContributionsEvent.EnteredAmountOwed -> {
-                val index = state.indexOfFirst { it.member.id == event.memberId }
-                state[index] = state[index].copy(
+                val index = state.memberStates.indexOfFirst { it.member.id == event.memberId }
+                val updatedMemberStates = state.memberStates.toMutableList()
+                updatedMemberStates[index] = updatedMemberStates[index].copy(
                     amountOwedState = TextFieldState(
                         value = event.value,
-                        error = InvalidInputError.checkDecimal(
-                            decimal = event.value.toDoubleOrNull(),
+                        error = InvalidInputError.checkAmount(
+                            amount = event.value.toDoubleOrNull(),
                             isRequired = false,
-                            maxValue = Contribution.MAX_AMOUNT
+                            maxAmount = Contribution.MAX_AMOUNT
                         )
                     )
                 )
+                state = ManageContributionsState(updatedMemberStates)
             }
 
             is ManageContributionsEvent.SaveContributions -> {
                 viewModelScope.launch {
-                    if (state.any { it.amountPaidState.error != null || it.amountOwedState.error != null }) {
+                    if (state.memberStates.any { it.amountPaidState.error != null || it.amountOwedState.error != null }) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
                     }
@@ -85,17 +89,19 @@ class ManageContributionsViewModel @Inject constructor(
                     val contributionsToUpsert = mutableListOf<Contribution>()
                     val contributionsToDelete = mutableListOf<Contribution>()
 
-                    for (memberState in state) {
+                    for (memberState in state.memberStates) {
                         val contribution =
                             allMembersAndContributions.first { it.first.id == memberState.member.id }.second
-                        val amountPaid = memberState.amountPaidState.value.toDoubleOrNull()
-                        val amountOwed = memberState.amountOwedState.value.toDoubleOrNull()
+                        val amountPaid =
+                            memberState.amountPaidState.value.toDoubleOrNull()?.times(100)?.toInt()
+                        val amountOwed =
+                            memberState.amountOwedState.value.toDoubleOrNull()?.times(100)?.toInt()
 
                         val tempContribution: Contribution? = Contribution(
                             billId = currentBillId,
                             memberId = memberState.member.id!!,
-                            amountPaid = amountPaid ?: 0.0,
-                            amountOwed = amountOwed ?: 0.0
+                            amountPaid = amountPaid ?: 0,
+                            amountOwed = amountOwed ?: 0
                         ).takeIf { it.amountPaid != it.amountOwed }
 
                         if (tempContribution == null) {
@@ -130,27 +136,30 @@ class ManageContributionsViewModel @Inject constructor(
                     it.toList().sortedWith(compareBy { (_, value) -> value == null })
             }
 
-            state.addAll(allMembersAndContributions.map { (member, contribution) ->
-                MemberState(
-                    member = member,
-                    amountPaidState = TextFieldState(
-                        value = contribution?.amountPaid?.toString() ?: "",
-                        error = InvalidInputError.checkDecimal(
-                            decimal = contribution?.amountPaid,
-                            isRequired = false,
-                            maxValue = Contribution.MAX_AMOUNT
-                        )
-                    ),
-                    amountOwedState = TextFieldState(
-                        value = contribution?.amountOwed?.toString() ?: "",
-                        error = InvalidInputError.checkDecimal(
-                            decimal = contribution?.amountOwed,
-                            isRequired = false,
-                            maxValue = Contribution.MAX_AMOUNT
+            state =
+                ManageContributionsState(allMembersAndContributions.map { (member, contribution) ->
+                    MemberState(
+                        member = member,
+                        amountPaidState = TextFieldState(
+                            value = contribution?.amountPaid?.div(100.0)
+                                ?.let { String.format("%.2f", it) } ?: "",
+                            error = InvalidInputError.checkAmount(
+                                amount = contribution?.amountPaid?.div(100.0),
+                                isRequired = false,
+                                maxAmount = Contribution.MAX_AMOUNT
+                            )
+                        ),
+                        amountOwedState = TextFieldState(
+                            value = contribution?.amountOwed?.div(100.0)
+                                ?.let { String.format("%.2f", it) } ?: "",
+                            error = InvalidInputError.checkAmount(
+                                amount = contribution?.amountOwed?.div(100.0),
+                                isRequired = false,
+                                maxAmount = Contribution.MAX_AMOUNT
+                            )
                         )
                     )
-                )
-            })
+                })
         }
     }
 
@@ -159,6 +168,22 @@ class ManageContributionsViewModel @Inject constructor(
         var amountPaidState: TextFieldState,
         var amountOwedState: TextFieldState,
     )
+
+    data class ManageContributionsState(
+        val memberStates: List<MemberState> = emptyList()
+    ) {
+        val sumOfAmountPaid: Int
+            get() = memberStates.sumOf {
+                it.amountPaidState.value.toDoubleOrNull()?.times(100)
+                    ?.toInt() ?: 0
+            }
+
+        val sumOfAmountOwed: Int
+            get() = memberStates.sumOf {
+                it.amountOwedState.value.toDoubleOrNull()?.times(100)
+                    ?.toInt() ?: 0
+            }
+    }
 
     sealed interface UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent

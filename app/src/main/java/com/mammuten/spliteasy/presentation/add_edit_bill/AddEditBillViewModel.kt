@@ -30,9 +30,6 @@ class AddEditBillViewModel @Inject constructor(
     var description by mutableStateOf(TextFieldState())
         private set
 
-    var amount by mutableStateOf(TextFieldState())
-        private set
-
     var date by mutableStateOf(DateState())
         private set
 
@@ -53,7 +50,6 @@ class AddEditBillViewModel @Inject constructor(
                         currentBillId = bill.id
                         name = name.copy(value = bill.name)
                         bill.description?.let { description = description.copy(value = it) }
-                        bill.amount?.let { amount = amount.copy(value = it.toString()) }
                         date = date.copy(value = bill.date)
                     }
                 }
@@ -72,13 +68,6 @@ class AddEditBillViewModel @Inject constructor(
                     isRequired = Bill.IS_DESC_REQUIRED,
                     minLength = Bill.MIN_DESC_LEN,
                     maxLength = Bill.MAX_DESC_LEN
-                )
-            )
-            amount = amount.copy(
-                error = InvalidInputError.checkDecimal(
-                    decimal = amount.value.toDoubleOrNull(),
-                    isRequired = Bill.IS_AMOUNT_REQUIRED,
-                    maxValue = Bill.MAX_AMOUNT
                 )
             )
             date = date.copy(
@@ -112,15 +101,6 @@ class AddEditBillViewModel @Inject constructor(
                 description = description.copy(value = event.value, error = error)
             }
 
-            is AddEditBillEvent.EnteredAmount -> {
-                val error: InvalidInputError? = InvalidInputError.checkDecimal(
-                    decimal = event.value.toDoubleOrNull(),
-                    isRequired = Bill.IS_AMOUNT_REQUIRED,
-                    maxValue = Bill.MAX_AMOUNT
-                )
-                amount = amount.copy(value = event.value, error = error)
-            }
-
             is AddEditBillEvent.EnteredDate -> {
                 val error: InvalidInputError? = InvalidInputError.checkDate(
                     date = event.value,
@@ -131,7 +111,7 @@ class AddEditBillViewModel @Inject constructor(
 
             is AddEditBillEvent.SaveBill -> {
                 viewModelScope.launch {
-                    if (name.error != null || description.error != null || amount.error != null || date.error != null) {
+                    if (name.error != null || description.error != null || date.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar("Please fill all fields correctly"))
                         return@launch
                     }
@@ -142,7 +122,6 @@ class AddEditBillViewModel @Inject constructor(
                             groupId = currentGroupId,
                             name = name.value.trim(),
                             description = description.value.takeIf { it.isNotBlank() }?.trim(),
-                            amount = amount.value.toDoubleOrNull(),
                             date = date.value
                         )
                     )

@@ -38,7 +38,6 @@ fun Bill.asEntity(): BillEntity {
         groupId = groupId,
         name = name,
         description = description,
-        amount = amount,
         date = date
     )
 }
@@ -49,7 +48,6 @@ fun BillEntity.asModel(): Bill {
         groupId = groupId,
         name = name,
         description = description,
-        amount = amount,
         date = date
     )
 }

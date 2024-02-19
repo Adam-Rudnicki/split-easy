@@ -7,8 +7,8 @@ data class Member(
     val name: String,
 ) {
     companion object {
-        val IS_NAME_REQUIRED = true
-        val MIN_NAME_LEN = 2
-        val MAX_NAME_LEN = 50
+        const val IS_NAME_REQUIRED = true
+        const val MIN_NAME_LEN = 2
+        const val MAX_NAME_LEN = 50
     }
 }

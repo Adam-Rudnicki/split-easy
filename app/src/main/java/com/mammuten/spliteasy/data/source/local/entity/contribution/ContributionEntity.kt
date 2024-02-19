@@ -27,8 +27,8 @@ import com.mammuten.spliteasy.data.source.local.entity.member.MemberEntity
 data class ContributionEntity(
     val billId: Int,
     val memberId: Int,
-    val amountPaid: Double = 0.0,
-    val amountOwed: Double = 0.0
+    val amountPaid: Int = 0,
+    val amountOwed: Int = 0
 ) {
     companion object {
         const val TABLE_NAME = "contributions"

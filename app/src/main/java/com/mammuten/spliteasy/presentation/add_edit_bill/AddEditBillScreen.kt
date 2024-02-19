@@ -48,7 +48,6 @@ fun AddEditBillScreen(
     navController: NavController,
     nameState: TextFieldState,
     descriptionState: TextFieldState,
-    amountState: TextFieldState,
     dateState: DateState,
     isSavingState: Boolean,
     onEvent: (AddEditBillEvent) -> Unit,
@@ -128,16 +127,6 @@ fun AddEditBillScreen(
                         isRequired = Bill.IS_DESC_REQUIRED,
                         singleLine = false
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    FormTextInput(
-                        modifier = Modifier.fillMaxWidth(),
-                        label = "Amount",
-                        text = amountState.value,
-                        error = amountState.error,
-                        onValueChange = { onEvent(AddEditBillEvent.EnteredAmount(it)) },
-                        isRequired = Bill.IS_AMOUNT_REQUIRED,
-                        keyboardType = KeyboardType.Decimal
-                    )
                     Text(text = "Date: ${dateState.value ?: "not set"}")
                     Row(
                         modifier = Modifier
@@ -184,7 +173,6 @@ fun AddEditBillScreenPreview() {
         navController = rememberNavController(),
         nameState = TextFieldState(),
         descriptionState = TextFieldState(),
-        amountState = TextFieldState(),
         dateState = DateState(),
         isSavingState = true,
         onEvent = {},

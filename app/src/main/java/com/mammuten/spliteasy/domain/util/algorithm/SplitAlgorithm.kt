@@ -10,23 +10,23 @@ data class Payer(
 
 data class Receiver(
     val receiver: Member,
-    val amount: Double
+    val amount: Int
 )
 
-fun algorithm(contributions: List<Contribution>): Map<Int, List<Pair<Int, Double>>> {
-    data class Payoff(val id: Int, var amount: Double)
+fun algorithm(contributions: List<Contribution>): Map<Int, List<Pair<Int, Int>>> {
+    data class Payoff(val id: Int, var amount: Int)
 
     val payoffs: List<Payoff> = contributions
         .map { Payoff(it.memberId, it.amountOwed - it.amountPaid) }
         .sortedByDescending { it.amount }
 
-    val result = mutableMapOf<Int, MutableList<Pair<Int, Double>>>()
+    val result = mutableMapOf<Int, MutableList<Pair<Int, Int>>>()
 
     var payerIndex = 0
     var receiverIndex = payoffs.lastIndex
     var payer: Payoff
     var receiver: Payoff
-    var amount: Double
+    var amount: Int
 
     while (payerIndex <= receiverIndex) {
         payer = payoffs[payerIndex]
@@ -37,8 +37,8 @@ fun algorithm(contributions: List<Contribution>): Map<Int, List<Pair<Int, Double
             payer.amount -= amount
             receiver.amount += amount
         }
-        if (payer.amount == 0.0) payerIndex++
-        if (receiver.amount == 0.0) receiverIndex--
+        if (payer.amount == 0) payerIndex++
+        if (receiver.amount == 0) receiverIndex--
     }
 
     return result
@@ -46,14 +46,14 @@ fun algorithm(contributions: List<Contribution>): Map<Int, List<Pair<Int, Double
 
 private fun main() {
     val listBill: MutableList<Contribution> = mutableListOf(
-        Contribution(1, 1, 100.0, 50.0),
-        Contribution(1, 2, 30.0, 10.0),
-        Contribution(1, 3, 40.0, 10.0),
-        Contribution(1, 4, 10.0, 50.0),
-        Contribution(1, 5, 15.0, 50.0),
-        Contribution(1, 6, 5.0, 25.0),
-        Contribution(1, 7, 25.0, 50.0),
-        Contribution(1, 8, 70.0, 50.0)
+        Contribution(1, 1, 10000, 5000),
+        Contribution(1, 2, 3000, 1000),
+        Contribution(1, 3, 4000, 1000),
+        Contribution(1, 4, 1000, 5000),
+        Contribution(1, 5, 1500, 5000),
+        Contribution(1, 6, 500, 2500),
+        Contribution(1, 7, 2500, 5000),
+        Contribution(1, 8, 7000, 5000)
     )
 
     println(algorithm(listBill))

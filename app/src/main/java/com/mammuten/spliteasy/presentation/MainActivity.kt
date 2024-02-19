@@ -132,7 +132,6 @@ private fun SplitEasyApp() {
                     val viewModel = hiltViewModel<AddEditBillViewModel>()
                     val nameState = viewModel.name
                     val descriptionState = viewModel.description
-                    val amountState = viewModel.amount
                     val dateState = viewModel.date
                     val isSavingState = viewModel.isSaving
                     val eventFlow = viewModel.eventFlow
@@ -140,7 +139,6 @@ private fun SplitEasyApp() {
                         navController = navController,
                         nameState = nameState,
                         descriptionState = descriptionState,
-                        amountState = amountState,
                         dateState = dateState,
                         isSavingState = isSavingState,
                         onEvent = viewModel::onEvent,

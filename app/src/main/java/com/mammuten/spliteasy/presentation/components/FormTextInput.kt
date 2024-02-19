@@ -64,8 +64,8 @@ fun FormTextInput(
                     is InvalidInputError.Required -> Text(text = "This field is required")
                     is InvalidInputError.TooShortText -> Text(text = "Text is too short (minimum length: ${it.minLength})")
                     is InvalidInputError.TooLongText -> Text(text = "Text is too long (maximum length: ${it.maxLength})")
-                    is InvalidInputError.TooBigDecimal -> Text(text = "Amount is too big (maximum: ${it.maxValue})")
-                    is InvalidInputError.TooSmallDecimal -> Text(text = "Amount is too small (minimum: ${it.minValue})")
+                    is InvalidInputError.TooBigAmount -> Text(text = "Value is too big (maximum: ${it.maxAmount})")
+                    is InvalidInputError.TooSmallAmount -> Text(text = "Value is too small (minimum: ${it.minAmount})")
                 }
             }
         },
@@ -76,7 +76,7 @@ fun FormTextInput(
 private fun isValidInput(input: String, keyboardType: KeyboardType): Boolean {
     return when (keyboardType) {
         KeyboardType.Text -> true
-        KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoDecimalPlacesRegex)
+        KeyboardType.Decimal -> input.matches(RegexUtil.inputTwoPrecisionPlacesRegex)
         else -> false
     }
 }
