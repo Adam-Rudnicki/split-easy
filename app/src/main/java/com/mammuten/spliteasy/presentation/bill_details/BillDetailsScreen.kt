@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
-import android.icu.math.BigDecimal
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +47,7 @@ import com.mammuten.spliteasy.presentation.bill_details.component.TableHeader
 import com.mammuten.spliteasy.presentation.bill_details.component.TableRow
 import com.mammuten.spliteasy.presentation.components.ConfirmDismissDialog
 import com.mammuten.spliteasy.presentation.components.MyDropdownMenu
+import com.mammuten.spliteasy.presentation.util.PriceUtil
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -250,16 +250,8 @@ fun BillDetailsScreen(
                                 itemContent = { (member, contribution) ->
                                     TableRow(
                                         memberName = member.name,
-                                        amountPaid =
-                                        contribution.amountPaid.let {
-                                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                                .divide(BigDecimal(100)).toString()
-                                        },
-                                        amountOwed =
-                                        contribution.amountOwed.let {
-                                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                                .divide(BigDecimal(100)).toString()
-                                        },
+                                        amountPaid = PriceUtil.scaleAndDivide(contribution.amountPaid),
+                                        amountOwed = PriceUtil.scaleAndDivide(contribution.amountOwed),
                                         onDeleteClick = {
                                             openDeleteContributionDialog = contribution
                                         }
@@ -270,32 +262,17 @@ fun BillDetailsScreen(
                     )
 
                     Text(
-                        text = "Sum of amount paid: ${
-                            state.sumOfAmountPaid.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
-                            }
-                        }",
+                        text = "Sum of amount paid: ${PriceUtil.scaleAndDivide(state.sumOfAmountPaid)}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
-                        text = "Sum of amount owed: ${
-                            state.sumOfAmountOwed.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
-                            }
-                        }",
+                        text = "Sum of amount owed: ${PriceUtil.scaleAndDivide(state.sumOfAmountOwed)}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
-                        text = "Difference: ${
-                            state.absoluteDifference.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
-                            }
-                        }",
+                        text = "Difference: ${PriceUtil.scaleAndDivide(state.absoluteDifference)}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )

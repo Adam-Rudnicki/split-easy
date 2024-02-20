@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.manage_contributions
 
-import android.icu.math.BigDecimal
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.presentation.components.FormTextInput
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
+import com.mammuten.spliteasy.presentation.util.PriceUtil
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -170,32 +170,17 @@ fun ManageContributionsScreen(
                     }
 
                     Text(
-                        text = "Sum of amount paid: ${
-                            state.sumOfAmountPaid.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
-                            }
-                        }",
+                        text = "Sum of amount paid: ${PriceUtil.scaleAndDivide(state.sumOfAmountPaid)}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
-                        text = "Sum of amount owed: ${
-                            state.sumOfAmountOwed.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
-                            }
-                        }",
+                        text = "Sum of amount owed: ${PriceUtil.scaleAndDivide(state.sumOfAmountOwed)}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
-                        text = "Difference: ${
-                            state.absoluteDifference.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
-                            }
-                        }",
+                        text = "Difference: ${PriceUtil.scaleAndDivide(state.absoluteDifference)}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )

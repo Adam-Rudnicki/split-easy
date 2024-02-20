@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.manage_contributions
 
-import android.icu.math.BigDecimal
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +12,7 @@ import com.mammuten.spliteasy.domain.usecase.contribution.ContributionUseCases
 import com.mammuten.spliteasy.domain.usecase.general.GeneralUseCases
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
 import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
+import com.mammuten.spliteasy.presentation.util.PriceUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -55,10 +55,7 @@ class ManageContributionsViewModel @Inject constructor(
                     amountPaidState = TextFieldState(
                         value = event.value,
                         error = InvalidInputError.checkAmount(
-                            amount = event.value.toDoubleOrNull()?.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .multiply(BigDecimal(100)).toInt()
-                            },
+                            amount = PriceUtil.scaleAndMultiply(event.value.toDoubleOrNull()),
                             isRequired = false,
                             maxAmount = Contribution.MAX_AMOUNT
                         )
@@ -74,10 +71,7 @@ class ManageContributionsViewModel @Inject constructor(
                     amountOwedState = TextFieldState(
                         value = event.value,
                         error = InvalidInputError.checkAmount(
-                            amount = event.value.toDoubleOrNull()?.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .multiply(BigDecimal(100)).toInt()
-                            },
+                            amount = PriceUtil.scaleAndMultiply(event.value.toDoubleOrNull()),
                             isRequired = false,
                             maxAmount = Contribution.MAX_AMOUNT
                         )
@@ -100,20 +94,16 @@ class ManageContributionsViewModel @Inject constructor(
                     for (memberState in state.memberStates) {
                         val contribution =
                             allMembersAndContributions.first { it.first.id == memberState.member.id }.second
-                        val amountPaid = memberState.amountPaidState.value.toDoubleOrNull()?.let {
-                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                .multiply(BigDecimal(100)).toInt()
-                        }
-                        val amountOwed = memberState.amountOwedState.value.toDoubleOrNull()?.let {
-                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                .multiply(BigDecimal(100)).toInt()
-                        }
+                        val amountPaid =
+                            PriceUtil.scaleAndMultiply(memberState.amountPaidState.value.toDoubleOrNull())
+                        val amountOwed =
+                            PriceUtil.scaleAndMultiply(memberState.amountOwedState.value.toDoubleOrNull())
 
                         val tempContribution: Contribution? = Contribution(
                             billId = currentBillId,
                             memberId = memberState.member.id!!,
-                            amountPaid = amountPaid ?: 0,
-                            amountOwed = amountOwed ?: 0
+                            amountPaid = amountPaid,
+                            amountOwed = amountOwed
                         ).takeIf { it.amountPaid != it.amountOwed }
 
                         if (tempContribution == null) {
@@ -154,8 +144,7 @@ class ManageContributionsViewModel @Inject constructor(
                         member = member,
                         amountPaidState = TextFieldState(
                             value = contribution?.amountPaid?.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
+                                PriceUtil.scaleAndDivide(it)
                             } ?: "",
                             error = InvalidInputError.checkAmount(
                                 amount = contribution?.amountPaid,
@@ -165,8 +154,7 @@ class ManageContributionsViewModel @Inject constructor(
                         ),
                         amountOwedState = TextFieldState(
                             value = contribution?.amountOwed?.let {
-                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                    .divide(BigDecimal(100)).toString()
+                                PriceUtil.scaleAndDivide(it)
                             } ?: "",
                             error = InvalidInputError.checkAmount(
                                 amount = contribution?.amountOwed,
@@ -190,18 +178,12 @@ class ManageContributionsViewModel @Inject constructor(
     ) {
         val sumOfAmountPaid: Int
             get() = memberStates.sumOf {
-                it.amountPaidState.value.toDoubleOrNull()?.let { value ->
-                    BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP)
-                        .multiply(BigDecimal(100)).toInt()
-                } ?: 0
+                PriceUtil.scaleAndMultiply(it.amountPaidState.value.toDoubleOrNull())
             }
 
         val sumOfAmountOwed: Int
             get() = memberStates.sumOf {
-                it.amountOwedState.value.toDoubleOrNull()?.let { value ->
-                    BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP)
-                        .multiply(BigDecimal(100)).toInt()
-                } ?: 0
+                PriceUtil.scaleAndMultiply(it.amountOwedState.value.toDoubleOrNull())
             }
 
         val absoluteDifference: Int

@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.calculate
 
-import android.icu.math.BigDecimal
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mammuten.spliteasy.domain.model.Member
 import com.mammuten.spliteasy.domain.util.algorithm.Payer
 import com.mammuten.spliteasy.domain.util.algorithm.Receiver
+import com.mammuten.spliteasy.presentation.util.PriceUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,13 +120,9 @@ fun CalculateScreen(
                                                                 modifier = Modifier
                                                                     .weight(1f)
                                                                     .padding(1.dp),
-                                                                text = amount.let {
-                                                                    BigDecimal(it).setScale(
-                                                                        2,
-                                                                        BigDecimal.ROUND_HALF_UP
-                                                                    ).divide(BigDecimal(100))
-                                                                        .toString()
-                                                                },
+                                                                text = PriceUtil.scaleAndDivide(
+                                                                    amount
+                                                                ),
                                                                 textAlign = TextAlign.Center
                                                             )
                                                         }
