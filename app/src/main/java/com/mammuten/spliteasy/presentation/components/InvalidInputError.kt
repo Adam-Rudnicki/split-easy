@@ -1,6 +1,5 @@
 package com.mammuten.spliteasy.presentation.components
 
-import android.icu.math.BigDecimal
 import java.util.Date
 
 sealed interface InvalidInputError {
