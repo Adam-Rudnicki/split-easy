@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.manage_contributions
 
+import android.icu.math.BigDecimal
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -54,7 +55,10 @@ class ManageContributionsViewModel @Inject constructor(
                     amountPaidState = TextFieldState(
                         value = event.value,
                         error = InvalidInputError.checkAmount(
-                            amount = event.value.toDoubleOrNull(),
+                            amount = event.value.toDoubleOrNull()?.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .multiply(BigDecimal(100)).toInt()
+                            },
                             isRequired = false,
                             maxAmount = Contribution.MAX_AMOUNT
                         )
@@ -70,7 +74,10 @@ class ManageContributionsViewModel @Inject constructor(
                     amountOwedState = TextFieldState(
                         value = event.value,
                         error = InvalidInputError.checkAmount(
-                            amount = event.value.toDoubleOrNull(),
+                            amount = event.value.toDoubleOrNull()?.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .multiply(BigDecimal(100)).toInt()
+                            },
                             isRequired = false,
                             maxAmount = Contribution.MAX_AMOUNT
                         )
@@ -93,10 +100,14 @@ class ManageContributionsViewModel @Inject constructor(
                     for (memberState in state.memberStates) {
                         val contribution =
                             allMembersAndContributions.first { it.first.id == memberState.member.id }.second
-                        val amountPaid =
-                            memberState.amountPaidState.value.toDoubleOrNull()?.times(100)?.toInt()
-                        val amountOwed =
-                            memberState.amountOwedState.value.toDoubleOrNull()?.times(100)?.toInt()
+                        val amountPaid = memberState.amountPaidState.value.toDoubleOrNull()?.let {
+                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                .multiply(BigDecimal(100)).toInt()
+                        }
+                        val amountOwed = memberState.amountOwedState.value.toDoubleOrNull()?.let {
+                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                .multiply(BigDecimal(100)).toInt()
+                        }
 
                         val tempContribution: Contribution? = Contribution(
                             billId = currentBillId,
@@ -142,19 +153,23 @@ class ManageContributionsViewModel @Inject constructor(
                     MemberState(
                         member = member,
                         amountPaidState = TextFieldState(
-                            value = contribution?.amountPaid?.div(100.0)
-                                ?.let { String.format("%.2f", it) } ?: "",
+                            value = contribution?.amountPaid?.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            } ?: "",
                             error = InvalidInputError.checkAmount(
-                                amount = contribution?.amountPaid?.div(100.0),
+                                amount = contribution?.amountPaid,
                                 isRequired = false,
                                 maxAmount = Contribution.MAX_AMOUNT
                             )
                         ),
                         amountOwedState = TextFieldState(
-                            value = contribution?.amountOwed?.div(100.0)
-                                ?.let { String.format("%.2f", it) } ?: "",
+                            value = contribution?.amountOwed?.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            } ?: "",
                             error = InvalidInputError.checkAmount(
-                                amount = contribution?.amountOwed?.div(100.0),
+                                amount = contribution?.amountOwed,
                                 isRequired = false,
                                 maxAmount = Contribution.MAX_AMOUNT
                             )
@@ -175,14 +190,18 @@ class ManageContributionsViewModel @Inject constructor(
     ) {
         val sumOfAmountPaid: Int
             get() = memberStates.sumOf {
-                it.amountPaidState.value.toDoubleOrNull()?.times(100)
-                    ?.toInt() ?: 0
+                it.amountPaidState.value.toDoubleOrNull()?.let { value ->
+                    BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP)
+                        .multiply(BigDecimal(100)).toInt()
+                } ?: 0
             }
 
         val sumOfAmountOwed: Int
             get() = memberStates.sumOf {
-                it.amountOwedState.value.toDoubleOrNull()?.times(100)
-                    ?.toInt() ?: 0
+                it.amountOwedState.value.toDoubleOrNull()?.let { value ->
+                    BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP)
+                        .multiply(BigDecimal(100)).toInt()
+                } ?: 0
             }
 
         val absoluteDifference: Int

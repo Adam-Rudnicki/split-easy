@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.calculate
 
+import android.icu.math.BigDecimal
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -119,10 +120,13 @@ fun CalculateScreen(
                                                                 modifier = Modifier
                                                                     .weight(1f)
                                                                     .padding(1.dp),
-                                                                text = String.format(
-                                                                    "%.2f",
-                                                                    amount.div(100.0)
-                                                                ),
+                                                                text = amount.let {
+                                                                    BigDecimal(it).setScale(
+                                                                        2,
+                                                                        BigDecimal.ROUND_HALF_UP
+                                                                    ).divide(BigDecimal(100))
+                                                                        .toString()
+                                                                },
                                                                 textAlign = TextAlign.Center
                                                             )
                                                         }

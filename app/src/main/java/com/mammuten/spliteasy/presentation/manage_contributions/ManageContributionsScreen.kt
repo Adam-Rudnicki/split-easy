@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.manage_contributions
 
+import android.icu.math.BigDecimal
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -170,30 +171,30 @@ fun ManageContributionsScreen(
 
                     Text(
                         text = "Sum of amount paid: ${
-                            String.format(
-                                "%.2f",
-                                state.sumOfAmountPaid.div(100.0)
-                            )
+                            state.sumOfAmountPaid.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            }
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
                         text = "Sum of amount owed: ${
-                            String.format(
-                                "%.2f",
-                                state.sumOfAmountOwed.div(100.0)
-                            )
+                            state.sumOfAmountOwed.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            }
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
                         text = "Difference: ${
-                            String.format(
-                                "%.2f",
-                                state.absoluteDifference.div(100.0)
-                            )
+                            state.absoluteDifference.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            }
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)

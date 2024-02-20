@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.components
 
+import android.icu.math.BigDecimal
 import java.util.Date
 
 sealed interface InvalidInputError {
@@ -27,17 +28,16 @@ sealed interface InvalidInputError {
         }
 
         fun checkAmount(
-            amount: Double?,
+            amount: Int?,
             isRequired: Boolean,
             maxAmount: Int,
             minAmount: Int = 0
         ): InvalidInputError? {
-            val value = amount?.times(100)?.toInt()
             return when {
-                value == null && !isRequired -> null
-                value == null && isRequired -> Required
-                value != null && value > maxAmount -> TooBigAmount(maxAmount)
-                value != null && value < minAmount -> TooSmallAmount(minAmount)
+                amount == null && !isRequired -> null
+                amount == null && isRequired -> Required
+                amount != null && amount > maxAmount -> TooBigAmount(maxAmount)
+                amount != null && amount < minAmount -> TooSmallAmount(minAmount)
                 else -> null
             }
         }

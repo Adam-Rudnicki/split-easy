@@ -1,5 +1,6 @@
 package com.mammuten.spliteasy.presentation.bill_details
 
+import android.icu.math.BigDecimal
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -249,14 +250,16 @@ fun BillDetailsScreen(
                                 itemContent = { (member, contribution) ->
                                     TableRow(
                                         memberName = member.name,
-                                        amountPaid = String.format(
-                                            "%.2f",
-                                            contribution.amountPaid.div(100.0)
-                                        ),
-                                        amountOwed = String.format(
-                                            "%.2f",
-                                            contribution.amountOwed.div(100.0)
-                                        ),
+                                        amountPaid =
+                                        contribution.amountPaid.let {
+                                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                                .divide(BigDecimal(100)).toString()
+                                        },
+                                        amountOwed =
+                                        contribution.amountOwed.let {
+                                            BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                                .divide(BigDecimal(100)).toString()
+                                        },
                                         onDeleteClick = {
                                             openDeleteContributionDialog = contribution
                                         }
@@ -268,30 +271,30 @@ fun BillDetailsScreen(
 
                     Text(
                         text = "Sum of amount paid: ${
-                            String.format(
-                                "%.2f",
-                                state.sumOfAmountPaid.div(100.0)
-                            )
+                            state.sumOfAmountPaid.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            }
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
                         text = "Sum of amount owed: ${
-                            String.format(
-                                "%.2f",
-                                state.sumOfAmountOwed.div(100.0)
-                            )
+                            state.sumOfAmountOwed.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            }
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
                     )
                     Text(
                         text = "Difference: ${
-                            String.format(
-                                "%.2f",
-                                state.absoluteDifference.div(100.0)
-                            )
+                            state.absoluteDifference.let {
+                                BigDecimal(it).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                    .divide(BigDecimal(100)).toString()
+                            }
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(8.dp)
@@ -352,8 +355,8 @@ fun BillDetailsScreenPreview() {
                 ) to Contribution(
                     billId = 1,
                     memberId = 1,
-                    amountPaid = 5000,
-                    amountOwed = 5000
+                    amountPaid = 5500,
+                    amountOwed = 5555
                 ),
                 Member(
                     id = 2,
