@@ -7,26 +7,30 @@ import com.mammuten.spliteasy.data.source.local.entity.bill.BillEntity
 import com.mammuten.spliteasy.data.source.local.entity.member.MemberEntity
 
 @Entity(
-    tableName = "contributions",
+    tableName = ContributionEntity.TABLE_NAME,
     primaryKeys = ["billId", "memberId"],
     foreignKeys = [
         ForeignKey(
             entity = BillEntity::class,
             parentColumns = ["id"],
             childColumns = ["billId"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = MemberEntity::class,
             parentColumns = ["id"],
             childColumns = ["memberId"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.RESTRICT
         )
     ]
 )
 data class ContributionEntity(
     val billId: Int,
     val memberId: Int,
-    val amountPaid: Double,
-    val amountOwed: Double,
-)
+    val amountPaid: Int = 0,
+    val amountOwed: Int = 0
+) {
+    companion object {
+        const val TABLE_NAME = "contributions"
+    }
+}

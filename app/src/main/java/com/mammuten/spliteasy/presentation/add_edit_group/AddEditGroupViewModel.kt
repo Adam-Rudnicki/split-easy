@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.mammuten.spliteasy.domain.model.Group
 import com.mammuten.spliteasy.domain.usecase.group.GroupUseCases
 import com.mammuten.spliteasy.presentation.components.InvalidInputError
-import com.mammuten.spliteasy.presentation.components.TextFieldState
+import com.mammuten.spliteasy.presentation.components.input_state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,68 +29,78 @@ class AddEditGroupViewModel @Inject constructor(
     var description by mutableStateOf(TextFieldState())
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentGroupId: Int? = null
 
     init {
-        savedStateHandle.get<Int>("groupId")?.let { groupId ->
-            if (groupId != -1) {
-                viewModelScope.launch {
-                    groupUseCases.getGroupByIdUseCase(groupId).firstOrNull()?.let { group ->
+        viewModelScope.launch {
+            savedStateHandle.get<Int>("groupId")?.let { id ->
+                if (id != -1) {
+                    groupUseCases.getGroupByIdUseCase(id).firstOrNull()?.let { group ->
                         currentGroupId = group.id
                         name = name.copy(value = group.name)
                         group.description?.let { description = description.copy(value = it) }
                     }
                 }
             }
+            name = name.copy(
+                error = InvalidInputError.checkText(
+                    text = name.value,
+                    isRequired = Group.IS_NAME_REQUIRED,
+                    minLength = Group.MIN_NAME_LEN,
+                    maxLength = Group.MAX_NAME_LEN
+                )
+            )
+            description = description.copy(
+                error = InvalidInputError.checkText(
+                    text = description.value,
+                    isRequired = Group.IS_DESC_REQUIRED,
+                    minLength = Group.MIN_DESC_LEN,
+                    maxLength = Group.MAX_DESC_LEN
+                )
+            )
         }
     }
 
     fun onEvent(event: AddEditGroupEvent) {
         when (event) {
             is AddEditGroupEvent.EnteredName -> {
-                val trimmed = event.value.trim()
-                val error: InvalidInputError? = when {
-                    trimmed.length < Group.MIN_NAME_LEN -> InvalidInputError.TooShort(Group.MIN_NAME_LEN)
-                    trimmed.length > Group.MAX_NAME_LEN -> InvalidInputError.TooLong(Group.MAX_NAME_LEN)
-                    else -> null
-                }
-                name = name.copy(
-                    value = event.value,
-                    error = error
+                val error: InvalidInputError? = InvalidInputError.checkText(
+                    text = event.value,
+                    isRequired = Group.IS_NAME_REQUIRED,
+                    minLength = Group.MIN_NAME_LEN,
+                    maxLength = Group.MAX_NAME_LEN
                 )
+                name = name.copy(value = event.value, error = error)
             }
 
             is AddEditGroupEvent.EnteredDescription -> {
-                val trimmed = event.value.trim()
-                val error: InvalidInputError? = when {
-                    trimmed.length < Group.MIN_DESC_LEN -> InvalidInputError.TooShort(Group.MIN_DESC_LEN)
-                    trimmed.length > Group.MAX_DESC_LEN -> InvalidInputError.TooLong(Group.MAX_DESC_LEN)
-                    else -> null
-                }
-                description = description.copy(
-                    value = event.value,
-                    error = error
+                val error: InvalidInputError? = InvalidInputError.checkText(
+                    text = event.value,
+                    isRequired = Group.IS_DESC_REQUIRED,
+                    minLength = Group.MIN_DESC_LEN,
+                    maxLength = Group.MAX_DESC_LEN
                 )
+                description = description.copy(value = event.value, error = error)
             }
 
             is AddEditGroupEvent.SaveGroup -> {
                 viewModelScope.launch {
-                    if (Group.IS_NAME_REQUIRED && name.value.isBlank()) name =
-                        name.copy(error = InvalidInputError.Required)
-                    if (Group.IS_DESC_REQUIRED) description =
-                        description.copy(error = InvalidInputError.Required)
                     if (name.error != null || description.error != null) {
                         _eventFlow.emit(UiEvent.ShowSnackbar(message = "Please fill properly all fields"))
                         return@launch
                     }
+                    isSaving = true
                     groupUseCases.upsertGroupUseCase(
                         Group(
                             id = currentGroupId,
-                            name = name.value,
-                            description = description.value.takeIf { it.isNotBlank() }
+                            name = name.value.trim(),
+                            description = description.value.takeIf { it.isNotBlank() }?.trim()
                         )
                     )
                     _eventFlow.emit(UiEvent.SaveGroup)
@@ -99,8 +109,8 @@ class AddEditGroupViewModel @Inject constructor(
         }
     }
 
-    sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
-        data object SaveGroup : UiEvent()
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data object SaveGroup : UiEvent
     }
 }

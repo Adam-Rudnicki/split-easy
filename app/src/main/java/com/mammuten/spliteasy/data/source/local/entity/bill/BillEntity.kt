@@ -5,21 +5,26 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 import com.mammuten.spliteasy.data.source.local.entity.group.GroupEntity
+import java.util.Date
 
 @Entity(
-    tableName = "bills",
+    tableName = BillEntity.TABLE_NAME,
     foreignKeys = [
         ForeignKey(
             entity = GroupEntity::class,
             parentColumns = ["id"],
-            childColumns = ["groupId"],
-            onDelete = ForeignKey.CASCADE,
+            childColumns = ["groupId"]
         )
     ]
 )
 data class BillEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
+    @PrimaryKey(autoGenerate = true) val id: Int? = 0,
     val groupId: Int,
-    val amount: Double,
-)
+    val name: String,
+    val description: String? = null,
+    val date: Date? = null
+) {
+    companion object {
+        const val TABLE_NAME = "bills"
+    }
+}

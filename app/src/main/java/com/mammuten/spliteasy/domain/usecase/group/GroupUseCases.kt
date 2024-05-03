@@ -4,5 +4,5 @@ data class GroupUseCases (
     val upsertGroupUseCase: UpsertGroupUseCase,
     val deleteGroupUseCase: DeleteGroupUseCase,
     val getGroupByIdUseCase: GetGroupByIdUseCase,
-    val getGroups: GetGroupsUseCase
+    val getGroupsUseCase: GetGroupsUseCase
 )
